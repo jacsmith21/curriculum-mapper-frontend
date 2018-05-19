@@ -31,8 +31,8 @@
     for (let i = 0; i < length; i++) {
       array.push({
         headline: 'Dr. MacIsaac',
-        title: 'CS1013',
-        subtitle: 'This is the ' + i + ' index'
+        title: 'CS10' + i,
+        subtitle: 'This is the ' + i + 'th index!'
       })
     }
     return array
@@ -44,7 +44,7 @@
     data () {
       return {
         loading: false,
-        items: getList(20)
+        items: getList(8)
       }
     },
     computed: {
@@ -60,7 +60,7 @@
   }
 </script>
 
-<style scoped>
+<style>
   .list-wrap {
     position: relative;
     width: 400px;
@@ -73,5 +73,11 @@
   }
   .item {
     border-bottom: 1px solid #eee;
+  }
+
+  /*This is to size of the items!*/
+  /*noinspection CssUnusedSymbol*/
+  .list__tile--avatar {
+    height: 80px!important;
   }
 </style>
