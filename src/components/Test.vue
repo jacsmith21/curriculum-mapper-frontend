@@ -1,24 +1,61 @@
 <template>
-  <div class="list-wrap">
-    <VueAutoVirtualScrollList class="list" :totalHeight="height" :defaultHeight="80">
-      <template v-for="(item, index) in items">
-        <v-list-tile
-          :key="index"
-          avatar
-          ripple
-          @click="toggle(index)"
-          class="item"
-        >
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-            <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </template>
-    </VueAutoVirtualScrollList>
-    <Loading class="list-loading" :loading="loading"></Loading>
-  </div>
+  <v-layout>
+
+    <v-layout style="max-width: 400px; min-width: 400px">
+      <div style="position: relative; width: 100%">
+        <VueAutoVirtualScrollList class="list" :totalHeight="height" :defaultHeight="80">
+          <template v-for="(item, index) in items">
+            <v-list-tile
+              :key="index"
+              avatar
+              ripple
+              @click="toggle(index)"
+              class="item"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </template>
+        </VueAutoVirtualScrollList>
+        <Loading class="list-loading" :loading="loading"></Loading>
+      </div>
+    </v-layout>
+
+    <v-container fluid style="margin: 0">
+      <v-layout row wrap>
+
+        <v-flex xs12>
+          <v-card ref="form">
+            <v-card-title primary-title><div class="headline">Course Form</div></v-card-title>
+            <v-card-text>
+
+              <template v-for="(value, key) in form">
+                  <v-text-field
+                    :value="value"
+                    :label="key"
+                    v-model="form[key]"
+                  ></v-text-field>
+              </template>
+
+              <p>Message is: {{ form['name'] }}</p>
+            </v-card-text>
+            <v-divider class="mt-5"></v-divider>
+            <v-card-actions>
+              <v-btn flat>Cancel</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" flat @click="submit">Submit</v-btn>
+            </v-card-actions>
+
+          </v-card>
+        </v-flex>
+
+      </v-layout>
+    </v-container>
+
+  </v-layout>
 </template>
 
 <script>
@@ -35,6 +72,11 @@
         subtitle: 'This is the ' + i + 'th index!'
       })
     }
+    array.push({
+      headline: 'Add a Course',
+      title: 'Add a Course',
+      subtitle: 'None'
+    })
     return array
   }
 
@@ -44,7 +86,8 @@
     data () {
       return {
         loading: false,
-        items: getList(8)
+        items: getList(8),
+        form: {'name': '', 'number': '', 'instructor': '', 'description': ''},
       }
     },
     computed: {
@@ -55,16 +98,16 @@
     methods: {
       toggle: function (index) {
         console.log('Toggle: ' + index)
+      },
+      submit: function () {
+        console.log('Submitted!')
+        console.log(this.name)
       }
     }
   }
 </script>
 
 <style>
-  .list-wrap {
-    position: relative;
-    width: 400px;
-  }
   .list-loading {
     position: absolute;
     bottom: 0;
