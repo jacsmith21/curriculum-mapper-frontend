@@ -32,7 +32,7 @@
     components: { Form, List },
     data () {
       return {
-        form: {'name': '', 'number': '', 'instructor': '', 'description': ''},
+        form: {'Name': '', 'Instructor': '', 'Description': ''},
         items: getItems(8)
       }
     },
@@ -44,9 +44,9 @@
         console.log('Submitted!')
 
         this.items.push({
-          headline: this.form['instructor'],
-          title: this.form['name'],
-          subtitle: this.form['description']
+          headline: this.form['Instructor'],
+          title: this.form['Name'],
+          subtitle: this.form['Description']
         })
       }
     }

@@ -15,6 +15,14 @@
               ></v-text-field>
             </template>
 
+            <v-select
+              :items="items"
+              label="Learning Outcomes"
+              chips
+              tags
+              deletable-chips
+            ></v-select>
+
           </v-card-text>
           <v-divider class="mt-5"></v-divider>
           <v-card-actions>
@@ -33,7 +41,12 @@
 <script>
   export default {
     name: 'Form',
-    props: ['form', 'onSubmit']
+    props: ['form', 'onSubmit'],
+    data () {
+      return {
+        items: ['Trigonometry', 'Java', 'Loops', 'Teamwork']
+      }
+    }
   }
 </script>
 
