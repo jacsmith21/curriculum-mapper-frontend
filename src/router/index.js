@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Test from '@/components/Test'
 
+// noinspection JSUnresolvedFunction
 Vue.use(Router)
 
 export default new Router({
@@ -15,7 +16,8 @@ export default new Router({
     {
       path: '/test',
       name: 'Test',
-      component: Test
+      component: Test,
+      props: {height: 833}
     }
   ]
 })
