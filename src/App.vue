@@ -1,9 +1,6 @@
 <template>
   <v-app style="max-height: 100%">
-    <v-toolbar
-      app
-      :clipped-left="clipped"
-    >
+    <v-toolbar app :clipped-left="clipped">
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
       </v-btn>
@@ -14,22 +11,19 @@
       <router-view/>
     </v-content>
 
-    <v-navigation-drawer
-      temporary
-      :right="right"
-      v-model="rightDrawer"
-      fixed
-      app
-    >
+    <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed app>
       <v-list>
-        <v-list-tile @click="right = !right">
+        <v-list-tile v-for="item in items" :key="item.title" @click="" :to="item.route">
           <v-list-tile-action>
-            <v-icon>compare_arrows</v-icon>
+            <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+
     <v-footer :fixed="fixed" app>
       <v-layout column align-center>
         <span>&copy; 2017 Jacob Smith</span>
@@ -47,7 +41,8 @@ export default {
       fixed: false,
       items: [{
         icon: 'bubble_chart',
-        title: 'Inspire'
+        title: 'Test',
+        route: '/test'
       }],
       miniVariant: false,
       right: false,
