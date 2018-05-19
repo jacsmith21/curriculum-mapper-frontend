@@ -87,7 +87,7 @@
       return {
         loading: false,
         items: getList(8),
-        form: {'name': '', 'number': '', 'instructor': '', 'description': ''},
+        form: {'name': '', 'number': '', 'instructor': '', 'description': ''}
       }
     },
     computed: {
@@ -101,7 +101,12 @@
       },
       submit: function () {
         console.log('Submitted!')
-        console.log(this.name)
+
+        this.items.push({
+          headline: this.form['instructor'],
+          title: this.form['name'],
+          subtitle: this.form['description']
+        })
       }
     }
   }
