@@ -1,31 +1,50 @@
 <template>
-  <div>
-    <div class="list-wrap">
-      <VueAutoVirtualScrollList :totalHeight="height" :defaultHeight="80" style="width: 100%;">
-        <!--suppress JSUnusedLocalSymbols -->
-        <Item v-for="(_, index) in items" :index="index" :key="index"></Item>
-      </VueAutoVirtualScrollList>
-      <Loading class="list-loading" :loading="loading"></Loading>
-    </div>
+  <div class="list-wrap">
+    <VueAutoVirtualScrollList class="list" :totalHeight="height" :defaultHeight="80">
+      <template v-for="(item, index) in items">
+        <v-list-tile
+          :key="index"
+          avatar
+          ripple
+          @click="toggle(index)"
+          class="item"
+        >
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+            <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </template>
+    </VueAutoVirtualScrollList>
+    <Loading class="list-loading" :loading="loading"></Loading>
   </div>
 </template>
 
 <script>
-  import Item from '@/components/Item.vue'
   import Loading from '@/components/Loading.vue'
   import VueAutoVirtualScrollList from 'vue-auto-virtual-scroll-list'
+  import 'vuetify/src/stylus/components/_lists.styl'
 
   const getList = (length) => {
-    return new Array(length)
+    let array = []
+    for (let i = 0; i < length; i++) {
+      array.push({
+        headline: 'Dr. MacIsaac',
+        title: 'CS1013',
+        subtitle: 'This is the ' + i + ' index'
+      })
+    }
+    return array
   }
 
   export default {
     name: 'Test',
-    components: { Item, VueAutoVirtualScrollList, Loading },
+    components: { VueAutoVirtualScrollList, Loading },
     data () {
       return {
         loading: false,
-        items: getList(6)
+        items: getList(20)
       }
     },
     computed: {
@@ -33,8 +52,10 @@
         return window.innerHeight - 64 - 32  // Take off size of toolbar & footer
       }
     },
-    mounted () {
-      console.log(this.$el.clientHeight)
+    methods: {
+      toggle: function (index) {
+        console.log('Toggle: ' + index)
+      }
     }
   }
 </script>
@@ -49,5 +70,8 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
+  }
+  .item {
+    border-bottom: 1px solid #eee;
   }
 </style>
