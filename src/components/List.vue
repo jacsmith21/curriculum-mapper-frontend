@@ -7,8 +7,7 @@
             :key="index"
             avatar
             ripple
-            @click="toggle(index)"
-            :to="course.instructor + '/' + course.name"
+            :to="'/instructors/' + course.instructor + '/' + course.name"
             class="item"
           >
             <v-list-tile-content>
@@ -30,7 +29,7 @@
   export default {
     name: 'List',
     components: {VueAutoVirtualScrollList},
-    props: ['width', 'toggle'],
+    props: ['width'],
     computed: {
       style: function () {
         return {maxWidth: this.width + 'px', minWidth: this.width + 'px'}

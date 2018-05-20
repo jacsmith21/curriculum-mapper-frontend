@@ -23,6 +23,25 @@ const getItems = (length) => {
 const state = {
   courses: getItems(8)
 }
+
+const getters = {
+  getCourse: (state) => (instructor, name) => {
+    return state.courses.filter(course => course.instructor === instructor && course.name === name)[0]
+  }
+}
+
+const mutations = {
+  addCourse (state, payload) {
+    state.courses.push({
+      instructor: payload['Instructor'],
+      name: payload['Name'],
+      description: this.form['Description']
+    })
+  }
+}
+
 export default new Vuex.Store({
-  state
+  state,
+  getters,
+  mutations
 })

@@ -8,7 +8,6 @@
 <script>
   import Form from '@/components/Form.vue'
   import List from '@/components/List.vue'
-  import 'vuetify/src/stylus/components/_lists.styl'
 
   export default {
     name: 'Test',

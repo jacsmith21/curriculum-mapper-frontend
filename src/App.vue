@@ -4,7 +4,8 @@
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-btn class="headline" :ripple="false" flat v-text="title" to="/"></v-btn>
+      <!--<v-toolbar-title v-text="title"></v-toolbar-title>-->
     </v-toolbar>
 
     <v-content>
