@@ -5,7 +5,8 @@ import axios from 'axios'
 Vue.use(Vuex)
 
 const state = {
-  courses: []
+  courses: [],
+  form: {'Name': '', 'Instructor': '', 'Description': ''}
 }
 
 const getters = {
@@ -25,26 +26,30 @@ const actions = {
   },
   addCourse ({ commit, state }) {
     const course = {
-      title: state.newTodo,
-      completed: false
+      instructor: state.form['Instructor'],
+      name: state.form['Name'],
+      description: state.form['Description']
     }
-    axios.post('/courses', course).then(() => {
+    axios.post('http://localhost:3000/courses', course).then(() => {
       commit('addCourse', course)
+    })
+  },
+  deleteCourse ({ commit }, course) {
+    axios.delete('http://localhost:3000/courses/' + course._id).then(() => {
+      commit('removeCourse', course)
     })
   }
 }
 
 const mutations = {
+  addCourse (state, course) {
+    state.courses.push(course)
+  },
   setCourses: (state, courses) => {
     state.courses = courses
   },
-  addCourse (state, payload) {
-    console.log(payload)
-    state.courses.push({
-      instructor: payload['Instructor'],
-      name: payload['Name'],
-      description: payload['Description']
-    })
+  removeCourse (state, course) {
+    state.courses = state.courses.filter(c => c.name !== course.name || c.instructor !== course.instructor)
   }
 }
 

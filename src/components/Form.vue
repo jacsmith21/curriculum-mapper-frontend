@@ -39,9 +39,10 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     name: 'Form',
-    props: ['form'],
     data () {
       return {
         items: ['Trigonometry', 'Java', 'Loops', 'Teamwork']
@@ -49,9 +50,10 @@
     },
     methods: {
       submit () {
-        this.$store.commit('addCourse', this.form)
+        this.$store.dispatch('addCourse')
       }
-    }
+    },
+    computed: mapState(['form'])
   }
 </script>
 

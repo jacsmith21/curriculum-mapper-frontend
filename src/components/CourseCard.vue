@@ -40,7 +40,7 @@
             <v-btn flat>Edit
               <v-icon right>edit</v-icon>
             </v-btn>
-            <v-btn flat>Delete
+            <v-btn flat @click="deleteCourse">Delete
               <v-icon right>delete</v-icon>
             </v-btn>
           </v-card-actions>
@@ -57,8 +57,13 @@
   export default {
     name: 'CourseCard',
     computed: {
-      course () {
+      course: function () {
         return this.$store.getters.getCourse(this.$route.params.instructor, this.$route.params.name)
+      }
+    },
+    methods: {
+      deleteCourse () {
+        this.$store.dispatch('deleteCourse', this.course)
       }
     }
   }
