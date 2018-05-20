@@ -4,19 +4,47 @@
 
       <v-flex xs12>
         <v-card>
-          <v-card-title primary-title><div class="headline">{{ this.course.name }}</div></v-card-title>
-          <v-card-text>
+          <v-card-title class="headline" primary-title>Course Information</v-card-title>
 
+          <v-list two-line>
+            <v-list-tile @click="">
+              <v-list-tile-action>
+                <v-icon>school</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ this.course.name }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider inset></v-divider>
+            <v-list-tile @click="">
+              <v-list-tile-action>
+                <v-icon>person</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ this.course.instructor }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider inset></v-divider>
+            <v-list-tile @click="">
+              <v-list-tile-action>
+                <v-icon>info</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ this.course.description }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
 
-          </v-card-text>
-          <v-divider class="mt-5"></v-divider>
           <v-card-actions>
-            <v-btn flat>Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" flat>Submit</v-btn>
+            <v-btn flat>Edit
+              <v-icon right>edit</v-icon>
+            </v-btn>
+            <v-btn flat>Delete
+              <v-icon right>delete</v-icon>
+            </v-btn>
           </v-card-actions>
 
-          <p>Instructor: {{ instructor  }} is the best</p>
         </v-card>
       </v-flex>
 
@@ -28,15 +56,9 @@
 <script>
   export default {
     name: 'CourseCard',
-    data () {
-      return {
-        instructor: this.$route.params.instructor,
-        name: this.$route.params.name
-      }
-    },
     computed: {
       course () {
-        return this.$store.getters.getCourse(this.instructor, this.name)
+        return this.$store.getters.getCourse(this.$route.params.instructor, this.$route.params.name)
       }
     }
   }
