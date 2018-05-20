@@ -1,27 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
-const getItems = (length) => {
-  let array = []
-  for (let i = 0; i < length; i++) {
-    array.push({
-      instructor: 'Dr. MacIsaac',
-      name: 'CS10' + i,
-      description: 'This is the ' + i + 'th index!'
-    })
-  }
-  array.push({
-    instructor: 'Add a Course',
-    name: 'Add a Course',
-    description: 'None'
-  })
-  return array
-}
-
 const state = {
-  courses: getItems(8)
+  courses: []
 }
 
 const getters = {
@@ -30,12 +14,36 @@ const getters = {
   }
 }
 
+const actions = {
+  loadCourses ({ commit }) {
+    axios
+    .get('http://localhost:3000/courses')
+    .then(r => r.data)
+    .then(courses => {
+      commit('setCourses', courses)
+    })
+  },
+  addCourse ({ commit, state }) {
+    const course = {
+      title: state.newTodo,
+      completed: false
+    }
+    axios.post('/courses', course).then(() => {
+      commit('addCourse', course)
+    })
+  }
+}
+
 const mutations = {
+  setCourses: (state, courses) => {
+    state.courses = courses
+  },
   addCourse (state, payload) {
+    console.log(payload)
     state.courses.push({
       instructor: payload['Instructor'],
       name: payload['Name'],
-      description: this.form['Description']
+      description: payload['Description']
     })
   }
 }
@@ -43,5 +51,6 @@ const mutations = {
 export default new Vuex.Store({
   state,
   getters,
-  mutations
+  mutations,
+  actions
 })

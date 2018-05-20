@@ -38,6 +38,9 @@
         return window.innerHeight - 64 - 32  // Take off size of toolbar & footer. I don't know any simple alternative.
       },
       ...mapState(['courses'])
+    },
+    created () {
+      this.$store.dispatch('loadCourses')
     }
   }
 </script>

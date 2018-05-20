@@ -3,7 +3,7 @@
     <v-layout row wrap>
 
       <v-flex xs12>
-        <v-card ref="form">
+        <v-card>
           <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
           <v-card-text>
 
@@ -28,7 +28,7 @@
           <v-card-actions>
             <v-btn flat>Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click="onSubmit">Submit</v-btn>
+            <v-btn color="primary" flat @click="submit">Submit</v-btn>
           </v-card-actions>
 
         </v-card>
@@ -41,10 +41,15 @@
 <script>
   export default {
     name: 'Form',
-    props: ['form', 'onSubmit'],
+    props: ['form'],
     data () {
       return {
         items: ['Trigonometry', 'Java', 'Loops', 'Teamwork']
+      }
+    },
+    methods: {
+      submit () {
+        this.$store.commit('addCourse', this.form)
       }
     }
   }
