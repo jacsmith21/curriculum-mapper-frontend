@@ -10,7 +10,7 @@
   import CourseCard from '@/components/CourseCard.vue'
 
   export default {
-    name: 'Course',
+    name: 'Courses',
     components: { List, CourseCard }
   }
 </script>

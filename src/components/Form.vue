@@ -4,7 +4,7 @@
 
       <v-flex xs12>
         <v-card ref="form">
-          <v-card-title primary-title><div class="headline">Course Form</div></v-card-title>
+          <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
           <v-card-text>
 
             <template v-for="(value, key) in form">

@@ -4,7 +4,7 @@
 
       <v-flex xs12>
         <v-card>
-          <v-card-title class="headline" primary-title>Course Information</v-card-title>
+          <v-card-title class="headline" primary-title>Courses Information</v-card-title>
 
           <v-list two-line>
             <v-list-tile @click="">
