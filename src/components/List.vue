@@ -2,18 +2,19 @@
   <v-layout :style="style">
     <div style="position: relative; width: 100%">
       <VueAutoVirtualScrollList class="list" :totalHeight="height" :defaultHeight="80">
-        <template v-for="(item, index) in items">
+        <template v-for="(course, index) in courses">
           <v-list-tile
             :key="index"
             avatar
             ripple
             @click="toggle(index)"
+            :to="course.instructor + '/' + course.name"
             class="item"
           >
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-              <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+              <v-list-tile-title>{{ course.name }}</v-list-tile-title>
+              <v-list-tile-sub-title class="text--primary">{{ course.instructor }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>{{ course.description }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </template>
@@ -24,18 +25,20 @@
 
 <script>
   import VueAutoVirtualScrollList from 'vue-auto-virtual-scroll-list'
+  import { mapState } from 'vuex'
 
   export default {
     name: 'List',
     components: {VueAutoVirtualScrollList},
-    props: ['items', 'width', 'toggle'],
+    props: ['width', 'toggle'],
     computed: {
       style: function () {
         return {maxWidth: this.width + 'px', minWidth: this.width + 'px'}
       },
       height: function () {
-        return window.innerHeight - 64 - 32  // Take off size of toolbar & footer
-      }
+        return window.innerHeight - 64 - 32  // Take off size of toolbar & footer. I don't know any simple alternative.
+      },
+      ...mapState(['courses'])
     }
   }
 </script>

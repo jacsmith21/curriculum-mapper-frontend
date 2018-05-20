@@ -14,15 +14,15 @@
     let array = []
     for (let i = 0; i < length; i++) {
       array.push({
-        headline: 'Dr. MacIsaac',
-        title: 'CS10' + i,
-        subtitle: 'This is the ' + i + 'th index!'
+        instructor: 'Dr. MacIsaac',
+        name: 'CS10' + i,
+        description: 'This is the ' + i + 'th index!'
       })
     }
     array.push({
-      headline: 'Add a Course',
-      title: 'Add a Course',
-      subtitle: 'None'
+      instructor: 'Add a Course',
+      name: 'Add a Course',
+      description: 'None'
     })
     return array
   }
@@ -32,7 +32,7 @@
     components: { Form, List },
     data () {
       return {
-        form: {'name': '', 'number': '', 'instructor': '', 'description': ''},
+        form: {'Name': '', 'Instructor': '', 'Description': ''},
         items: getItems(8)
       }
     },
@@ -44,9 +44,9 @@
         console.log('Submitted!')
 
         this.items.push({
-          headline: this.form['instructor'],
-          title: this.form['name'],
-          subtitle: this.form['description']
+          instructor: this.form['Instructor'],
+          name: this.form['Name'],
+          description: this.form['Description']
         })
       }
     }

@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <List width="400" :toggle="toggle" :items="items"></List>
+    <List width="400" :toggle="toggle"></List>
     <Form :form="form" :onSubmit="submit"></Form>
   </v-layout>
 </template>
@@ -10,30 +10,12 @@
   import List from '@/components/List.vue'
   import 'vuetify/src/stylus/components/_lists.styl'
 
-  const getItems = (length) => {
-    let array = []
-    for (let i = 0; i < length; i++) {
-      array.push({
-        headline: 'Dr. MacIsaac',
-        title: 'CS10' + i,
-        subtitle: 'This is the ' + i + 'th index!'
-      })
-    }
-    array.push({
-      headline: 'Add a Course',
-      title: 'Add a Course',
-      subtitle: 'None'
-    })
-    return array
-  }
-
   export default {
     name: 'Test',
     components: { Form, List },
     data () {
       return {
-        form: {'Name': '', 'Instructor': '', 'Description': ''},
-        items: getItems(8)
+        form: {'Name': '', 'Instructor': '', 'Description': ''}
       }
     },
     methods: {
@@ -44,9 +26,9 @@
         console.log('Submitted!')
 
         this.items.push({
-          headline: this.form['Instructor'],
-          title: this.form['Name'],
-          subtitle: this.form['Description']
+          instructor: this.form['Instructor'],
+          name: this.form['Name'],
+          description: this.form['Description']
         })
       }
     }
