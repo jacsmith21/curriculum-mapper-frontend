@@ -7,8 +7,8 @@
           <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
           <v-card-text>
 
-            <template v-for="(value) in form">
-              <TextField v-if="!value['type'] || value['type'] === 'text'" :config="value"></TextField>
+            <template v-for="(value, key) in form">
+              <TextField v-if="!value['type'] || value['type'] === 'text'" :config="value" :identifier="key"></TextField>
               <TagSelect v-else :config="value"></TagSelect>
             </template>
 

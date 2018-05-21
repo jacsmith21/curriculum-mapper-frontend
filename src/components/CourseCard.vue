@@ -13,7 +13,7 @@
               <v-list-tile-action>
                 <v-icon>school</v-icon>
               </v-list-tile-action>
-              <input ref="input" v-show="edit === true" v-on:blur="edit = false" @keyup.enter="edit = false" v-model="course.name">
+              <input ref="input" v-show="edit === true" v-on:blur="finishedEdit" @keyup.enter="$refs.input.blur()" :value="course.name">
               <v-list-tile-content @dblclick="doubleClick" v-show="edit === false">
                 <v-list-tile-title>{{ course.name }}</v-list-tile-title>
               </v-list-tile-content>
@@ -84,9 +84,14 @@
         this.$store.dispatch('deleteCourse', this.course)
       },
       doubleClick () {
-        console.log(this.$refs.input)
         this.edit = true
         this.$nextTick(() => this.$refs.input.focus())
+      },
+      finishedEdit (e) {
+        console.log(e)
+        this.edit = false
+        this.$emit('update')
+        this.$store.dispatch('editCourse', {id: this.course._id, key: 'name', value: this.$refs.input.value})
       }
     }
   }

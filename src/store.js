@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import router from '@/router'
 
 Vue.use(Vuex)
 
@@ -17,6 +18,13 @@ const state = {
 const getters = {
   getCourse: (state) => (instructor, name) => {
     return state.courses.filter(course => course.instructor === instructor && course.name === name)[0]
+  },
+  getCourseById: (state) => (id) => {
+    for (let course of state.courses) {
+      if (course._id === id) {
+        return course
+      }
+    }
   }
 }
 
@@ -40,6 +48,12 @@ const actions = {
     axios.delete('http://localhost:3000/courses/' + course._id).then(() => {
       commit('removeCourse', course)
     })
+  },
+  editCourse ({ commit, getters }, edit) {
+    const course = getters.getCourseById(edit.id)
+    edit.index = course.index
+    commit('editCourse', edit)
+    router.push('/instructors/' + course.instructor + '/' + course.name)
   }
 }
 
@@ -48,10 +62,23 @@ const mutations = {
     state.courses.push(course)
   },
   setCourses: (state, courses) => {
+    for (let i = 0; i < courses.length; i++) {
+      courses[i].index = i
+    }
     state.courses = courses
   },
   removeCourse (state, course) {
     state.courses = state.courses.filter(c => c.name !== course.name || c.instructor !== course.instructor)
+  },
+  editForm (state, payload) {
+    state.form[payload.key]['value'] = payload.value
+  },
+  editCourse (state, edit) {
+    console.log(edit)
+    let course = state.courses[edit.index]
+    course[edit.key] = edit.value
+    state.courses[edit.index] = course
+    console.log(state.courses)
   }
 }
 

@@ -2,14 +2,19 @@
   <v-text-field
     :value="config['value']"
     :label="config['label']"
-    v-model="config['value']"
+    @input="update"
   ></v-text-field>
 </template>
 
 <script>
   export default {
     name: 'TextField',
-    props: ['config']
+    props: ['identifier', 'config'],
+    methods: {
+      update (value) {
+        this.$store.commit('editForm', {key: this.identifier, value: value})
+      }
+    }
   }
 </script>
 
