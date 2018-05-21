@@ -31,7 +31,7 @@ const getters = {
 const actions = {
   loadCourses ({ commit }) {
     axios
-    .get('http://localhost:3000/courses')
+    .get('http://localhost:3030/courses')
     .then(r => r.data)
     .then(courses => {
       commit('setCourses', courses)
@@ -40,12 +40,12 @@ const actions = {
   addCourse ({ commit, state }) {
     const form = state.form
     const course = Object.keys(form).reduce((course, key) => Object.assign(course, {[key]: form[key]['value']}), {})
-    axios.post('http://localhost:3000/courses', course).then(() => {
+    axios.post('http://localhost:3030/courses', course).then(() => {
       commit('addCourse', course)
     })
   },
   deleteCourse ({ commit }, course) {
-    axios.delete('http://localhost:3000/courses/' + course._id).then(() => {
+    axios.delete('http://localhost:3030/courses/' + course._id).then(() => {
       commit('removeCourse', course)
     })
     router.go(-1)
@@ -53,7 +53,7 @@ const actions = {
   editCourse ({ commit, getters }, edit) {
     const course = edit.instance
     course[edit.key] = edit.value
-    axios.put('http://localhost:3000/courses/' + course._id, course).then(() => {
+    axios.put('http://localhost:3030/courses/' + course._id, course).then(() => {
       commit('editCourse', course)
     })
     router.push('/instructors/' + course.instructor + '/' + course.name)
