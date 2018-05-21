@@ -51,8 +51,10 @@ const actions = {
   },
   editCourse ({ commit, getters }, edit) {
     const course = getters.getCourseById(edit.id)
-    edit.index = course.index
-    commit('editCourse', edit)
+    course[edit.key] = edit.value
+    axios.put('http://localhost:3000/courses/' + course._id, course).then(() => {
+      commit('editCourse', course)
+    })
     router.push('/instructors/' + course.instructor + '/' + course.name)
   }
 }
@@ -73,12 +75,8 @@ const mutations = {
   editForm (state, payload) {
     state.form[payload.key]['value'] = payload.value
   },
-  editCourse (state, edit) {
-    console.log(edit)
-    let course = state.courses[edit.index]
-    course[edit.key] = edit.value
-    state.courses[edit.index] = course
-    console.log(state.courses)
+  editCourse (state, course) {
+    state.courses[course.index] = course
   }
 }
 
