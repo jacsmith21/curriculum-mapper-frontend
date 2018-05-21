@@ -48,9 +48,10 @@ const actions = {
     axios.delete('http://localhost:3000/courses/' + course._id).then(() => {
       commit('removeCourse', course)
     })
+    router.go(-1)
   },
   editCourse ({ commit, getters }, edit) {
-    const course = getters.getCourseById(edit.id)
+    const course = edit.instance
     course[edit.key] = edit.value
     axios.put('http://localhost:3000/courses/' + course._id, course).then(() => {
       commit('editCourse', course)

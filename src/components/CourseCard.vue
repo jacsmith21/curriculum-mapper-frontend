@@ -8,53 +8,43 @@
 
           <!--v-if there to remove undefined error. There is definitely a better way to do this.-->
           <v-list two-line v-if="course">
-
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>school</v-icon>
-              </v-list-tile-action>
-              <input ref="input" v-show="edit === true" v-on:blur="finishedEdit" @keyup.enter="$refs.input.blur()" :value="course.name">
-              <v-list-tile-content @dblclick="doubleClick" v-show="edit === false">
-                <v-list-tile-title>{{ course.name }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <EditableTile
+              icon="school"
+              :instance="course"
+              identifier="name"
+              dispatch="editCourse"
+            ></EditableTile>
 
             <v-divider inset></v-divider>
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>person</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ course.instructor }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <EditableTile
+              icon="person"
+              :instance="course"
+              identifier="instructor"
+              dispatch="editCourse"
+            ></EditableTile>
+
             <v-divider inset></v-divider>
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>info</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ course.description }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <EditableTile
+              icon="info"
+              :instance="course"
+              identifier="description"
+              dispatch="editCourse"
+            ></EditableTile>
+
             <v-divider inset></v-divider>
-            <v-list-tile @dblclick="doubleClick">
-              <v-list-tile-action>
-                <v-icon>code</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ course.learningOutcomes.join(', ') }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <EditableTile
+              icon="code"
+              :instance="course"
+              identifier="learningOutcomes"
+              :label="course.learningOutcomes.join(', ')"
+              dispatch="editCourse"
+            ></EditableTile>
           </v-list>
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn flat>Edit
-              <v-icon right>edit</v-icon>
-            </v-btn>
-            <v-btn flat @click="deleteCourse">Delete
-              <v-icon right>delete</v-icon>
+            <v-btn flat @click="deleteCourse">
+              <v-icon right left>delete</v-icon>
             </v-btn>
           </v-card-actions>
 
@@ -62,16 +52,26 @@
       </v-flex>
 
     </v-layout>
+
+    <v-snackbar :bottom="true" :left="true" :timeout="6000" v-model="snackbar">
+      Course modified!
+      <v-btn flat icon @click="snackbar = false"><v-icon>close</v-icon></v-btn>
+    </v-snackbar>
+
   </v-container>
 </template>
 
 
 <script>
+  import EditableTile from '@/components/inputs/EditableTile'
+
   export default {
     name: 'CourseCard',
+    components: { EditableTile },
     data () {
       return {
-        edit: false
+        edit: false,
+        snackbar: false
       }
     },
     computed: {
@@ -82,16 +82,7 @@
     methods: {
       deleteCourse () {
         this.$store.dispatch('deleteCourse', this.course)
-      },
-      doubleClick () {
-        this.edit = true
-        this.$nextTick(() => this.$refs.input.focus())
-      },
-      finishedEdit (e) {
-        console.log(e)
-        this.edit = false
-        this.$emit('update')
-        this.$store.dispatch('editCourse', {id: this.course._id, key: 'name', value: this.$refs.input.value})
+        this.snackbar = true
       }
     }
   }

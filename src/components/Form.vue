@@ -24,6 +24,12 @@
       </v-flex>
 
     </v-layout>
+
+    <v-snackbar :bottom="true" :left="true" :timeout="6000" v-model="snackbar">
+      Course added!
+      <v-btn flat icon @click="snackbar = false"><v-icon>close</v-icon></v-btn>
+    </v-snackbar>
+
   </v-container>
 </template>
 
@@ -32,18 +38,19 @@
   import TextField from '@/components/inputs/TextField'
   import TagSelect from '@/components/inputs/TagSelect'
 
-  // TODO: Fix this. We shouldn't be directly modifying stuff in the store.
   export default {
     name: 'Form',
     components: { TextField, TagSelect },
     data () {
       return {
-        items: ['Trigonometry', 'Java', 'Loops', 'Teamwork']
+        items: ['Trigonometry', 'Java', 'Loops', 'Teamwork'],
+        snackbar: false
       }
     },
     methods: {
       submit () {
         this.$store.dispatch('addCourse')
+        this.snackbar = true
       }
     },
     computed: mapState(['form'])
