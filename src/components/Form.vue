@@ -7,21 +7,10 @@
           <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
           <v-card-text>
 
-            <template v-for="(value, key) in form">
-              <v-text-field
-                :value="value"
-                :label="key"
-                v-model="form[key]"
-              ></v-text-field>
+            <template v-for="(value) in form">
+              <TextField v-if="!value['type'] || value['type'] === 'text'" :config="value"></TextField>
+              <TagSelect v-else :config="value"></TagSelect>
             </template>
-
-            <v-select
-              :items="items"
-              label="Learning Outcomes"
-              chips
-              tags
-              deletable-chips
-            ></v-select>
 
           </v-card-text>
           <v-divider class="mt-5"></v-divider>
@@ -40,9 +29,13 @@
 
 <script>
   import { mapState } from 'vuex'
+  import TextField from '@/components/inputs/TextField'
+  import TagSelect from '@/components/inputs/TagSelect'
 
+  // TODO: Fix this. We shouldn't be directly modifying stuff in the store.
   export default {
     name: 'Form',
+    components: { TextField, TagSelect },
     data () {
       return {
         items: ['Trigonometry', 'Java', 'Loops', 'Teamwork']

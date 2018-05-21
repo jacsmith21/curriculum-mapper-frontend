@@ -6,7 +6,12 @@ Vue.use(Vuex)
 
 const state = {
   courses: [],
-  form: {'Name': '', 'Instructor': '', 'Description': ''}
+  form: {
+    name: {label: 'Name', value: ''},
+    instructor: {label: 'Instructor', value: ''},
+    description: {label: 'Description', value: ''},
+    learningOutcomes: {label: 'Learning Outcomes', value: [], items: ['Trigonometry', 'Java', 'Loops', 'Teamwork'], type: 'tagselect'}
+  }
 }
 
 const getters = {
@@ -25,11 +30,8 @@ const actions = {
     })
   },
   addCourse ({ commit, state }) {
-    const course = {
-      instructor: state.form['Instructor'],
-      name: state.form['Name'],
-      description: state.form['Description']
-    }
+    const form = state.form
+    const course = Object.keys(form).reduce((course, key) => Object.assign(course, {[key]: form[key]['value']}), {})
     axios.post('http://localhost:3000/courses', course).then(() => {
       commit('addCourse', course)
     })
