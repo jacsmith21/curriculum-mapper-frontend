@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import Test from '@/components/Test'
+import PrerequisiteGraph from '@/components/PrerequisiteGraph'
 import Course from '@/components/Course'
 
 // noinspection JSUnresolvedFunction
@@ -14,8 +14,8 @@ export default new Router({
       component: Home
     },
     {
-      path: '/test',
-      component: Test
+      path: '/prerequisites',
+      component: PrerequisiteGraph
     },
     {
       path: '/instructors/:instructor/:name',

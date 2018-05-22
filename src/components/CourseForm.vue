@@ -6,14 +6,13 @@
         <v-card>
           <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
           <v-card-text>
-
-            <component v-for="(field, key) in form"
-              :is="field.component || defaultInput"
-              :config="field"
-              :identifier="key"
-              :key="key">
-            </component>
-
+            <v-form>
+              <TextField label="Name" identifier="name"></TextField>
+              <TextField label="Instructor" identifier="instructor"></TextField>
+              <TextField label="Description" identifier="description"></TextField>
+              <TagSelect label="Learning Outcomes" identifier="learningOutcomes" :items="items"></TagSelect>
+              <TagSelect label="Prerequisites" identifier="prerequisites" :items="items"></TagSelect>
+            </v-form>
           </v-card-text>
           <v-divider class="mt-5"></v-divider>
           <v-card-actions>
@@ -38,9 +37,11 @@
 <script>
   import { mapState } from 'vuex'
   import TextField from '@/components/inputs/TextField'
+  import TagSelect from '@/components/inputs/TagSelect'
 
   export default {
-    name: 'Form',
+    name: 'CourseForm',
+    components: { TagSelect, TextField },
     data () {
       return {
         items: ['Trigonometry', 'Java', 'Loops', 'Teamwork'],

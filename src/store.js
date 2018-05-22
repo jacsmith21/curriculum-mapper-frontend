@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
+import TagSelect from '@/components/inputs/TagSelect'
 
 const base = process.env.SERVER_BASE
 Vue.use(Vuex)
@@ -12,20 +13,14 @@ const state = {
     name: {label: 'Name', value: ''},
     instructor: {label: 'Instructor', value: ''},
     description: {label: 'Description', value: ''},
-    learningOutcomes: {label: 'Learning Outcomes', value: [], items: ['Trigonometry', 'Java', 'Loops', 'Teamwork'], type: 'tagselect'}
+    learningOutcomes: {label: 'Learning Outcomes', value: [], component: TagSelect},
+    prerequisites: {label: 'Prerequisites', value: [], items: {state: 'courses', display: 'name', key: '_id'}, component: TagSelect}
   }
 }
 
 const getters = {
   getCourse: (state) => (instructor, name) => {
     return state.courses.filter(course => course.instructor === instructor && course.name === name)[0]
-  },
-  getCourseById: (state) => (id) => {
-    for (let course of state.courses) {
-      if (course._id === id) {
-        return course
-      }
-    }
   }
 }
 

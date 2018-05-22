@@ -1,6 +1,6 @@
 <template>
   <v-select
-    :items="config['items']"
+    :items="items"
     :label="config['label']"
     v-model="config['value']"
     chips
@@ -12,7 +12,15 @@
 <script>
   export default {
     name: 'TagSelect',
-    props: ['config']
+    props: ['config'],
+    computed: {
+      items () {
+        if (typeof this.config === 'string') {
+          return
+        }
+        return this.config.items
+      }
+    }
   }
 </script>
 

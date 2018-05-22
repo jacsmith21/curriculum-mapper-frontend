@@ -1,5 +1,5 @@
 <template>
-  <v-app style="max-height: 100%">
+  <v-app>
     <v-toolbar app :clipped-left="clipped">
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
@@ -27,7 +27,7 @@
 
     <v-footer :fixed="fixed" app>
       <v-layout column align-center>
-        <span>&copy; 2017 Jacob Smith</span>
+        <span>&copy; 2018 Jacob Smith</span>
       </v-layout>
     </v-footer>
   </v-app>
@@ -42,8 +42,8 @@ export default {
       fixed: false,
       items: [{
         icon: 'bubble_chart',
-        title: 'Test',
-        route: '/test'
+        title: 'PrerequisiteGraph',
+        route: '/prerequisites'
       }],
       miniVariant: false,
       right: false,
@@ -54,8 +54,3 @@ export default {
   name: 'App'
 }
 </script>
-
-<style>
-  html, body {margin:0;padding:0;height:100%;}
-  {box-sizing:border-box;}
-</style>
