@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
-import TagSelect from '@/components/inputs/TagSelect'
 
 const base = process.env.SERVER_BASE
 Vue.use(Vuex)
@@ -10,11 +9,11 @@ Vue.use(Vuex)
 const state = {
   courses: [],
   form: {
-    name: {label: 'Name', value: ''},
-    instructor: {label: 'Instructor', value: ''},
-    description: {label: 'Description', value: ''},
-    learningOutcomes: {label: 'Learning Outcomes', value: [], component: TagSelect},
-    prerequisites: {label: 'Prerequisites', value: [], items: {state: 'courses', display: 'name', key: '_id'}, component: TagSelect}
+    name: '',
+    instructor: '',
+    description: '',
+    learningOutcomes: [],
+    prerequisites: []
   }
 }
 
@@ -35,7 +34,7 @@ const actions = {
   },
   addCourse ({ commit, state }) {
     const form = state.form
-    const course = Object.keys(form).reduce((course, key) => Object.assign(course, {[key]: form[key]['value']}), {})
+    const course = Object.keys(form).reduce((course, key) => Object.assign(course, {[key]: form[key]}), {})
     axios.post(base + '/courses', course).then(() => {
       commit('addCourse', course)
     })
@@ -70,7 +69,7 @@ const mutations = {
     state.courses = state.courses.filter(c => c.name !== course.name || c.instructor !== course.instructor)
   },
   editForm (state, payload) {
-    state.form[payload.key]['value'] = payload.value
+    state.form[payload.key] = payload.value
   },
   editCourse (state, course) {
     state.courses[course.index] = course

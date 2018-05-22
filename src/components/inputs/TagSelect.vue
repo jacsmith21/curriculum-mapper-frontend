@@ -1,24 +1,21 @@
 <template>
   <v-select
     :items="items"
-    :label="config['label']"
-    v-model="config['value']"
+    :label="label"
     chips
     tags
     deletable-chips
+    @input="update"
   ></v-select>
 </template>
 
 <script>
   export default {
     name: 'TagSelect',
-    props: ['config'],
-    computed: {
-      items () {
-        if (typeof this.config === 'string') {
-          return
-        }
-        return this.config.items
+    props: ['items', 'label', 'identifier'],
+    methods: {
+      update (value) {
+        this.$store.commit('editForm', {key: this.identifier, value: value})
       }
     }
   }

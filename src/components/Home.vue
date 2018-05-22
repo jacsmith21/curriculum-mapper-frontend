@@ -1,16 +1,16 @@
 <template>
   <v-layout>
     <List width="400"></List>
-    <Form></Form>
+    <CourseForm></CourseForm>
   </v-layout>
 </template>
 
 <script>
-  import Form from '@/components/Form.vue'
+  import CourseForm from '@/components/CourseForm.vue'
   import List from '@/components/List.vue'
 
   export default {
     name: 'Home',
-    components: { Form, List }
+    components: { CourseForm, List }
   }
 </script>
