@@ -5,8 +5,7 @@
   "author": "Jacob Smith <jacob.smith@unb.ca>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --env.SERVER_BASE=localhost:3030 --env.other=nononsadfn",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js"
   },
