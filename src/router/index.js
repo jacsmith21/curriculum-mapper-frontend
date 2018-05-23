@@ -18,7 +18,7 @@ export default new Router({
       component: PrerequisiteGraph
     },
     {
-      path: '/instructors/:instructor/:name',
+      path: '/courses/:name',
       component: Course
     }
   ]

@@ -4,3 +4,7 @@ export const iterable = (obj) => {
   }
   return obj.constructor === Array
 }
+
+export const copy = (obj) => {
+  return Object.assign({}, obj)
+}

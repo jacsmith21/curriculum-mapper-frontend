@@ -7,7 +7,7 @@
             :key="index"
             avatar
             ripple
-            :to="'/instructors/' + course.instructor + '/' + course.name"
+            :to="'/courses/' + course.name"
             class="item"
           >
             <v-list-tile-content>

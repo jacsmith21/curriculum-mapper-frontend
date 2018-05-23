@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
+import { copy } from '@/_'
 
 const base = process.env.SERVER_BASE
 Vue.use(Vuex)
@@ -18,23 +19,31 @@ const state = {
 }
 
 const getters = {
-  getCourse: (state) => (instructor, name) => {
-    return state.courses.filter(course => course.instructor === instructor && course.name === name)[0]
+  courseByName: (state) => (name) => {
+    return state.courses.filter(course => course.name === name)[0]
+  },
+  courseById: (state) => (id) => {
+    return state.courses.filter(course => course._id === id)[0]
   }
 }
 
 const actions = {
   loadCourses ({ commit }) {
-    axios
-    .get(base + '/courses')
-    .then(r => r.data)
-    .then(courses => {
-      commit('setCourses', courses)
+    return new Promise((resolve, reject) => {
+      axios
+        .get(base + '/courses')
+        .then(r => r.data)
+        .then(courses => {
+          commit('setCourses', courses)
+          resolve(courses)
+        }, err => {
+          reject(err)
+        })
     })
   },
-  addCourse ({ commit, state }) {
-    const form = state.form
-    const course = Object.keys(form).reduce((course, key) => Object.assign(course, {[key]: form[key]}), {})
+  addCourse ({ commit, state, getters }) {
+    let course = copy(state.form)
+    course.prerequisites = course.prerequisites.map(prerequisite => getters.courseByName(prerequisite))
     axios.post(base + '/courses', course).then(() => {
       commit('addCourse', course)
     })
@@ -51,7 +60,7 @@ const actions = {
     axios.put(base + '/courses/' + course._id, course).then(() => {
       commit('editCourse', course)
     })
-    router.push('/instructors/' + course.instructor + '/' + course.name)
+    router.push('/courses/' + course.name)
   }
 }
 

@@ -4,16 +4,19 @@
 
       <v-flex xs12>
         <v-card>
+
           <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
+
           <v-card-text>
             <v-form>
               <TextField label="Name" identifier="name"></TextField>
               <TextField label="Instructor" identifier="instructor"></TextField>
               <TextField label="Description" identifier="description"></TextField>
               <TagSelect label="Learning Outcomes" identifier="learningOutcomes" :items="items"></TagSelect>
-              <TagSelect label="Prerequisites" identifier="prerequisites" :items="items"></TagSelect>
+              <TagSelect label="Prerequisites" identifier="prerequisites" :items="courseItems"></TagSelect>
             </v-form>
           </v-card-text>
+
           <v-divider class="mt-5"></v-divider>
           <v-card-actions>
             <v-btn flat>Cancel</v-btn>
@@ -35,7 +38,6 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
   import TextField from '@/components/inputs/TextField'
   import TagSelect from '@/components/inputs/TagSelect'
 
@@ -49,16 +51,16 @@
         defaultInput: TextField
       }
     },
+    computed: {
+      courseItems () {
+        return this.$store.state.courses.map(course => course.name)
+      }
+    },
     methods: {
       submit () {
         this.$store.dispatch('addCourse')
         this.snackbar = true
       }
-    },
-    computed: mapState(['form'])
+    }
   }
 </script>
-
-<style scoped>
-
-</style>
