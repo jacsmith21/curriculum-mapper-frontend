@@ -42,20 +42,35 @@
           .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
         const svg = d3.select('svg')
-        const links = svg.append('g')
+
+        svg.append('svg:defs').selectAll('marker')
+          .data(['end'])      // Different link/path types can be defined here
+          .enter().append('svg:marker')    // This section adds in the arrows
+          .attr('id', String)
+          .attr('viewBox', '0 -5 10 10')
+          .attr('refX', 15)
+          .attr('refY', -1.5)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('svg:path')
+          .attr('d', 'M0,-5L10,0L0,5')
+
+        const link = svg.append('g')
           .attr('class', 'links')
           .selectAll('line')
           .data(that.links)
           .enter().append('line')
           .attr('stroke-width', () => { return Math.sqrt(5) })
           .style('stroke', '#ccc')
+          .attr('marker-end', 'url(#end)')
 
-        const nodes = svg.append('g')
+        const node = svg.append('g')
           .attr('class', 'nodes')
           .selectAll('circle')
           .data(that.nodes)
           .enter().append('circle')
-          .attr('r', 20)
+          .attr('r', 10)
           .attr('fill', (_, i) => that.color(i))
           .call(d3.drag()
             .on('start', d => {
@@ -72,15 +87,28 @@
               d.fy = null
             }))
 
+        const label = svg.append('g')
+          .attr('class', 'text')
+          .selectAll('text')
+          .data(that.nodes).enter()
+          .append('text')
+          .text(node => node.id)
+          .style('text-anchor', 'middle')
+          .style('fill', '#000')
+          .style('font-size', 15)
+
         simulation.nodes(that.nodes).on('tick', () => {
-          links
+          link
             .attr('x1', link => link.source.x)
             .attr('y1', link => link.source.y)
             .attr('x2', link => link.target.x)
             .attr('y2', link => link.target.y)
-          nodes
+          node
             .attr('cx', node => node.x)
             .attr('cy', node => node.y)
+          label
+            .attr('x', label => label.x)
+            .attr('y', label => label.y)
         })
       })
     },
@@ -102,7 +130,7 @@
             if (target === undefined) {
               throw new Error('Target is not defined')
             }
-            links.push({source: index, target: target})
+            links.push({source: target, target: index})
           })
         })
         return links
@@ -116,3 +144,10 @@
     }
   }
 </script>
+
+<style scoped>
+  .node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+  }
+</style>
