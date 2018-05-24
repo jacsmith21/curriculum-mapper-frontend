@@ -17,7 +17,8 @@
         simulation: null,
         color: d3.scaleOrdinal(d3.schemeCategory10),
         courses: null,
-        loaded: false
+        loaded: false,
+        radius: 15
       }
     },
     methods: {
@@ -28,6 +29,30 @@
             return i
           }
         }
+      },
+      normalize (vector) {
+        return this.div(vector, this.length(vector))
+      },
+      length ({ x, y }) {
+        return Math.sqrt(x * x + y * y)
+      },
+      div ({ x, y }, scalar) {
+        return {x: x / scalar, y: y / scalar}
+      },
+      add ({x: x1, y: y1}, {x: x2, y: y2}) {
+        return {x: x1 + x2, y: y1 + y2}
+      },
+      sub ({x: x1, y: y1}, {x: x2, y: y2}) {
+        return {x: x1 - x2, y: y1 - y2}
+      },
+      scale (vector, scalar) {
+        return this.prod(this.normalize(vector), scalar)
+      },
+      prod ({x, y}, scalar) {
+        return {x: x * scalar, y: y * scalar}
+      },
+      radiusVector (link) {
+        return this.scale(this.sub(link.target, link.source), this.radius)
       }
     },
     created () {
@@ -70,7 +95,7 @@
           .selectAll('circle')
           .data(that.nodes)
           .enter().append('circle')
-          .attr('r', 10)
+          .attr('r', that.radius)
           .attr('fill', (_, i) => that.color(i))
           .call(d3.drag()
             .on('start', d => {
@@ -99,10 +124,10 @@
 
         simulation.nodes(that.nodes).on('tick', () => {
           link
-            .attr('x1', link => link.source.x)
-            .attr('y1', link => link.source.y)
-            .attr('x2', link => link.target.x)
-            .attr('y2', link => link.target.y)
+            .attr('x1', link => this.add(link.source, this.radiusVector(link)).x)
+            .attr('y1', link => this.add(link.source, this.radiusVector(link)).y)
+            .attr('x2', link => this.sub(link.target, this.radiusVector(link)).x)
+            .attr('y2', link => this.sub(link.target, this.radiusVector(link)).y)
           node
             .attr('cx', node => node.x)
             .attr('cy', node => node.y)
