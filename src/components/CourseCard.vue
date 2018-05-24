@@ -46,7 +46,7 @@
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title>
-                  <router-link v-for="prerequisite in prerequisites" :to="'/courses/' + prerequisite">{{ prerequisite }}</router-link>
+                  <router-link v-for="prerequisite in prerequisites" :key="prerequisite" :to="'/courses/' + prerequisite">{{ prerequisite }}</router-link>
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>

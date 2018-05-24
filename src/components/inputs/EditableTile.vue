@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  import { iterable } from '@/_'
+  import * as _ from '@/_'
 
   export default {
     name: 'EditableTile',
@@ -38,7 +38,7 @@
       text () {
         let text = this.instance[this.identifier]
 
-        if (iterable(text)) {
+        if (_.iterable(text)) {
           text = text.join(', ')
         }
 
