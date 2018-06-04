@@ -9,11 +9,18 @@
 
           <v-card-text>
             <v-form>
-              <TextField label="Name" identifier="name"></TextField>
-              <TextField label="Instructor" identifier="instructor"></TextField>
-              <TextField label="Description" identifier="description"></TextField>
-              <TagSelect label="Learning Outcomes" identifier="learningOutcomes" :items="items"></TagSelect>
-              <TagSelect label="Prerequisites" identifier="prerequisites" :items="courseItems"></TagSelect>
+              <v-container grid-list-xl fluid>
+                <v-layout wrap>
+                  <TextField label="Name" identifier="name" xs12 sm4></TextField>
+                  <TextField label="Title" identifier="title" xs12 sm8></TextField>
+                  <TextField label="Instructor" identifier="instructor" xs12></TextField>
+                  <TextField label="Description" identifier="description" xs12></TextField>
+                  <!--<TextField sm6 label="Class Hours"></TextField>-->
+                  <!--<TextField sm6 label="Lab Hours"></TextField>-->
+                  <DynamicInput identifier="learningOutcomes"></DynamicInput>
+                  <TagSelect label="Prerequisites" identifier="prerequisites" :items="courseItems"></TagSelect>
+                </v-layout>
+              </v-container>
             </v-form>
           </v-card-text>
 
@@ -40,13 +47,13 @@
 <script>
   import TextField from '@/components/inputs/TextField'
   import TagSelect from '@/components/inputs/TagSelect'
+  import DynamicInput from '@/components/inputs/DynamicInput'
 
-  export default {
+export default {
     name: 'CourseForm',
-    components: { TagSelect, TextField },
+    components: { DynamicInput, TagSelect, TextField },
     data () {
       return {
-        items: ['Trigonometry', 'Java', 'Loops', 'Teamwork'],
         snackbar: false,
         defaultInput: TextField
       }

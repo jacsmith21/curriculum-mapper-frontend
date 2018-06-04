@@ -77,8 +77,17 @@ const mutations = {
   removeCourse (state, course) {
     state.courses = state.courses.filter(c => c.name !== course.name || c.instructor !== course.instructor)
   },
-  editForm (state, payload) {
-    state.form[payload.key] = payload.value
+  editForm (state, {key, value, index}) {
+    if (index === undefined) {
+      state.form[key] = value
+    } else {
+      let array = state.form[key]
+      if (array.length === index) {
+        array.push(value)
+      } else {
+        array[index] = value
+      }
+    }
   },
   editCourse (state, course) {
     state.courses[course.index] = course

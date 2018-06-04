@@ -1,12 +1,14 @@
 <template>
-  <v-select
-    :items="items"
-    :label="label"
-    chips
-    tags
-    deletable-chips
-    @input="update"
-  ></v-select>
+  <v-flex xs12>
+    <v-select
+      :items="items"
+      :label="label"
+      chips
+      tags
+      deletable-chips
+      @input="update"
+    ></v-select>
+  </v-flex>
 </template>
 
 <script>

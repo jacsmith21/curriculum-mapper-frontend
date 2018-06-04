@@ -1,8 +1,10 @@
 <template>
-  <v-text-field
-    :label="label"
-    @input="update"
-  ></v-text-field>
+  <v-flex xs12>
+    <v-text-field
+      :label="label"
+      @input="update"
+    ></v-text-field>
+  </v-flex>
 </template>
 
 <script>
@@ -17,6 +19,3 @@
   }
 </script>
 
-<style scoped>
-
-</style>
