@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
 import { copy } from '@/_'
+import { getField, updateField } from 'vuex-map-fields'
 
 const base = process.env.SERVER_BASE
 Vue.use(Vuex)
@@ -11,10 +12,12 @@ const state = {
   courses: [],
   form: {
     name: '',
-    instructor: '',
+    title: '',
+    maintainer: '',
     description: '',
-    learningOutcomes: [],
-    prerequisites: []
+    learningOutcomes: [{value: ''}],
+    prerequisites: [],
+    assessments: [{type: '', description: ''}]
   }
 }
 
@@ -24,7 +27,11 @@ const getters = {
   },
   courseById: (state) => (id) => {
     return state.courses.filter(course => course._id === id)[0]
-  }
+  },
+  lastIndex: (state) => (key, index) => {
+    return state.form[key].length - 1 === index
+  },
+  getField
 }
 
 const actions = {
@@ -44,6 +51,7 @@ const actions = {
   addCourse ({ commit, state, getters }) {
     let course = copy(state.form)
     course.prerequisites = course.prerequisites.map(prerequisite => getters.courseByName(prerequisite))
+    course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
     axios.post(base + '/courses', course).then(() => {
       commit('addCourse', course)
     })
@@ -75,23 +83,25 @@ const mutations = {
     state.courses = courses
   },
   removeCourse (state, course) {
-    state.courses = state.courses.filter(c => c.name !== course.name || c.instructor !== course.instructor)
-  },
-  editForm (state, {key, value, index}) {
-    if (index === undefined) {
-      state.form[key] = value
-    } else {
-      let array = state.form[key]
-      if (array.length === index) {
-        array.push(value)
-      } else {
-        array[index] = value
-      }
-    }
+    state.courses = state.courses.filter(c => c.name !== course.name)
   },
   editCourse (state, course) {
     state.courses[course.index] = course
-  }
+  },
+  addAssessment (state) {
+    state.form.assessments.push({type: '', description: ''})
+  },
+  removeAssessment (index) {
+    state.form.assessments.splice(index, 1)
+  },
+  clickedDynamicInput (state, {key, index}) {
+    if (state.form[key].length - 1 === index) {
+      state.form[key].push({value: ''})
+    } else {
+      state.form[key].splice(index, 1)
+    }
+  },
+  updateField
 }
 
 export default new Vuex.Store({

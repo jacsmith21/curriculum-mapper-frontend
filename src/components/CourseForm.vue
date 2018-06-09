@@ -11,14 +11,39 @@
             <v-form>
               <v-container grid-list-xl fluid>
                 <v-layout wrap>
-                  <TextField label="Name" identifier="name" xs12 sm4></TextField>
-                  <TextField label="Title" identifier="title" xs12 sm8></TextField>
-                  <TextField label="Instructor" identifier="instructor" xs12></TextField>
-                  <TextField label="Description" identifier="description" xs12></TextField>
+                  <v-flex xs12>
+                    <v-text-field
+                      label="Name"
+                      v-model="name"
+                    ></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-text-field
+                      label="Title"
+                      v-model="title"
+                    ></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-text-field
+                      label="Maintainer"
+                      v-model="maintainer"
+                    ></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-text-field
+                      label="Description"
+                      v-model="description"
+                    ></v-text-field>
+                  </v-flex>
+
+                  <LearningOutcomes></LearningOutcomes>
+                  <Prerequisites></Prerequisites>
+                  <AssessmentInput></AssessmentInput>
                   <!--<TextField sm6 label="Class Hours"></TextField>-->
                   <!--<TextField sm6 label="Lab Hours"></TextField>-->
-                  <DynamicInput identifier="learningOutcomes"></DynamicInput>
-                  <TagSelect label="Prerequisites" identifier="prerequisites" :items="courseItems"></TagSelect>
                 </v-layout>
               </v-container>
             </v-form>
@@ -46,23 +71,21 @@
 
 <script>
   import TextField from '@/components/inputs/TextField'
-  import TagSelect from '@/components/inputs/TagSelect'
-  import DynamicInput from '@/components/inputs/DynamicInput'
+  import Prerequisites from '@/components/inputs/Prerequisites'
+  import LearningOutcomes from '@/components/inputs/LearningOutcomes'
+  import AssessmentInput from '@/components/inputs/AssessmentInput'
+  import { mapFields } from 'vuex-map-fields'
 
-export default {
+  export default {
     name: 'CourseForm',
-    components: { DynamicInput, TagSelect, TextField },
+    components: { LearningOutcomes, Prerequisites, TextField, AssessmentInput },
     data () {
       return {
         snackbar: false,
         defaultInput: TextField
       }
     },
-    computed: {
-      courseItems () {
-        return this.$store.state.courses.map(course => course.name)
-      }
-    },
+    computed: mapFields(['form.name', 'form.title', 'form.maintainer', 'form.description']),
     methods: {
       submit () {
         this.$store.dispatch('addCourse')

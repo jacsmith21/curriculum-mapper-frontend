@@ -19,7 +19,7 @@
             <EditableTile
               icon="person"
               :instance="course"
-              identifier="instructor"
+              identifier="maintainer"
               dispatch="editCourse"
             ></EditableTile>
 
