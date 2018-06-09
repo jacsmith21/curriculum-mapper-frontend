@@ -17,7 +17,10 @@ const state = {
     description: '',
     learningOutcomes: [{value: ''}],
     prerequisites: [],
-    assessments: [{type: '', description: ''}]
+    assessments: [{type: '', description: ''}],
+    averageGrade: '',
+    percentFailure: '',
+    sections: [{section: '', instructor: ''}]
   }
 }
 
@@ -94,11 +97,23 @@ const mutations = {
   removeAssessment (index) {
     state.form.assessments.splice(index, 1)
   },
+  addSection (state) {
+    state.form.sections.push({section: '', instructor: ''})
+  },
+  removeSection (index) {
+    state.form.sections.splice(index, 1)
+  },
   clickedDynamicInput (state, {key, index}) {
-    if (state.form[key].length - 1 === index) {
-      state.form[key].push({value: ''})
+    const array = state.form[key]
+    if (array.length - 1 === index) {
+      const element = array[0]
+      let newElement = {}
+      for (const key in element) {
+        newElement[key] = ''
+      }
+      array.push(newElement)
     } else {
-      state.form[key].splice(index, 1)
+      array.splice(index, 1)
     }
   },
   updateField

@@ -15,10 +15,14 @@
                   <TextInput v-model="title" label="Title"></TextInput>
                   <TextInput v-model="maintainer" label="Maintainer"></TextInput>
                   <TextInput v-model="description" label="Description"></TextInput>
+                  <TextInput v-model="averageGrade" label="Average Grade"></TextInput>
+                  <TextInput v-model="percentFailure" label="Percent Failure" type="number"></TextInput>
+
+                  <Prerequisites></Prerequisites>
 
                   <LearningOutcomes></LearningOutcomes>
-                  <Prerequisites></Prerequisites>
                   <AssessmentInput></AssessmentInput>
+                  <SectionInput></SectionInput>
                   <!--<TextField sm6 label="Class Hours"></TextField>-->
                   <!--<TextField sm6 label="Lab Hours"></TextField>-->
                 </v-layout>
@@ -51,17 +55,18 @@
   import LearningOutcomes from '@/components/inputs/LearningOutcomes'
   import AssessmentInput from '@/components/inputs/AssessmentInput'
   import TextInput from '@/components/inputs/TextInput'
+  import SectionInput from '@/components/inputs/SectionInput'
   import { mapFields } from 'vuex-map-fields'
 
   export default {
     name: 'CourseForm',
-    components: { LearningOutcomes, Prerequisites, AssessmentInput, TextInput },
+    components: { LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
     data () {
       return {
         snackbar: false
       }
     },
-    computed: mapFields(['form.name', 'form.title', 'form.maintainer', 'form.description']),
+    computed: mapFields(['name', 'title', 'maintainer', 'description', 'percentFailure', 'averageGrade'].map(field => `form.${field}`)),
     methods: {
       submit () {
         this.$store.dispatch('addCourse').then(() => {
