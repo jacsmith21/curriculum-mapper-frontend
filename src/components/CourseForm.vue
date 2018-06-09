@@ -11,20 +11,30 @@
             <v-form>
               <v-container grid-list-xl fluid>
                 <v-layout wrap>
-                  <TextInput v-model="name" label="Name"></TextInput>
-                  <TextInput v-model="title" label="Title"></TextInput>
-                  <TextInput v-model="maintainer" label="Maintainer"></TextInput>
-                  <TextInput v-model="description" label="Description"></TextInput>
-                  <TextInput v-model="averageGrade" label="Average Grade"></TextInput>
-                  <TextInput v-model="percentFailure" label="Percent Failure" type="number"></TextInput>
+                  <TextInput v-model="name" label="Name" xs12></TextInput>
+                  <TextInput v-model="title" label="Title" xs12></TextInput>
+                  <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
+                  <TextInput v-model="description" label="Description" xs12></TextInput>
+                  <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
+                  <TextInput v-model="percentFailure" label="Percent Failure" type="number" xs6></TextInput>
+
+                  <TextInput xs2 v-model="auDistribution.math" label="Math" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="auDistribution.naturalScience" label="Natural Science" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="auDistribution.complementaryStudies" label="Complementary Studies" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="auDistribution.engineeringDesign" label="Engineering Science" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="auDistribution.engineeringDesign" label="Engineering Design" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 disabled></TextInput>
+
+                  <TextInput v-model="inClass" label="Class Credit Hours" xs4 type="number"></TextInput>
+                  <TextInput v-model="inLab" label="Lab Credit Hours" xs4 type="number"></TextInput>
+                  <v-flex xs4><span>Total Credit Hours: {{ totalCreditHours }}</span></v-flex>
+
 
                   <Prerequisites></Prerequisites>
 
                   <LearningOutcomes></LearningOutcomes>
                   <AssessmentInput></AssessmentInput>
                   <SectionInput></SectionInput>
-                  <!--<TextField sm6 label="Class Hours"></TextField>-->
-                  <!--<TextField sm6 label="Lab Hours"></TextField>-->
                 </v-layout>
               </v-container>
             </v-form>
@@ -66,7 +76,25 @@
         snackbar: false
       }
     },
-    computed: mapFields(['name', 'title', 'maintainer', 'description', 'percentFailure', 'averageGrade'].map(field => `form.${field}`)),
+    computed: {
+      totalCreditHours () {
+        const inLab = parseInt(this.inLab) || 0
+        const inClass = parseInt(this.inClass) || 0
+        return inLab + inClass
+      },
+      ...mapFields(
+        [
+          'name',
+          'title',
+          'maintainer',
+          'description',
+          'percentFailure',
+          'averageGrade',
+          'inLab',
+          'inClass',
+          'auDistribution'
+        ].map(field => `form.${field}`))
+    },
     methods: {
       submit () {
         this.$store.dispatch('addCourse').then(() => {

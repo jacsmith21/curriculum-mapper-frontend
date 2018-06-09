@@ -36,7 +36,7 @@
       ...mapGetters(['lastIndex']),
       ...mapMultiRowFields(['form.assessments'])
     },
-    methods: mapMutations(['addAssessment', 'removeAssessment', 'clickedDynamicInput'])
+    methods: mapMutations(['clickedDynamicInput'])
   }
 </script>
 

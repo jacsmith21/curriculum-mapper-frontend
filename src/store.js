@@ -15,12 +15,16 @@ const state = {
     title: '',
     maintainer: '',
     description: '',
+    inClass: '',
+    inLab: '',
     learningOutcomes: [{value: ''}],
     prerequisites: [],
     assessments: [{type: '', description: ''}],
     averageGrade: '',
     percentFailure: '',
-    sections: [{section: '', instructor: ''}]
+    sections: [{section: '', instructor: ''}],
+    auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
+    caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''}
   }
 }
 
@@ -90,18 +94,6 @@ const mutations = {
   },
   editCourse (state, course) {
     state.courses[course.index] = course
-  },
-  addAssessment (state) {
-    state.form.assessments.push({type: '', description: ''})
-  },
-  removeAssessment (index) {
-    state.form.assessments.splice(index, 1)
-  },
-  addSection (state) {
-    state.form.sections.push({section: '', instructor: ''})
-  },
-  removeSection (index) {
-    state.form.sections.splice(index, 1)
   },
   clickedDynamicInput (state, {key, index}) {
     const array = state.form[key]

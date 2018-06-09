@@ -1,5 +1,5 @@
 <template>
-  <v-flex :xs12="xs12" :xs6="xs6">
+  <v-flex :class="classes">
     <v-text-field
       :label="label"
       v-model="content"
@@ -7,11 +7,16 @@
       :append-icon="appendIcon"
       :append-icon-cb="appendIconCb"
       @input="input"
+      :mask="mask"
+      :suffix="suffix"
+      :disabled="disabled"
     ></v-text-field>
   </v-flex>
 </template>
 
 <script>
+  import 'vuetify/src/stylus/components/_grid.styl'
+
   export default {
     name: 'TextInput',
     props: {
@@ -20,7 +25,9 @@
       type: {default: 'text', type: String},
       appendIcon: String,
       appendIconCb: Function,
-      xs6: {required: false}
+      mask: {required: false},
+      suffix: {type: String},
+      disabled: {default: false}
     },
     data () {
       return {
@@ -28,14 +35,17 @@
       }
     },
     computed: {
-      xs12 () {
-        return !(this.xs6 === '')
+      classes () {
+        return Object.keys(this.$attrs).join(' ')
       }
     },
     methods: {
       input () {
         this.$emit('input', this.content)
       }
+    },
+    mounted () {
+      console.log(this)
     }
   }
 </script>
