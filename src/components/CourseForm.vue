@@ -11,33 +11,10 @@
             <v-form>
               <v-container grid-list-xl fluid>
                 <v-layout wrap>
-                  <v-flex xs12>
-                    <v-text-field
-                      label="Name"
-                      v-model="name"
-                    ></v-text-field>
-                  </v-flex>
-
-                  <v-flex xs12>
-                    <v-text-field
-                      label="Title"
-                      v-model="title"
-                    ></v-text-field>
-                  </v-flex>
-
-                  <v-flex xs12>
-                    <v-text-field
-                      label="Maintainer"
-                      v-model="maintainer"
-                    ></v-text-field>
-                  </v-flex>
-
-                  <v-flex xs12>
-                    <v-text-field
-                      label="Description"
-                      v-model="description"
-                    ></v-text-field>
-                  </v-flex>
+                  <TextInput v-model="name" label="Name"></TextInput>
+                  <TextInput v-model="title" label="Title"></TextInput>
+                  <TextInput v-model="maintainer" label="Maintainer"></TextInput>
+                  <TextInput v-model="description" label="Description"></TextInput>
 
                   <LearningOutcomes></LearningOutcomes>
                   <Prerequisites></Prerequisites>
@@ -70,26 +47,28 @@
 </template>
 
 <script>
-  import TextField from '@/components/inputs/TextField'
   import Prerequisites from '@/components/inputs/Prerequisites'
   import LearningOutcomes from '@/components/inputs/LearningOutcomes'
   import AssessmentInput from '@/components/inputs/AssessmentInput'
+  import TextInput from '@/components/inputs/TextInput'
   import { mapFields } from 'vuex-map-fields'
 
   export default {
     name: 'CourseForm',
-    components: { LearningOutcomes, Prerequisites, TextField, AssessmentInput },
+    components: { LearningOutcomes, Prerequisites, AssessmentInput, TextInput },
     data () {
       return {
-        snackbar: false,
-        defaultInput: TextField
+        snackbar: false
       }
     },
     computed: mapFields(['form.name', 'form.title', 'form.maintainer', 'form.description']),
     methods: {
       submit () {
-        this.$store.dispatch('addCourse')
-        this.snackbar = true
+        this.$store.dispatch('addCourse').then(() => {
+          this.snackbar = true
+        }).catch(err => {
+          console.error(err)
+        })
       }
     }
   }
