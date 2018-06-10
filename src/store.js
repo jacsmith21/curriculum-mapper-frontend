@@ -36,7 +36,7 @@ const getters = {
     return state.courses.filter(course => course._id === id)[0]
   },
   lastIndex: (state) => (key, index) => {
-    return state.form[key].length - 1 === index
+    return state['form'][key].length - 1 === index
   },
   getField
 }
@@ -96,12 +96,12 @@ const mutations = {
     state.courses[course.index] = course
   },
   clickedDynamicInput (state, {key, index}) {
-    const array = state.form[key]
+    const array = state['form'][key]
     if (array.length - 1 === index) {
       const element = array[0]
       let newElement = {}
-      for (const key in element) {
-        newElement[key] = ''
+      for (const prop in element) {
+        newElement[prop] = ''
       }
       array.push(newElement)
     } else {

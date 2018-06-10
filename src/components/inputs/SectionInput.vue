@@ -29,10 +29,6 @@
       ...mapGetters(['lastIndex']),
       ...mapMultiRowFields(['form.sections'])
     },
-    methods: mapMutations(['addSection', 'removeSection', 'clickedDynamicInput'])
+    methods: mapMutations(['clickedDynamicInput'])
   }
 </script>
-
-<style scoped>
-
-</style>

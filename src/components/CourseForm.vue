@@ -42,11 +42,12 @@
                   <SelectInput xs2 v-model="economics" label="Economics" :items="caebItems"></SelectInput>
                   <SelectInput xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></SelectInput>
 
-                  <Prerequisites></Prerequisites>
+                  <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
 
+                  <!--<ListField label="Learning Outcome" v-model="learningOutcomes"></ListField>-->
                   <LearningOutcomes></LearningOutcomes>
-                  <AssessmentInput></AssessmentInput>
-                  <SectionInput></SectionInput>
+                  <!--<AssessmentInput></AssessmentInput>-->
+                  <!--<SectionInput></SectionInput>-->
                 </v-layout>
               </v-container>
             </v-form>
@@ -78,12 +79,14 @@
   import AssessmentInput from '@/components/inputs/AssessmentInput'
   import TextInput from '@/components/inputs/TextInput'
   import SectionInput from '@/components/inputs/SectionInput'
-  import { mapFields } from 'vuex-map-fields'
+  import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
   import SelectInput from '@/components/inputs/SelectInput'
+  import ChipSelect from '@/components/inputs/ChipSelect'
+  import ListField from '@/components/inputs/ListField'
 
 export default {
     name: 'CourseForm',
-    components: { SelectInput, LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
+    components: { ChipSelect, ListField, SelectInput, LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
     data () {
       return {
         snackbar: false,
@@ -96,12 +99,16 @@ export default {
         const inClass = parseInt(this.inClass) || 0
         return inLab + inClass
       },
+      courseItems () {
+        return this.$store.state.courses.map(course => course.name)
+      },
       ...mapFields(
         [
           'name',
           'title',
           'maintainer',
           'description',
+          'prerequisites',
           'percentFailure',
           'averageGrade',
           'inLab',
@@ -123,7 +130,8 @@ export default {
           'caebAttributes.ethics',
           'caebAttributes.economics',
           'caebAttributes.ll'
-        ].map(field => `form.${field}`))
+        ].map(field => `form.${field}`)),
+      ...mapMultiRowFields([`form.learningOutcomes`])
     },
     methods: {
       submit () {

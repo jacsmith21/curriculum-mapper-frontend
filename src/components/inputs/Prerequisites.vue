@@ -3,9 +3,10 @@
     <v-select
       :items="courseItems"
       label="Prerequisites"
+      multiple
       chips
-      tags
       deletable-chips
+      autocomplete
       v-model="prerequisites"
     ></v-select>
   </v-flex>

@@ -8,7 +8,7 @@
             label="Learning Outcome"
             v-model="outcome.value"
             :append-icon="lastIndex('learningOutcomes', index) ? 'add' : 'close'"
-            :append-icon-cb="() => { clickedDynamicInput({key: 'learningOutcomes', index: index}) }"
+            :append-icon-cb="clickedIcon('learningOutcomes', index)"
           ></v-text-field>
         </v-flex>
       </template>
@@ -18,15 +18,12 @@
 
 <script>
   import { mapMultiRowFields } from 'vuex-map-fields'
-  import { mapMutations, mapGetters } from 'vuex'
+  import { dynamic } from '@/mixins'
 
   export default {
     name: 'LearningOutcomes',
-    computed: {
-      ...mapGetters(['lastIndex']),
-      ...mapMultiRowFields([`form.learningOutcomes`])
-    },
-    methods: mapMutations(['clickedDynamicInput'])
+    mixins: [dynamic],
+    computed: mapMultiRowFields([`form.learningOutcomes`])
   }
 </script>
 

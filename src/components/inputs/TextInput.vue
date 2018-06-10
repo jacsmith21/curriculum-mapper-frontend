@@ -16,11 +16,12 @@
 
 <script>
   // import 'vuetify/src/stylus/components/_grid.styl'
+  import { vmodel } from '@/mixins'
 
   export default {
     name: 'TextInput',
+    mixins: [vmodel],
     props: {
-      value: {required: false},
       label: String,
       type: {default: 'text', type: String},
       appendIcon: String,
@@ -29,19 +30,9 @@
       suffix: {type: String},
       disabled: {default: false}
     },
-    data () {
-      return {
-        content: this.value
-      }
-    },
     computed: {
       classes () {
         return Object.keys(this.$attrs).join(' ')
-      }
-    },
-    methods: {
-      input () {
-        this.$emit('input', this.content)
       }
     }
   }

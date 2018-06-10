@@ -1,11 +1,12 @@
 <template>
-  <v-flex :class="classes">
+  <v-flex>
     <v-select
       :items="items"
-      v-model="content"
       :label="label"
-      item-value="text"
-      clearable
+      multiple
+      chips
+      deletable-chips
+      autocomplete
       @input="input"
     ></v-select>
   </v-flex>
@@ -15,9 +16,9 @@
   import { vmodel } from '@/mixins'
 
   export default {
-    name: 'SelectInput',
-    mixins: [vmodel],
+    name: 'ChipSelect',
     props: ['items', 'label'],
+    mixins: [vmodel],
     computed: {
       classes () {
         return Object.keys(this.$attrs).join(' ')
