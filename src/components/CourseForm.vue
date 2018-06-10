@@ -44,7 +44,19 @@
 
                   <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
 
-                  <ListField label="Learning Outcome" identifier="learningOutcomes" v-model="learningOutcomes"></ListField>
+                  <DynamicField identifier="learningOutcomes" :items="learningOutcomes">
+                    <!--suppress HtmlUnknownAttribute -->
+                    <template slot-scope="{ item, index, lastIndex, clickedIcon }">
+                      <TextInput
+                        style="padding-left: 0"
+                        xs12
+                        label="Learning Outcome"
+                        v-model="item.value"
+                        :append-icon="lastIndex ? 'add' : 'close'"
+                        :append-icon-cb="clickedIcon('learningOutcomes', index)"
+                      ></TextInput>
+                    </template>
+                  </DynamicField>
 
                   <DynamicField identifier="assessments" :items="assessments">
                     <!--suppress HtmlUnknownAttribute -->
@@ -105,12 +117,11 @@
   import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
   import SelectInput from '@/components/inputs/SelectInput'
   import ChipSelect from '@/components/inputs/ChipSelect'
-  import ListField from '@/components/inputs/ListField'
   import DynamicField from '@/components/inputs/DynamicField'
 
   export default {
     name: 'CourseForm',
-    components: { DynamicField, ChipSelect, ListField, SelectInput, TextInput },
+    components: { DynamicField, ChipSelect, SelectInput, TextInput },
     data () {
       return {
         snackbar: false,
