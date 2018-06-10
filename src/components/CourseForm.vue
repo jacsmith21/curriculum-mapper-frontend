@@ -1,11 +1,11 @@
 <template>
-  <v-container fluid style="margin: 0">
+  <v-container fluid :style="{margin: 0, overflow: 'auto', height: height + 'px'}">
     <v-layout row wrap>
 
       <v-flex xs12>
         <v-card>
 
-          <v-card-title primary-title><div class="headline">Courses Form</div></v-card-title>
+          <v-card-title primary-title><div class="headline">Course Form</div></v-card-title>
 
           <v-card-text>
             <v-form>
@@ -133,6 +133,9 @@
         const inLab = parseInt(this.inLab) || 0
         const inClass = parseInt(this.inClass) || 0
         return inLab + inClass
+      },
+      height: function () {
+        return window.innerHeight - 64 - 32
       },
       courseItems () {
         return this.$store.state.courses.map(course => course.name)
