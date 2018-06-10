@@ -8,7 +8,7 @@
             :label="label"
             v-model="item.value"
             :append-icon="lastIndex(identifier, index) ? 'add' : 'close'"
-            :append-icon-cb="() => { clickedDynamicInput({key: content, index: index}) }"
+            :append-icon-cb="clickedIcon(identifier, index)"
           ></v-text-field>
         </v-flex>
       </template>
@@ -17,18 +17,11 @@
 </template>
 
 <script>
-  import { mapMutations, mapGetters } from 'vuex'
-  import { vmodel } from '@/mixins'
+  import { vmodel, dynamic } from '@/mixins'
 
   export default {
     name: 'ListField',
     props: ['label', 'identifier'],
-    mixins: [vmodel],
-    computed: mapGetters(['lastIndex']),
-    methods: mapMutations(['clickedDynamicInput'])
+    mixins: [vmodel, dynamic]
   }
 </script>
-
-<style scoped>
-
-</style>

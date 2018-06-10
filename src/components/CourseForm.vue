@@ -44,10 +44,36 @@
 
                   <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
 
-                  <!--<ListField label="Learning Outcome" v-model="learningOutcomes"></ListField>-->
-                  <LearningOutcomes></LearningOutcomes>
-                  <!--<AssessmentInput></AssessmentInput>-->
-                  <!--<SectionInput></SectionInput>-->
+                  <ListField label="Learning Outcome" identifier="learningOutcomes" v-model="learningOutcomes"></ListField>
+
+                  <DynamicField identifier="assessments" :items="assessments">
+                    <!--suppress HtmlUnknownAttribute -->
+                    <template slot-scope="{ item, index, lastIndex, clickedIcon }">
+                      <SelectInput xs2 :items="['Test', 'Lab', 'Assignment']" label="Type" v-model="item.assessmentType" style="padding-left: 0"></SelectInput>
+                      <TextInput
+                        xs10
+                        label="Description"
+                        v-model="item.description"
+                        :append-icon="lastIndex ? 'add' : 'close'"
+                        :append-icon-cb="clickedIcon('assessments', index)"
+                      ></TextInput>
+                    </template>
+                  </DynamicField>
+
+                  <DynamicField identifier="sections" :items="sections">
+                    <!--suppress HtmlUnknownAttribute -->
+                    <template slot-scope="{ item, index, lastIndex, clickedIcon }">
+                      <TextInput style="padding-left: 0" label="Instructor" v-model="item.instructor" xs6></TextInput>
+                      <TextInput
+                        label="Section"
+                        v-model="item.section"
+                        :append-icon="lastIndex ? 'add' : 'close'"
+                        :append-icon-cb="clickedIcon('sections', index)"
+                        xs6
+                      ></TextInput>
+                    </template>
+                  </DynamicField>
+
                 </v-layout>
               </v-container>
             </v-form>
@@ -74,19 +100,17 @@
 </template>
 
 <script>
-  import Prerequisites from '@/components/inputs/Prerequisites'
-  import LearningOutcomes from '@/components/inputs/LearningOutcomes'
-  import AssessmentInput from '@/components/inputs/AssessmentInput'
+  // TODO: Refactor append-icon & append-icon-db. Move this to TextInput or a higher level component.
   import TextInput from '@/components/inputs/TextInput'
-  import SectionInput from '@/components/inputs/SectionInput'
   import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
   import SelectInput from '@/components/inputs/SelectInput'
   import ChipSelect from '@/components/inputs/ChipSelect'
   import ListField from '@/components/inputs/ListField'
+  import DynamicField from '@/components/inputs/DynamicField'
 
-export default {
+  export default {
     name: 'CourseForm',
-    components: { ChipSelect, ListField, SelectInput, LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
+    components: { DynamicField, ChipSelect, ListField, SelectInput, TextInput },
     data () {
       return {
         snackbar: false,
@@ -131,7 +155,7 @@ export default {
           'caebAttributes.economics',
           'caebAttributes.ll'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`])
+      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections'])
     },
     methods: {
       submit () {
