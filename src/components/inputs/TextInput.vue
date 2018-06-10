@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import 'vuetify/src/stylus/components/_grid.styl'
+  // import 'vuetify/src/stylus/components/_grid.styl'
 
   export default {
     name: 'TextInput',
@@ -43,9 +43,6 @@
       input () {
         this.$emit('input', this.content)
       }
-    },
-    mounted () {
-      console.log(this)
     }
   }
 </script>

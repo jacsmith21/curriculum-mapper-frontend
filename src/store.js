@@ -19,7 +19,7 @@ const state = {
     inLab: '',
     learningOutcomes: [{value: ''}],
     prerequisites: [],
-    assessments: [{type: '', description: ''}],
+    assessments: [{assessmentType: '', description: ''}],
     averageGrade: '',
     percentFailure: '',
     sections: [{section: '', instructor: ''}],

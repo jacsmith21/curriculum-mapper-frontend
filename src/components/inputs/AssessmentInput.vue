@@ -5,11 +5,10 @@
       <template v-for="(assessment, index) in assessments">
         <v-flex xs2 style="padding-left: 0">
           <v-select
-            ref="type"
             :items="['Test', 'Lab', 'Assignment']"
             label="Type"
             single-line
-            v-model="assessment.type"
+            v-model="assessment.assessmentType"
           ></v-select>
         </v-flex>
         <v-flex xs10>
@@ -31,7 +30,6 @@
 
   export default {
     name: 'AssessmentInput',
-    props: ['identifier', 'label'],
     computed: {
       ...mapGetters(['lastIndex']),
       ...mapMultiRowFields(['form.assessments'])

@@ -18,17 +18,29 @@
                   <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
                   <TextInput v-model="percentFailure" label="Percent Failure" type="number" xs6></TextInput>
 
-                  <TextInput xs2 v-model="auDistribution.math" label="Math" type="number" suffix="%"></TextInput>
-                  <TextInput xs2 v-model="auDistribution.naturalScience" label="Natural Science" type="number" suffix="%"></TextInput>
-                  <TextInput xs2 v-model="auDistribution.complementaryStudies" label="Complementary Studies" type="number" suffix="%"></TextInput>
-                  <TextInput xs2 v-model="auDistribution.engineeringDesign" label="Engineering Science" type="number" suffix="%"></TextInput>
-                  <TextInput xs2 v-model="auDistribution.engineeringDesign" label="Engineering Design" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="math" label="Math" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="naturalScience" label="Natural Science" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="complementaryStudies" label="Complementary Studies" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="engineeringScience" label="Engineering Science" type="number" suffix="%"></TextInput>
+                  <TextInput xs2 v-model="engineeringDesign" label="Engineering Design" type="number" suffix="%"></TextInput>
                   <TextInput xs2 disabled></TextInput>
 
                   <TextInput v-model="inClass" label="Class Credit Hours" xs4 type="number"></TextInput>
                   <TextInput v-model="inLab" label="Lab Credit Hours" xs4 type="number"></TextInput>
                   <v-flex xs4><span>Total Credit Hours: {{ totalCreditHours }}</span></v-flex>
 
+                  <SelectInput xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="investigation" label="Investigation" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="design" label="Design" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="tools" label="Tools" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="team" label="Team" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="communication" label="Communication" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="professionalism" label="Professionalism" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="impacts" label="Impacts" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="ethics" label="Ethics" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="economics" label="Economics" :items="caebItems"></SelectInput>
+                  <SelectInput xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></SelectInput>
 
                   <Prerequisites></Prerequisites>
 
@@ -67,13 +79,15 @@
   import TextInput from '@/components/inputs/TextInput'
   import SectionInput from '@/components/inputs/SectionInput'
   import { mapFields } from 'vuex-map-fields'
+  import SelectInput from '@/components/inputs/SelectInput'
 
-  export default {
+export default {
     name: 'CourseForm',
-    components: { LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
+    components: { SelectInput, LearningOutcomes, Prerequisites, AssessmentInput, TextInput, SectionInput },
     data () {
       return {
-        snackbar: false
+        snackbar: false,
+        caebItems: ['I', 'D', 'A']
       }
     },
     computed: {
@@ -92,7 +106,23 @@
           'averageGrade',
           'inLab',
           'inClass',
-          'auDistribution'
+          'auDistribution.math',
+          'auDistribution.naturalScience',
+          'auDistribution.complementaryStudies',
+          'auDistribution.engineeringScience',
+          'auDistribution.engineeringDesign',
+          'caebAttributes.knowledgeBase',
+          'caebAttributes.problemAnalysis',
+          'caebAttributes.investigation',
+          'caebAttributes.design',
+          'caebAttributes.tools',
+          'caebAttributes.team',
+          'caebAttributes.communication',
+          'caebAttributes.professionalism',
+          'caebAttributes.impacts',
+          'caebAttributes.ethics',
+          'caebAttributes.economics',
+          'caebAttributes.ll'
         ].map(field => `form.${field}`))
     },
     methods: {
