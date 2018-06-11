@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import List from '@/components/List.vue'
+  import List from '@/components/CourseList.vue'
   import CourseCard from '@/components/CourseCard.vue'
 
   export default {

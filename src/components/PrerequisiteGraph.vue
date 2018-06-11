@@ -17,8 +17,11 @@
         simulation: null,
         color: d3.scaleOrdinal(d3.schemeCategory10),
         courses: null,
+        courseLookup: {},
         loaded: false,
-        radius: 15
+        radius: 15,
+        fontSize: 15,
+        node: null
       }
     },
     methods: {
@@ -29,6 +32,42 @@
             return i
           }
         }
+      },
+      clicked (clickedNode) {
+        console.log(`Clicked on ${clickedNode.id}`)
+
+        d3.event.stopPropagation()
+        const options = {prereq: 'yellow', post: 'red', none: 'grey', current: 'blue'}
+        let states = {}
+
+        // initialize to nothing
+        for (const course of this.courses) {
+          states[course.name] = options.none
+        }
+
+        const set = (course, key, option, start) => {
+          if (course === undefined) {
+            return
+          }
+
+          if (!start) {
+            states[course.name] = option
+          }
+
+          for (const id of course[key] || []) {
+            let c = this.courseLookup[id]
+            set(c, key, option, false)
+          }
+        }
+
+        let clickedCourse = this.courses.filter(course => course.name === clickedNode.id)[0]
+        set(clickedCourse, 'prerequisites', options.prereq, true)
+        set(clickedCourse, 'post', options.post, true)
+
+        console.log(`The final states:`)
+        console.log(states)
+        console.log(this.courses)
+        this.node.style('fill', node => states[node.id])
       },
       normalize (vector) {
         return this.div(vector, this.length(vector))
@@ -61,6 +100,19 @@
         that.courses = courses
         that.loaded = true
 
+        // add courses to the lookup
+        for (const course of courses) {
+          that.courseLookup[course._id] = course
+        }
+
+        for (const course of courses) {
+          for (const id of course.prerequisites) {
+            let prereq = this.courseLookup[id]
+            prereq.post = prereq.post || []
+            prereq.post.push(course._id)
+          }
+        }
+
         let simulation = d3.forceSimulation(that.nodes)
           .force('link', d3.forceLink(that.links).distance(100).strength(0.1))
           .force('charge', d3.forceManyBody())
@@ -73,8 +125,8 @@
           .enter().append('svg:marker')    // This section adds in the arrows
           .attr('id', String)
           .attr('viewBox', '0 -5 10 10')
-          .attr('refX', 15)
-          .attr('refY', -1.5)
+          .attr('refX', 10)
+          .attr('refY', 0)
           .attr('markerWidth', 6)
           .attr('markerHeight', 6)
           .attr('orient', 'auto')
@@ -90,13 +142,14 @@
           .style('stroke', '#ccc')
           .attr('marker-end', 'url(#end)')
 
-        const node = svg.append('g')
+        that.node = svg.append('g')
           .attr('class', 'nodes')
           .selectAll('circle')
           .data(that.nodes)
           .enter().append('circle')
           .attr('r', that.radius)
           .attr('fill', (_, i) => that.color(i))
+          .on('mousedown', that.clicked)
           .call(d3.drag()
             .on('start', d => {
               if (!d3.event.active) { simulation.alphaTarget(0.3).restart() }
@@ -112,6 +165,15 @@
               d.fy = null
             }))
 
+        let getTextWidth = (text, font) => {
+          // re-use canvas object for better performance
+          let canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'))
+          let context = canvas.getContext('2d')
+          context.font = font
+          let metrics = context.measureText(text)
+          return metrics.width
+        }
+
         const label = svg.append('g')
           .attr('class', 'text')
           .selectAll('text')
@@ -120,15 +182,18 @@
           .text(node => node.id)
           .style('text-anchor', 'middle')
           .style('fill', '#000')
-          .style('font-size', 15)
+          .style('font-size', this.fontSize)
+          .attr('dy', 6)
+          .attr('class', 'unselectable')
+          .attr('dx', text => getTextWidth(text.id, `${Math.min(this.fontSize, this.radius * 2)}pt Roboto`) / 2 + 10)
 
         simulation.nodes(that.nodes).on('tick', () => {
           link
-            .attr('x1', link => this.add(link.source, this.radiusVector(link)).x)
+            .attr('x1', link => this.add(link.source, this.radiusVector(link)).x) // computes the edge of the circle
             .attr('y1', link => this.add(link.source, this.radiusVector(link)).y)
             .attr('x2', link => this.sub(link.target, this.radiusVector(link)).x)
             .attr('y2', link => this.sub(link.target, this.radiusVector(link)).y)
-          node
+          that.node
             .attr('cx', node => node.x)
             .attr('cy', node => node.y)
           label
@@ -170,9 +235,18 @@
   }
 </script>
 
-<style scoped>
+<style>
   .node text {
     pointer-events: none;
     font: 10px sans-serif;
+  }
+
+  /*noinspection CssUnusedSymbol*/
+  .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 </style>

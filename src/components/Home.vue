@@ -7,7 +7,7 @@
 
 <script>
   import CourseForm from '@/components/CourseForm.vue'
-  import List from '@/components/List.vue'
+  import List from '@/components/CourseList.vue'
 
   export default {
     name: 'Home',
