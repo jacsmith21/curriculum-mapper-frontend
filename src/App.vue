@@ -12,7 +12,7 @@
       <router-view/>
     </v-content>
 
-    <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed app>
+    <v-navigation-drawer temporary :right="false" v-model="rightDrawer" fixed app>
       <v-list>
         <v-list-tile v-for="item in items" :key="item.title" @click="" :to="item.route">
           <v-list-tile-action>
@@ -40,13 +40,13 @@ export default {
       clipped: false,
       drawer: true,
       fixed: false,
+      open: true,
       items: [{
         icon: 'bubble_chart',
         title: 'PrerequisiteGraph',
         route: '/prerequisites'
       }],
       miniVariant: false,
-      right: false,
       rightDrawer: false,
       title: 'Curriculum Mapper'
     }

@@ -1,9 +1,35 @@
 <template>
-  <v-container v-bind:style="{padding: 0}" fluid>
+  <v-container>
+
+  <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
     <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;" ref="component">
       <g :id="links"></g>
       <g :id="nodes"></g>
     </svg>
+  </v-container>
+
+  <v-navigation-drawer temporary v-model="open" fixed right hide-overlay>
+    <v-list two-line subheader>
+      <v-subheader>Information</v-subheader>
+      <v-list-tile>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ selectedCourse.name }}</v-list-tile-title>
+          <v-list-tile-sub-title>{{ selectedCourse.title || 'No Title' }}</v-list-tile-sub-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+    <v-divider></v-divider>
+    <v-list three-line subheader>
+      <v-subheader>Prerequisites</v-subheader>
+      <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`">
+        <v-list-tile-content>
+          <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
+          <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+  </v-navigation-drawer>
+
   </v-container>
 </template>
 
@@ -21,7 +47,9 @@
         loaded: false,
         radius: 15,
         fontSize: 15,
-        node: null
+        node: null,
+        open: false,
+        selectedCourse: {}
       }
     },
     methods: {
@@ -35,6 +63,7 @@
       },
       clicked (clickedNode) {
         console.log(`Clicked on ${clickedNode.id}`)
+        this.open = true
 
         d3.event.stopPropagation()
         const options = {prereq: 'yellow', post: 'red', none: 'grey', current: 'blue'}
@@ -60,9 +89,10 @@
           }
         }
 
-        let clickedCourse = this.courses.filter(course => course.name === clickedNode.id)[0]
-        set(clickedCourse, 'prerequisites', options.prereq, true)
-        set(clickedCourse, 'post', options.post, true)
+        this.selectedCourse = this.courses.filter(course => course.name === clickedNode.id)[0]
+        states[this.selectedCourse.name] = options.current
+        set(this.selectedCourse, 'prerequisites', options.prereq, true)
+        set(this.selectedCourse, 'post', options.post, true)
 
         console.log(`The final states:`)
         console.log(states)
@@ -92,6 +122,10 @@
       },
       radiusVector (link) {
         return this.scale(this.sub(link.target, link.source), this.radius)
+      },
+      getPrerequisites (course) {
+        const prerequisites = course.prerequisites || []
+        return prerequisites.map(id => this.courseLookup[id])
       }
     },
     created () {
@@ -115,7 +149,7 @@
 
         let simulation = d3.forceSimulation(that.nodes)
           .force('link', d3.forceLink(that.links).distance(100).strength(0.1))
-          .force('charge', d3.forceManyBody())
+          .force('charge', d3.forceManyBody().strength(-140).distanceMax(300).distanceMin(5))
           .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
         const svg = d3.select('svg')
