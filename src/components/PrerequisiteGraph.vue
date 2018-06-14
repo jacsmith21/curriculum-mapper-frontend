@@ -21,7 +21,7 @@
     <v-divider></v-divider>
     <v-list three-line subheader>
       <v-subheader>Prerequisites</v-subheader>
-      <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`">
+      <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`" :key="prerequisite._id">
         <v-list-tile-content>
           <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
           <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>

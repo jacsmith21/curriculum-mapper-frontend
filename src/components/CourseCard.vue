@@ -6,7 +6,7 @@
         <v-card>
           <v-card-title class="headline" primary-title>Courses Information</v-card-title>
 
-          <!--v-if there to remove undefined error. There is definitely a better way to do this.-->
+          <!--v-if exists to remove undefined error. There may be a better way to do this!-->
           <v-list two-line v-if="course">
             <EditableTile
               icon="school"

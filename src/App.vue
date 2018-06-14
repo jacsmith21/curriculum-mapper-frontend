@@ -6,6 +6,13 @@
       </v-btn>
       <v-btn class="headline" :ripple="false" flat v-text="title" to="/"></v-btn>
       <!--<v-toolbar-title v-text="title"></v-toolbar-title>-->
+
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat to="/courses">Add Course</v-btn>
+        <v-btn flat to="/strands">Add Strand</v-btn>
+      </v-toolbar-items>
+
     </v-toolbar>
 
     <v-content>

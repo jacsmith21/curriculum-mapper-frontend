@@ -44,7 +44,7 @@
 
                   <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
 
-                  <DynamicField identifier="learningOutcomes" :items="learningOutcomes">
+                  <DynamicField :items="learningOutcomes">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
                       <TextInput
@@ -58,7 +58,7 @@
                     </template>
                   </DynamicField>
 
-                  <DynamicField identifier="assessments" :items="assessments">
+                  <DynamicField :items="assessments">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
                       <SelectInput xs2 :items="['Test', 'Lab', 'Assignment']" label="Type" v-model="item.assessmentType" style="padding-left: 0"></SelectInput>
@@ -72,7 +72,7 @@
                     </template>
                   </DynamicField>
 
-                  <DynamicField identifier="sections" :items="sections">
+                  <DynamicField :items="sections">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
                       <TextInput style="padding-left: 0" label="Instructor" v-model="item.instructor" xs6></TextInput>

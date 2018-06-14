@@ -25,7 +25,12 @@ const state = {
     sections: [{section: '', instructor: ''}],
     auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''}
-  }
+  },
+  strand: {
+    name: '',
+    sub: [{type: '', name: ''}]
+  },
+  strands: []
 }
 
 const getters = {
@@ -34,9 +39,6 @@ const getters = {
   },
   courseById: (state) => (id) => {
     return state.courses.filter(course => course._id === id)[0]
-  },
-  lastIndex: (state) => (key, index) => {
-    return state['form'][key].length - 1 === index
   },
   getField
 }
@@ -76,6 +78,9 @@ const actions = {
       commit('editCourse', course)
     })
     router.push('/courses/' + course.name)
+  },
+  addStrand ({ commit, state }) {
+    commit('addStrand', state.strand)
   }
 }
 
@@ -95,8 +100,11 @@ const mutations = {
   editCourse (state, course) {
     state.courses[course.index] = course
   },
-  clickedDynamicInput (state, {key, index}) {
-    const array = state['form'][key]
+  addStrand (state, strand) {
+    state.strands.push(strand)
+  },
+  clickedDynamicInput (state, {key, index, item}) {
+    const array = state[item][key]
     if (array.length - 1 === index) {
       const element = array[0]
       let newElement = {}
