@@ -1,6 +1,5 @@
 <template>
   <v-flex xs12>
-    <v-divider></v-divider>
     <v-layout row wrap :style="{marginLeft: 0 + 'px'}">
       <template v-for="(item, index) in items">
         <slot v-bind:item="item" v-bind:index="index" v-bind:last-index="items.length - 1 === index" v-bind:clickedIcon="clickedIcon"></slot>

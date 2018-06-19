@@ -11,13 +11,19 @@
             <v-form>
               <v-container grid-list-xl fluid>
                 <v-layout wrap>
+
+                  <SectionBreak title="Basic Information"></SectionBreak>
                   <TextInput v-model="name" label="Name" xs12></TextInput>
                   <TextInput v-model="title" label="Title" xs12></TextInput>
                   <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
                   <TextInput v-model="description" label="Description" xs12></TextInput>
+                  <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
+
+                  <SectionBreak title="Grades"></SectionBreak>
                   <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
                   <TextInput v-model="percentFailure" label="Percent Failure" type="number" xs6></TextInput>
 
+                  <SectionBreak title="Content Breakdown"></SectionBreak>
                   <TextInput xs2 v-model="math" label="Math" type="number" suffix="%"></TextInput>
                   <TextInput xs2 v-model="naturalScience" label="Natural Science" type="number" suffix="%"></TextInput>
                   <TextInput xs2 v-model="complementaryStudies" label="Complementary Studies" type="number" suffix="%"></TextInput>
@@ -25,10 +31,13 @@
                   <TextInput xs2 v-model="engineeringDesign" label="Engineering Design" type="number" suffix="%"></TextInput>
                   <TextInput xs2 disabled></TextInput>
 
+                  <SectionBreak title="Credit Hours"></SectionBreak>
                   <TextInput v-model="inClass" label="Class Credit Hours" xs4 type="number"></TextInput>
                   <TextInput v-model="inLab" label="Lab Credit Hours" xs4 type="number"></TextInput>
                   <v-flex xs4><span>Total Credit Hours: {{ totalCreditHours }}</span></v-flex>
 
+
+                  <SectionBreak title="CAEB Attributes"></SectionBreak>
                   <SelectInput xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></SelectInput>
                   <SelectInput xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></SelectInput>
                   <SelectInput xs2 v-model="investigation" label="Investigation" :items="caebItems"></SelectInput>
@@ -42,8 +51,7 @@
                   <SelectInput xs2 v-model="economics" label="Economics" :items="caebItems"></SelectInput>
                   <SelectInput xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></SelectInput>
 
-                  <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
-
+                  <SectionBreak title="Learning Outcomes"></SectionBreak>
                   <DynamicField :items="learningOutcomes">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
@@ -58,6 +66,7 @@
                     </template>
                   </DynamicField>
 
+                  <SectionBreak title="Assessments"></SectionBreak>
                   <DynamicField :items="assessments">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
@@ -72,6 +81,7 @@
                     </template>
                   </DynamicField>
 
+                  <SectionBreak title="Instructors"></SectionBreak>
                   <DynamicField :items="sections">
                     <!--suppress HtmlUnknownAttribute -->
                     <template slot-scope="{ item, index, lastIndex, clickedIcon }">
@@ -118,10 +128,11 @@
   import SelectInput from '@/components/inputs/SelectInput'
   import ChipSelect from '@/components/inputs/ChipSelect'
   import DynamicField from '@/components/inputs/DynamicField'
+  import SectionBreak from '@/components/SectionBreak'
 
   export default {
     name: 'CourseForm',
-    components: { DynamicField, ChipSelect, SelectInput, TextInput },
+    components: { SectionBreak, DynamicField, ChipSelect, SelectInput, TextInput },
     data () {
       return {
         snackbar: false,
