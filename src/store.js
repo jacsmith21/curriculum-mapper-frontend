@@ -10,6 +10,7 @@ Vue.use(Vuex)
 
 const state = {
   courses: [],
+  benchmarks: [],
   form: {
     name: '',
     title: '',
@@ -26,11 +27,7 @@ const state = {
     auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''}
   },
-  strand: {
-    name: '',
-    sub: [{type: '', name: ''}]
-  },
-  strands: []
+  benchmark: {name: '', course: ''}
 }
 
 const getters = {
@@ -79,8 +76,8 @@ const actions = {
     })
     router.push('/courses/' + course.name)
   },
-  addStrand ({ commit, state }) {
-    commit('addStrand', state.strand)
+  addBenchmark ({ commit, state }) {
+    commit('addBenchmark', state.benchmark)
   }
 }
 
@@ -100,8 +97,8 @@ const mutations = {
   editCourse (state, course) {
     state.courses[course.index] = course
   },
-  addStrand (state, strand) {
-    state.strands.push(strand)
+  addBenchmark (state, strand) {
+    state.benchmarks.push(strand)
   },
   clickedDynamicInput (state, {key, index, item}) {
     const array = state[item][key]

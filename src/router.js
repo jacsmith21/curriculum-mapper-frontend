@@ -19,7 +19,7 @@ export default new Router({
       component: Home
     },
     {
-      path: '/strands',
+      path: '/benchmarks',
       component: Strand
     },
     {

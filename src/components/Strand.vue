@@ -1,16 +1,27 @@
 <template>
   <v-layout>
-    <List width="400"></List>
     <StrandForm></StrandForm>
   </v-layout>
 </template>
 
 <script>
   import StrandForm from '@/components/StrandForm.vue'
-  import List from '@/components/CourseList.vue'
 
   export default {
     name: 'Strand',
-    components: { StrandForm, List }
+    components: { StrandForm },
+    data () {
+      return {
+        clipped: false,
+        drawer: true,
+        fixed: false,
+        items: [{
+          icon: 'bubble_chart',
+          title: 'Inspire'
+        }],
+        miniVariant: false,
+        title: 'Visualization'
+      }
+    }
   }
 </script>

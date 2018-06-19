@@ -5,25 +5,13 @@
     <v-card>
       <v-card-text style="padding-top: 0">
 
-        <v-card-title class="headline" primary-title>Strand Form</v-card-title>
+        <v-card-title class="headline" primary-title>Benchmark</v-card-title>
 
         <v-form>
           <v-container fluid grid-list-xl>
             <v-layout row wrap>
-              <TextInput label="Name" v-model="name" xs12></TextInput>
-              <DynamicField :items="sub">
-                <!--suppress HtmlUnknownAttribute -->
-                <template slot-scope="{ item, index, lastIndex, clickedIcon }">
-                  <SelectInput xs3 :items="['Subsection', 'Benchmark']" label="Type" v-model="item.type" style="padding-left: 0"></SelectInput>
-                  <TextInput
-                    xs9
-                    label="Name"
-                    v-model="item.name"
-                    :append-icon="lastIndex ? 'add' : 'close'"
-                    :append-icon-cb="clickedIcon('sub', index, 'strand')"
-                  ></TextInput>
-                </template>
-              </DynamicField>
+              <text-input label="Name" v-model="name" xs12></text-input>
+              <select-input label="Course" :items="courseItems" v-model="course"></select-input>
             </v-layout>
           </v-container>
         </v-form>
@@ -47,18 +35,20 @@
   import TextInput from '@/components/inputs/TextInput'
   import DynamicField from '@/components/inputs/DynamicField'
   import SelectInput from '@/components/inputs/SelectInput'
-  import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
+  import { mapFields } from 'vuex-map-fields'
 
   export default {
     name: 'StrandForm',
     components: { SelectInput, DynamicField, TextInput },
     computed: {
-      ...mapFields(['strand.name']),
-      ...mapMultiRowFields(['strand.sub'])
+      ...mapFields(['benchmark.name', 'benchmark.course']),
+      courseItems () {
+        return this.$store.state.courses.map(course => course.name)
+      }
     },
     methods: {
       submit () {
-        this.$store.dispatch('addStrand').then(() => {
+        this.$store.dispatch('addBenchmark').then(() => {
         }).catch(err => {
           console.error(err)
         })
