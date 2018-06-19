@@ -12,7 +12,7 @@
           <v-list-tile
             ripple
             :key="item.title"
-            @click=""
+            :to="item.to"
             class="tile"
           >
             <v-list-tile-content>
@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     items () {
-      return this.$store.state.courses.map(course => { return {title: course.name, headline: course.title || 'No Title'} })
+      return this.$store.state.courses.map(course => { return {title: course.name, headline: course.title || 'No Title', to: '/courses/' + course.name} })
     }
   },
   created () {
