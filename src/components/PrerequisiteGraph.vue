@@ -66,7 +66,7 @@
         this.open = true
 
         d3.event.stopPropagation()
-        const options = {prereq: 'yellow', post: 'red', none: 'grey', current: 'blue'}
+        const options = {prereq: '#ffe800', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
         // initialize to nothing
