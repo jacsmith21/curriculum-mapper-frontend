@@ -1,7 +1,5 @@
 <template>
-  <v-layout>
-    <CourseForm></CourseForm>
-  </v-layout>
+  <CourseForm></CourseForm>
 </template>
 
 <script>

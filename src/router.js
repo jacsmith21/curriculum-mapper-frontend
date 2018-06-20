@@ -2,8 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import PrerequisiteGraph from '@/components/PrerequisiteGraph'
-import Course from '@/components/Course'
-import Strand from '@/components/Strand'
+import CourseForm from '@/components/CourseForm'
+import StrandForm from '@/components/StrandForm'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -20,7 +20,7 @@ export default new Router({
     },
     {
       path: '/benchmarks',
-      component: Strand
+      component: StrandForm
     },
     {
       path: '/prerequisites',
@@ -28,7 +28,7 @@ export default new Router({
     },
     {
       path: '/courses/:name',
-      component: Course
+      component: CourseForm
     }
   ]
 })

@@ -9,6 +9,8 @@ const base = process.env.SERVER_BASE
 Vue.use(Vuex)
 
 const state = {
+  displayCourses: true,
+  title: 'Curriculum Mapper',
   courses: [],
   benchmarks: [],
   form: {
@@ -20,6 +22,7 @@ const state = {
     inLab: '',
     learningOutcomes: [{value: ''}],
     prerequisites: [],
+    recommended: [],
     assessments: [{assessmentType: '', description: ''}],
     averageGrade: '',
     percentFailure: '',
@@ -27,7 +30,7 @@ const state = {
     auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''}
   },
-  benchmark: {name: '', course: ''}
+  benchmark: {name: ''}
 }
 
 const getters = {
@@ -77,7 +80,22 @@ const actions = {
     router.push('/courses/' + course.name)
   },
   addBenchmark ({ commit, state }) {
-    commit('addBenchmark', state.benchmark)
+    axios.post(base + '/benchmarks', state.benchmark).then(() => {
+      commit('addBenchmark', state.benchmark)
+    })
+  },
+  loadBenchmarks ({ commit }) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(base + '/benchmarks')
+        .then(r => r.data)
+        .then(benchmarks => {
+          commit('setBenchmarks', benchmarks)
+          resolve(benchmarks)
+        }, err => {
+          reject(err)
+        })
+    })
   }
 }
 
@@ -105,13 +123,16 @@ const mutations = {
     if (array.length - 1 === index) {
       const element = array[0]
       let newElement = {}
-      for (const prop in element) {
+      for (const prop of element) {
         newElement[prop] = ''
       }
       array.push(newElement)
     } else {
       array.splice(index, 1)
     }
+  },
+  setBenchmarks (state, benchmarks) {
+    state.benchmarks = benchmarks
   },
   updateField
 }

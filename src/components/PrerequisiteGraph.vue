@@ -1,43 +1,50 @@
 <template>
   <v-container>
+    <v-navigation-drawer
+      v-model="open"
+      clipped
+      fixed
+      right
+      app>
+      <v-list two-line subheader>
+        <v-subheader>Information</v-subheader>
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ selectedCourse.name }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ selectedCourse.title || 'No Title' }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list three-line subheader>
+        <v-subheader>Prerequisites</v-subheader>
+        <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`" :key="prerequisite._id">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
 
-  <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-    <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;" ref="component">
-      <g :id="links"></g>
-      <g :id="nodes"></g>
-    </svg>
-  </v-container>
+    <toolbar></toolbar>
 
-  <v-navigation-drawer temporary v-model="open" fixed right hide-overlay>
-    <v-list two-line subheader>
-      <v-subheader>Information</v-subheader>
-      <v-list-tile>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ selectedCourse.name }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ selectedCourse.title || 'No Title' }}</v-list-tile-sub-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-    <v-divider></v-divider>
-    <v-list three-line subheader>
-      <v-subheader>Prerequisites</v-subheader>
-      <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`" :key="prerequisite._id">
-        <v-list-tile-content>
-          <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-  </v-navigation-drawer>
-
+    <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
+      <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;" ref="component">
+        <g :id="links"></g>
+        <g :id="nodes"></g>
+      </svg>
+    </v-container>
   </v-container>
 </template>
 
 <script>
   import * as d3 from 'd3'
+  import Toolbar from '@/components/Toolbar'
 
-  export default {
+export default {
     name: 'PrerequisiteGraph',
+    components: {Toolbar},
     data () {
       return {
         simulation: null,
