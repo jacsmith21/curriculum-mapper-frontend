@@ -18,7 +18,7 @@
       <v-divider></v-divider>
       <v-list three-line subheader>
         <v-subheader>Prerequisites</v-subheader>
-        <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" :to="`/courses/${prerequisite.name}`" :key="prerequisite._id">
+        <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" @click="() => colorize(prerequisite.name)" :key="prerequisite._id">
           <v-list-tile-content>
             <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
@@ -73,6 +73,11 @@ export default {
         this.open = true
 
         d3.event.stopPropagation()
+        this.colorize(clickedNode.id)
+      },
+      colorize (id) {
+        console.log(`Colorizing: ${id}`)
+
         const options = {prereq: '#ffe800', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
@@ -96,14 +101,13 @@ export default {
           }
         }
 
-        this.selectedCourse = this.courses.filter(course => course.name === clickedNode.id)[0]
+        this.selectedCourse = this.courses.filter(course => course.name === id)[0]
         states[this.selectedCourse.name] = options.current
         set(this.selectedCourse, 'prerequisites', options.prereq, true)
         set(this.selectedCourse, 'post', options.post, true)
 
-        console.log(`The final states:`)
-        console.log(states)
-        console.log(this.courses)
+        console.debug(`The final states:`)
+        console.debug(states)
         this.node.style('fill', node => states[node.id])
       },
       normalize (vector) {
