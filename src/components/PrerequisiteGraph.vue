@@ -141,7 +141,7 @@
 
         for (const course of courses) {
           for (const id of course.prerequisites) {
-            let prereq = this.courseLookup[id]
+            let prereq = that.courseLookup[id]
             prereq.post = prereq.post || []
             prereq.post.push(course._id)
           }
