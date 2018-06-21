@@ -78,7 +78,7 @@ export default {
       colorize (id) {
         console.log(`Colorizing: ${id}`)
 
-        const options = {prereq: '#ffe800', post: '#ff4e41', none: 'grey', current: '#15abff'}
+        const options = {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
         // initialize to nothing
@@ -86,9 +86,17 @@ export default {
           states[course.name] = options.none
         }
 
-        const set = (course, key, option, start) => {
+        const dfs = (course, key, option, start, seen) => {
+          seen = seen || {}
+
           if (course === undefined) {
             return
+          }
+
+          if (course.name in seen) {
+            return
+          } else {
+            seen[course.name] = true
           }
 
           if (!start) {
@@ -97,14 +105,15 @@ export default {
 
           for (const id of course[key] || []) {
             let c = this.courseLookup[id]
-            set(c, key, option, false)
+            dfs(c, key, option, false)
           }
         }
 
         this.selectedCourse = this.courses.filter(course => course.name === id)[0]
         states[this.selectedCourse.name] = options.current
-        set(this.selectedCourse, 'prerequisites', options.prereq, true)
-        set(this.selectedCourse, 'post', options.post, true)
+        dfs(this.selectedCourse, 'prerequisites', options.prereq, true)
+        dfs(this.selectedCourse, 'corequisites', options.coreq, true)  // TODO make sure this works (maybe add seen variable)
+        dfs(this.selectedCourse, 'post', options.post, true)
 
         console.debug(`The final states:`)
         console.debug(states)

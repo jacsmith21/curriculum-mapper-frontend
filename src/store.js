@@ -23,6 +23,7 @@ const state = {
     learningOutcomes: [{value: ''}],
     prerequisites: [],
     recommended: [],
+    corequisites: [],
     assessments: [{assessmentType: '', description: ''}],
     averageGrade: '',
     percentFailure: '',

@@ -1,5 +1,5 @@
 <template>
-  <v-flex>
+  <v-flex :class="classes">
     <v-select
       :items="items"
       :label="label"

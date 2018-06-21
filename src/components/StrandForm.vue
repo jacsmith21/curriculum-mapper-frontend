@@ -1,6 +1,6 @@
 <template>
   <sidebar-base>
-    <card-form title="Course Form" :submit="submit" snackbar-text="Benchmark Added!">
+    <card-form title="Benchmark Form" :submit="submit" snackbar-text="Benchmark Added!">
       <text-input label="Name" v-model="name" xs12></text-input>
     </card-form>
   </sidebar-base>

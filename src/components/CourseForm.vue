@@ -7,8 +7,9 @@
       <TextInput v-model="title" label="Title" xs12></TextInput>
       <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
       <TextInput v-model="description" label="Description" xs12></TextInput>
-      <ChipSelect label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
-      <ChipSelect label="Recommended" :items="courseItems" v-model="recommended"></ChipSelect>
+      <ChipSelect xs4 label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
+      <ChipSelect xs4 label="Recommended" :items="courseItems" v-model="recommended"></ChipSelect>
+      <ChipSelect xs4 label="Corequisites" :items="courseItems" v-model="corequisites"></ChipSelect>
 
       <SectionBreak title="Grades"></SectionBreak>
       <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
@@ -127,6 +128,7 @@
           'maintainer',
           'description',
           'prerequisites',
+          'corequisites',
           'recommended',
           'percentFailure',
           'averageGrade',
