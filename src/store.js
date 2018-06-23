@@ -21,7 +21,7 @@ const state = {
     inClass: '',
     inLab: '',
     learningOutcomes: [{value: ''}],
-    prerequisites: [],
+    prerequisites: [{prerequisite: '', alternative: ''}],
     recommended: [],
     corequisites: [],
     assessments: [{assessmentType: '', description: ''}],
@@ -29,7 +29,8 @@ const state = {
     percentFailure: '',
     sections: [{section: '', instructor: ''}],
     auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
-    caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''}
+    caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
+    benchmarks: []
   },
   benchmark: {name: ''}
 }
@@ -60,7 +61,10 @@ const actions = {
   },
   addCourse ({ commit, state, getters }) {
     let course = copy(state.form)
-    course.prerequisites = course.prerequisites.map(prerequisite => getters.courseByName(prerequisite))
+    course.prerequisites = course.prerequisites.map(prerequisite => {
+      const alternative = prerequisite.alternative === null ? null : getters.courseByName(prerequisite.alternative)
+      return {prerequisite: getters.courseByName(prerequisite.prerequisite), alternative: alternative}
+    })
     course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
     axios.post(base + '/courses', course).then(() => {
       commit('addCourse', course)
@@ -119,12 +123,16 @@ const mutations = {
   addBenchmark (state, strand) {
     state.benchmarks.push(strand)
   },
-  clickedDynamicInput (state, {key, index, item}) {
-    const array = state[item][key]
+  clickedDynamicInput (state, {key, index}) {
+    let array = state
+    for (const subKey of key.split('.')) {
+      array = array[subKey]
+    }
+
     if (array.length - 1 === index) {
       const element = array[0]
       let newElement = {}
-      for (const prop of element) {
+      for (const prop of Object.keys(element)) {
         newElement[prop] = ''
       }
       array.push(newElement)

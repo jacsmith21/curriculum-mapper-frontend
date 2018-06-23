@@ -1,3 +1,4 @@
+<!--suppress HtmlUnknownAttribute -->
 <template>
   <sidebar-base>
     <card-form title="Course Form" :submit="submit" snackbar-text="Course Added!">
@@ -7,9 +8,16 @@
       <TextInput v-model="title" label="Title" xs12></TextInput>
       <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
       <TextInput v-model="description" label="Description" xs12></TextInput>
-      <ChipSelect xs4 label="Prerequisites" :items="courseItems" v-model="prerequisites"></ChipSelect>
-      <ChipSelect xs4 label="Recommended" :items="courseItems" v-model="recommended"></ChipSelect>
-      <ChipSelect xs4 label="Corequisites" :items="courseItems" v-model="corequisites"></ChipSelect>
+
+      <dynamic-field :items="prerequisites" identifier="form.prerequisites">
+        <template slot-scope="{ item }">
+          <select-input xs6 label="Prerequisite" :items="courseItems" v-model="item.prerequisite"></select-input>
+          <select-input xs5 label="Alternative" :items="courseItems" v-model="item.alternative"></select-input>
+        </template>
+      </dynamic-field>
+      <ChipSelect xs6 label="Recommended" :items="courseItems" v-model="recommended"></ChipSelect>
+      <ChipSelect xs6 label="Corequisites" :items="courseItems" v-model="corequisites"></ChipSelect>
+      <chip-select xs12 label="Benchmarks" :items="benchmarkItems" v-model="benchmarks"></chip-select>
 
       <SectionBreak title="Grades"></SectionBreak>
       <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
@@ -30,70 +38,47 @@
 
 
       <SectionBreak title="CAEB Attributes"></SectionBreak>
-      <SelectInput xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="investigation" label="Investigation" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="design" label="Design" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="tools" label="Tools" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="team" label="Team" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="communication" label="Communication" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="professionalism" label="Professionalism" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="impacts" label="Impacts" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="ethics" label="Ethics" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="economics" label="Economics" :items="caebItems"></SelectInput>
-      <SelectInput xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></SelectInput>
+      <select-input xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></select-input>
+      <select-input xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></select-input>
+      <select-input xs2 v-model="investigation" label="Investigation" :items="caebItems"></select-input>
+      <select-input xs2 v-model="design" label="Design" :items="caebItems"></select-input>
+      <select-input xs2 v-model="tools" label="Tools" :items="caebItems"></select-input>
+      <select-input xs2 v-model="team" label="Team" :items="caebItems"></select-input>
+      <select-input xs2 v-model="communication" label="Communication" :items="caebItems"></select-input>
+      <select-input xs2 v-model="professionalism" label="Professionalism" :items="caebItems"></select-input>
+      <select-input xs2 v-model="impacts" label="Impacts" :items="caebItems"></select-input>
+      <select-input xs2 v-model="ethics" label="Ethics" :items="caebItems"></select-input>
+      <select-input xs2 v-model="economics" label="Economics" :items="caebItems"></select-input>
+      <select-input xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></select-input>
 
-      <SectionBreak title="Learning Outcomes"></SectionBreak>
-      <DynamicField :items="learningOutcomes">
-        <!--suppress HtmlUnknownAttribute -->
-        <template slot-scope="{ item, index, lastIndex, clickedIcon }">
-          <TextInput
-            style="padding-left: 0"
-            xs12
-            label="Learning Outcome"
-            v-model="item.value"
-            :append-icon="lastIndex ? 'add' : 'close'"
-            :append-icon-cb="clickedIcon('learningOutcomes', index)"
-          ></TextInput>
+      <section-break title="Learning Outcomes"></section-break>
+      <dynamic-field :items="learningOutcomes" identifier="form.learningOutcomes">
+        <template slot-scope="{ item }">
+          <text-input xs11 label="Learning Outcome" v-model="item.value"></text-input>
         </template>
-      </DynamicField>
+      </dynamic-field>
 
-      <SectionBreak title="Assessments"></SectionBreak>
-      <DynamicField :items="assessments">
-        <!--suppress HtmlUnknownAttribute -->
-        <template slot-scope="{ item, index, lastIndex, clickedIcon }">
-          <SelectInput xs2 :items="['Test', 'Lab', 'Assignment']" label="Type" v-model="item.assessmentType" style="padding-left: 0"></SelectInput>
-          <TextInput
-            xs10
-            label="Description"
-            v-model="item.description"
-            :append-icon="lastIndex ? 'add' : 'close'"
-            :append-icon-cb="clickedIcon('assessments', index)"
-          ></TextInput>
+      <section-break title="Assessments"></section-break>
+      <dynamic-field :items="assessments" identifier="form.assessments">
+        <template slot-scope="{ item }">
+          <select-input xs2 label="Type" :items="assessmentTypes" v-model="item.assessmentType"></select-input>
+          <text-input xs9 label="Description" v-model="item.description"></text-input>
         </template>
-      </DynamicField>
+      </dynamic-field>
 
-      <SectionBreak title="Instructors"></SectionBreak>
-      <DynamicField :items="sections">
-        <!--suppress HtmlUnknownAttribute -->
-        <template slot-scope="{ item, index, lastIndex, clickedIcon }">
-          <TextInput style="padding-left: 0" label="Instructor" v-model="item.instructor" xs6></TextInput>
-          <TextInput
-            label="Section"
-            v-model="item.section"
-            :append-icon="lastIndex ? 'add' : 'close'"
-            :append-icon-cb="clickedIcon('sections', index)"
-            xs6
-          ></TextInput>
+      <section-break title="Instructors"></section-break>
+      <dynamic-field :items="sections" identifier="form.sections">
+        <template slot-scope="{ item }">
+          <text-input xs6 label="Instructor" v-model="item.instructor"></text-input>
+          <text-input xs5 label="Section" v-model="item.section"></text-input>
         </template>
-      </DynamicField>
+      </dynamic-field>
 
     </card-form>
   </sidebar-base>
 </template>
 
 <script>
-  // TODO: Refactor append-icon & append-icon-db. Move this to TextInput or a higher level component.
   import TextInput from '@/components/inputs/TextInput'
   import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
   import SelectInput from '@/components/inputs/SelectInput'
@@ -109,7 +94,8 @@
     data () {
       return {
         snackbar: false,
-        caebItems: ['I', 'D', 'A']
+        caebItems: ['I', 'D', 'A'],
+        assessmentTypes: ['Test', 'Lab', 'Assignment']
       }
     },
     computed: {
@@ -121,13 +107,15 @@
       courseItems () {
         return this.$store.state.courses.map(course => course.name)
       },
+      benchmarkItems () {
+        return this.$store.state.benchmarks.map(benchmark => benchmark.name)
+      },
       ...mapFields(
         [
           'name',
           'title',
           'maintainer',
           'description',
-          'prerequisites',
           'corequisites',
           'recommended',
           'percentFailure',
@@ -150,9 +138,10 @@
           'caebAttributes.impacts',
           'caebAttributes.ethics',
           'caebAttributes.economics',
-          'caebAttributes.ll'
+          'caebAttributes.ll',
+          'benchmarks'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections'])
+      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections', 'form.prerequisites'])
     },
     methods: {
       submit () {

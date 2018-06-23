@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container ref="container">
     <v-navigation-drawer
       v-model="open"
       clipped
@@ -16,7 +16,8 @@
         </v-list-tile>
       </v-list>
       <v-divider></v-divider>
-      <v-list three-line subheader>
+      <v-list two-line subheader>
+
         <v-subheader>Prerequisites</v-subheader>
         <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" @click="() => colorize(prerequisite.name)" :key="prerequisite._id">
           <v-list-tile-content>
@@ -24,13 +25,22 @@
             <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <v-subheader>Corequisites</v-subheader>
+        <v-list-tile v-for="corequisite in get(selectedCourse, 'corequisites')" @click="() => colorize(corequisite.name)" :key="corequisite._id">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ corequisite.name }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ corequisite.title || 'No Title' }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
       </v-list>
     </v-navigation-drawer>
 
-    <toolbar></toolbar>
+    <toolbar ref="toolbar"></toolbar>
 
     <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-      <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;" ref="component">
+      <svg ref="svg" style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
         <g :id="links"></g>
         <g :id="nodes"></g>
       </svg>
@@ -56,7 +66,9 @@ export default {
         fontSize: 15,
         node: null,
         open: false,
-        selectedCourse: {}
+        selectedCourse: {},
+        width: window.innerWidth,
+        height: window.innerHeight - 64 - 32
       }
     },
     methods: {
@@ -105,14 +117,14 @@ export default {
 
           for (const id of course[key] || []) {
             let c = this.courseLookup[id]
-            dfs(c, key, option, false)
+            dfs(c, key, option, false, seen)
           }
         }
 
         this.selectedCourse = this.courses.filter(course => course.name === id)[0]
         states[this.selectedCourse.name] = options.current
         dfs(this.selectedCourse, 'prerequisites', options.prereq, true)
-        dfs(this.selectedCourse, 'corequisites', options.coreq, true)  // TODO make sure this works (maybe add seen variable)
+        dfs(this.selectedCourse, 'corequisites', options.coreq, true)
         dfs(this.selectedCourse, 'post', options.post, true)
 
         console.debug(`The final states:`)
@@ -145,10 +157,16 @@ export default {
       },
       getPrerequisites (course) {
         const prerequisites = course.prerequisites || []
-        return prerequisites.map(id => this.courseLookup[id])
+        return prerequisites.map(prerequisite => this.courseLookup[prerequisite.prerequisite])
+      },
+      get (course, key) {
+        const items = course[key] || []
+        return items.map(id => this.courseLookup[id])
       }
     },
     created () {
+      console.log(this.$refs)
+
       const that = this
       this.$store.dispatch('loadCourses').then(courses => {
         that.courses = courses
@@ -160,7 +178,8 @@ export default {
         }
 
         for (const course of courses) {
-          for (const id of course.prerequisites) {
+          for (const prerequisite of course.prerequisites) {
+            const id = prerequisite.prerequisite
             let prereq = that.courseLookup[id]
             prereq.post = prereq.post || []
             prereq.post.push(course._id)
@@ -169,7 +188,7 @@ export default {
 
         let simulation = d3.forceSimulation(that.nodes)
           .force('link', d3.forceLink(that.links).distance(100).strength(0.1))
-          .force('charge', d3.forceManyBody().strength(-140).distanceMax(300).distanceMin(5))
+          .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))
           .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
         const svg = d3.select('svg')
@@ -248,8 +267,8 @@ export default {
             .attr('x2', link => this.sub(link.target, this.radiusVector(link)).x)
             .attr('y2', link => this.sub(link.target, this.radiusVector(link)).y)
           that.node
-            .attr('cx', node => node.x)
-            .attr('cy', node => node.y)
+            .attr('cx', node => Math.max(this.radius, Math.min(this.width - this.radius, node.x)))
+            .attr('cy', node => Math.max(64 + this.radius, Math.min(64 + this.height - this.radius, node.y)))
           label
             .attr('x', label => label.x)
             .attr('y', label => label.y)
@@ -274,17 +293,34 @@ export default {
             if (target === undefined) {
               throw new Error('Target is not defined')
             }
-            links.push({source: target, target: index})
+            links.push({source: target, target: index, directed: true})
+          })
+
+          course.recommended.map(req => {
+            const target = this.courseIndexById(req)
+            if (target === undefined) {
+              throw new Error('Target is not defined')
+            }
+            links.push({source: target, target: index, directed: true})
+          })
+
+          course.corequisites.map(corequisite => {
+            const target = this.courseIndexById(corequisite)
+            if (target === undefined) {
+              throw new Error('Target is not defined')
+            }
+            links.push({source: index, target: target, directed: false})
           })
         })
+
         return links
-      },
-      height () {
-        return this.$refs.component.clientHeight
-      },
-      width () {
-        return this.$refs.component.clientWidth
       }
+    },
+    mounted () {
+      window.addEventListener('resize', () => {
+        this.width = window.innerWidth
+        this.height = window.innerWidth - 64 - 32
+      })
     }
   }
 </script>

@@ -3,6 +3,7 @@
     <v-select
       :items="items"
       :label="label"
+      v-model="content"
       multiple
       chips
       deletable-chips

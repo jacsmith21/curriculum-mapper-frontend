@@ -5,7 +5,7 @@
       <v-flex xs12>
         <v-card>
 
-          <v-card-title primary-title><div class="headline">{{ title }}</div></v-card-title>
+          <v-card-title primary-title style="padding-left: 35px"><div class="headline">{{ title }}</div></v-card-title>
 
           <v-card-text>
             <v-form>
@@ -42,12 +42,7 @@
       return {
         snackbar: false,
         timeout: 6000,
-        style: {margin: 0, overflow: 'auto', height: this.height}
-      }
-    },
-    computed: {
-      height: function () {
-        return (window.innerHeight - 64 - 32) + 'px'
+        style: {margin: 0, overflow: 'auto'}
       }
     },
     props: {title: String, submit: Function, snackbarText: String}
