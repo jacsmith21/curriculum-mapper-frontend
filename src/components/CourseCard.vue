@@ -1,4 +1,5 @@
 <template>
+  <sidebar-base>
   <v-container fluid style="margin: 0">
     <v-layout row wrap>
 
@@ -24,12 +25,12 @@
             ></EditableTile>
 
             <v-divider inset></v-divider>
-            <EditableTile
+            <editable-tile
               icon="info"
               :instance="course"
               identifier="description"
               dispatch="editCourse"
-            ></EditableTile>
+            ></editable-tile>
 
             <v-divider inset></v-divider>
             <EditableTile
@@ -71,15 +72,17 @@
     </v-snackbar>
 
   </v-container>
+  </sidebar-base>
 </template>
 
 
 <script>
   import EditableTile from '@/components/inputs/EditableTile'
+  import SidebarBase from '@/views/SidebarBase'
 
   export default {
     name: 'CourseCard',
-    components: { EditableTile },
+    components: { EditableTile, SidebarBase },
     data () {
       return {
         edit: false,
@@ -91,7 +94,7 @@
         return this.$store.getters.courseByName(this.$route.params.name)
       },
       prerequisites () {
-        return this.course.prerequisites.map(prerequisite => this.$store.getters.courseById(prerequisite).name)
+        return this.course.prerequisites.map(prerequisite => this.$store.getters.courseById(prerequisite.prerequisite).name)
       }
     },
     methods: {

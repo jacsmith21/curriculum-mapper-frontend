@@ -8,3 +8,15 @@ export const iterable = (obj) => {
 export const copy = (obj) => {
   return Object.assign({}, obj)
 }
+
+export const Enum = (arr) => {
+  let obj = {}
+  for (let val of arr) {
+    obj[val] = Symbol(val)
+  }
+  return Object.freeze(obj)
+}
+
+export const parse = (expression) => {
+  let tokens = expression.split(' ')
+}

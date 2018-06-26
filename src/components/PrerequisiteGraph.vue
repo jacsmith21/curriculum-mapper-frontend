@@ -50,6 +50,7 @@
 
 <script>
   import * as d3 from 'd3'
+  import { add, sub, radiusVector } from '@/components/vector'
   import Toolbar from '@/components/Toolbar'
 
 export default {
@@ -98,62 +99,37 @@ export default {
           states[course.name] = options.none
         }
 
-        const dfs = (course, key, option, start, seen) => {
-          seen = seen || {}
-
+        const dfs = (course, key, option, notStart) => {
           if (course === undefined) {
             return
           }
 
-          if (course.name in seen) {
-            return
+          // Have we already seen this node before?
+          if (states[course.name] !== options.none) {
+            // Only return if we are not at the start. We still don't want to set the color as the start is set to 'current'
+            if (notStart) {
+              return
+            }
           } else {
-            seen[course.name] = true
-          }
-
-          if (!start) {
             states[course.name] = option
           }
 
           for (const id of course[key] || []) {
-            let c = this.courseLookup[id]
-            dfs(c, key, option, false, seen)
+            dfs(this.courseLookup[id], key, option, true)
           }
         }
 
         this.selectedCourse = this.courses.filter(course => course.name === id)[0]
         states[this.selectedCourse.name] = options.current
-        dfs(this.selectedCourse, 'prerequisites', options.prereq, true)
-        dfs(this.selectedCourse, 'corequisites', options.coreq, true)
-        dfs(this.selectedCourse, 'post', options.post, true)
+        dfs(this.selectedCourse, 'selectedPrereqs', options.prereq)
+        dfs(this.selectedCourse, 'prereqs', options.prereq)
+        dfs(this.selectedCourse, 'corequisites', options.coreq)
+        dfs(this.selectedCourse, 'selectedPost', options.post)
+        dfs(this.selectedCourse, 'post', options.post)
 
         console.debug(`The final states:`)
         console.debug(states)
         this.node.style('fill', node => states[node.id])
-      },
-      normalize (vector) {
-        return this.div(vector, this.length(vector))
-      },
-      length ({ x, y }) {
-        return Math.sqrt(x * x + y * y)
-      },
-      div ({ x, y }, scalar) {
-        return {x: x / scalar, y: y / scalar}
-      },
-      add ({x: x1, y: y1}, {x: x2, y: y2}) {
-        return {x: x1 + x2, y: y1 + y2}
-      },
-      sub ({x: x1, y: y1}, {x: x2, y: y2}) {
-        return {x: x1 - x2, y: y1 - y2}
-      },
-      scale (vector, scalar) {
-        return this.prod(this.normalize(vector), scalar)
-      },
-      prod ({x, y}, scalar) {
-        return {x: x * scalar, y: y * scalar}
-      },
-      radiusVector (link) {
-        return this.scale(this.sub(link.target, link.source), this.radius)
       },
       getPrerequisites (course) {
         const prerequisites = course.prerequisites || []
@@ -178,11 +154,26 @@ export default {
         }
 
         for (const course of courses) {
-          for (const prerequisite of course.prerequisites) {
-            const id = prerequisite.prerequisite
-            let prereq = that.courseLookup[id]
-            prereq.post = prereq.post || []
-            prereq.post.push(course._id)
+          course.selectedPrereqs = [] // these are they selected prereqs. they exist because of OR statements
+          course.prereqs = [] // these are all of the prereqs
+          for (const {prerequisite, alternative} of course.prerequisites) {
+            course.selectedPrereqs.push(prerequisite)
+
+            console.log(course)
+            let prereq = that.courseLookup[prerequisite]
+            prereq.selectedPost = prereq.selectedPost || []
+            prereq.selectedPost.push(prerequisite)
+
+            for (const id of [prerequisite, alternative]) {
+              if (id === null || id === undefined) {
+                continue
+              }
+
+              course.prereqs.push(id)
+              prereq = that.courseLookup[id]
+              prereq.post = prereq.post || []
+              prereq.post.push(course._id)
+            }
           }
         }
 
@@ -262,10 +253,10 @@ export default {
 
         simulation.nodes(that.nodes).on('tick', () => {
           link
-            .attr('x1', link => this.add(link.source, this.radiusVector(link)).x) // computes the edge of the circle
-            .attr('y1', link => this.add(link.source, this.radiusVector(link)).y)
-            .attr('x2', link => this.sub(link.target, this.radiusVector(link)).x)
-            .attr('y2', link => this.sub(link.target, this.radiusVector(link)).y)
+            .attr('x1', link => add(link.source, radiusVector(link)).x, this.radius)
+            .attr('y1', link => add(link.source, radiusVector(link)).y, this.radius)
+            .attr('x2', link => sub(link.target, radiusVector(link)).x, this.radius)
+            .attr('y2', link => sub(link.target, radiusVector(link)).y, this.radius)
           that.node
             .attr('cx', node => Math.max(this.radius, Math.min(this.width - this.radius, node.x)))
             .attr('cy', node => Math.max(64 + this.radius, Math.min(64 + this.height - this.radius, node.y)))
@@ -288,12 +279,18 @@ export default {
         }
         const links = []
         this.courses.map((course, index) => {
-          course.prerequisites.map(prerequisite => {
-            const target = this.courseIndexById(prerequisite)
-            if (target === undefined) {
-              throw new Error('Target is not defined')
+          course.prerequisites.map(({prerequisite, alternative}) => {
+            for (const id of [prerequisite, alternative]) {
+              if (id === null || id === undefined) {
+                continue
+              }
+
+              const target = this.courseIndexById(id)
+              if (target === undefined) {
+                throw new Error('Target is not defined')
+              }
+              links.push({source: target, target: index, directed: true})
             }
-            links.push({source: target, target: index, directed: true})
           })
 
           course.recommended.map(req => {
