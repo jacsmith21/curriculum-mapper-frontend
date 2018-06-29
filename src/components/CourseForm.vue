@@ -9,14 +9,9 @@
       <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
       <TextInput v-model="description" label="Description" xs12></TextInput>
 
-      <dynamic-field :items="prerequisites" identifier="form.prerequisites">
-        <template slot-scope="{ item }">
-          <select-input xs6 label="Prerequisite" :items="courseItems" v-model="item.prerequisite"></select-input>
-          <select-input xs5 label="Alternative" :items="courseItems" v-model="item.alternative"></select-input>
-        </template>
-      </dynamic-field>
-      <ChipSelect xs6 label="Recommended" :items="courseItems" v-model="recommended"></ChipSelect>
-      <ChipSelect xs6 label="Corequisites" :items="courseItems" v-model="corequisites"></ChipSelect>
+      <text-input xs12 label="Prerequisites" v-model="prerequisites"></text-input>
+      <text-input xs12 label="Recommended" v-model="recommended"></text-input>
+      <text-input xs12 label="Corequisites" v-model="corequisites"></text-input>
       <chip-select xs12 label="Benchmarks" :items="benchmarkItems" v-model="benchmarks"></chip-select>
 
       <SectionBreak title="Grades"></SectionBreak>
@@ -104,9 +99,6 @@
         const inClass = parseInt(this.inClass) || 0
         return inLab + inClass
       },
-      courseItems () {
-        return this.$store.state.courses.map(course => course.name)
-      },
       benchmarkItems () {
         return this.$store.state.benchmarks.map(benchmark => benchmark.name)
       },
@@ -117,6 +109,7 @@
           'maintainer',
           'description',
           'corequisites',
+          'prerequisites',
           'recommended',
           'percentFailure',
           'averageGrade',
@@ -141,7 +134,7 @@
           'caebAttributes.ll',
           'benchmarks'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections', 'form.prerequisites'])
+      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections'])
     },
     methods: {
       submit () {

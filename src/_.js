@@ -16,7 +16,3 @@ export const Enum = (arr) => {
   }
   return Object.freeze(obj)
 }
-
-export const parse = (expression) => {
-  let tokens = expression.split(' ')
-}
