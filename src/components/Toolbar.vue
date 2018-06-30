@@ -8,6 +8,7 @@
 
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
+      <v-btn flat to="/test">Test Page</v-btn>
       <v-btn flat to="/courses">Add Course</v-btn>
       <v-btn flat to="/benchmarks">Add Benchmark</v-btn>
       <v-btn flat to="/prerequisites">Prerequisite Graph</v-btn>

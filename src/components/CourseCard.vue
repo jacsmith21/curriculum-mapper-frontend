@@ -37,20 +37,18 @@
               icon="code"
               :instance="course"
               identifier="learningOutcomes"
-              :label="course.learningOutcomes.join(', ')"
+              :label="course.learningOutcomes && course.learningOutcomes.join(', ')"
               dispatch="editCourse"
             ></EditableTile>
 
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>navigate_before</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  <router-link v-for="prerequisite in prerequisites" :key="prerequisite" :to="'/courses/' + prerequisite">{{ prerequisite }}</router-link>
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <v-divider inset></v-divider>
+            <EditableTile
+              icon="navigate_before"
+              :instance="course"
+              identifier="prerequisites"
+              :label="course.prerequisites"
+              dispatch="editCourse"
+            ></EditableTile>
 
           </v-list>
 
@@ -92,9 +90,6 @@
     computed: {
       course: function () {
         return this.$store.getters.courseByName(this.$route.params.name)
-      },
-      prerequisites () {
-        return this.course.prerequisites.map(prerequisite => this.$store.getters.courseById(prerequisite.prerequisite).name)
       }
     },
     methods: {

@@ -20,6 +20,9 @@
 
         <v-subheader>Prerequisites</v-subheader>
         <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" @click="() => colorize(prerequisite.name)" :key="prerequisite._id">
+          <v-list-tile-content v-if="prerequisite instanceof String">
+            <v-list-tile-title>{{ prerequisite }}</v-list-tile-title>
+          </v-list-tile-content>
           <v-list-tile-content>
             <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
@@ -60,7 +63,7 @@ export default {
       return {
         simulation: null,
         color: d3.scaleOrdinal(d3.schemeCategory10),
-        courses: null,
+        parsed: null,
         courseLookup: {},
         loaded: false,
         radius: 15,
@@ -73,14 +76,6 @@ export default {
       }
     },
     methods: {
-      courseIndexById (id) {
-        const courses = this.$store.state.courses
-        for (let i = 0; i < courses.length; i++) {
-          if (courses[i]._id === id) {
-            return i
-          }
-        }
-      },
       clicked (clickedNode) {
         console.log(`Clicked on ${clickedNode.id}`)
         this.open = true
@@ -95,7 +90,7 @@ export default {
         let states = {}
 
         // initialize to nothing
-        for (const course of this.courses) {
+        for (const course of this.parsed) {
           states[course.name] = options.none
         }
 
@@ -119,21 +114,29 @@ export default {
           }
         }
 
-        this.selectedCourse = this.courses.filter(course => course.name === id)[0]
+        this.selectedCourse = this.parsed.filter(course => course.name === id)[0]
         states[this.selectedCourse.name] = options.current
-        dfs(this.selectedCourse, 'selectedPrereqs', options.prereq)
         dfs(this.selectedCourse, 'prereqs', options.prereq)
-        dfs(this.selectedCourse, 'corequisites', options.coreq)
-        dfs(this.selectedCourse, 'selectedPost', options.post)
-        dfs(this.selectedCourse, 'post', options.post)
+        // dfs(this.selectedCourse, 'corequisites', options.coreq)
+        // dfs(this.selectedCourse, 'selectedPost', options.post)
+        // dfs(this.selectedCourse, 'post', options.post)
 
         console.debug(`The final states:`)
         console.debug(states)
         this.node.style('fill', node => states[node.id])
       },
       getPrerequisites (course) {
-        const prerequisites = course.prerequisites || []
-        return prerequisites.map(prerequisite => this.courseLookup[prerequisite.prerequisite])
+        if (this._.isEmpty(course)) {
+          return []
+        }
+
+        return course.prereqs.map(prereq => {
+          if (prereq in this.courseLookup) {
+            return this.courseLookup[prereq]
+          } else {
+            return prereq
+          }
+        })
       },
       get (course, key) {
         const items = course[key] || []
@@ -141,40 +144,49 @@ export default {
       }
     },
     created () {
-      console.log(this.$refs)
+      console.debug(this.$refs)
 
       const that = this
-      this.$store.dispatch('loadCourses').then(courses => {
-        that.courses = courses
-        that.loaded = true
+      this.$store.dispatch('loadParsed').then(parsed => {
+        console.info(parsed)
+        that.parsed = parsed
 
         // add courses to the lookup
-        for (const course of courses) {
-          that.courseLookup[course._id] = course
+        for (const [i, course] of parsed.entries()) {
+          that.courseLookup[course.name] = course
+          course.index = i
         }
 
-        for (const course of courses) {
-          course.selectedPrereqs = [] // these are they selected prereqs. they exist because of OR statements
-          course.prereqs = [] // these are all of the prereqs
-          for (const {prerequisite, alternative} of course.prerequisites) {
-            course.selectedPrereqs.push(prerequisite)
+        const parse = (root, node) => {
+          node = node || root
 
-            console.log(course)
-            let prereq = that.courseLookup[prerequisite]
-            prereq.selectedPost = prereq.selectedPost || []
-            prereq.selectedPost.push(prerequisite)
-
-            for (const id of [prerequisite, alternative]) {
-              if (id === null || id === undefined) {
-                continue
-              }
-
-              course.prereqs.push(id)
-              prereq = that.courseLookup[id]
+          // noinspection JSUnresolvedVariable
+          if (node.leaf) {
+            const prereqName = node.value
+            if (prereqName in that.courseLookup) {
+              let prereq = that.courseLookup[prereqName]
               prereq.post = prereq.post || []
-              prereq.post.push(course._id)
+              prereq.post.push(root.name)
+            }
+            root.prereqs.push(prereqName)
+          } else {
+            if (node.value === 'and') {
+              parse(root, node.left)
+              parse(root, node.right)
+            } else if (node.value === 'or') {
+              parse(root, node.left)
+            } else {
+              throw new Error(`Unknown node value: ${node.value}`)
             }
           }
+        }
+
+        // Ok now we set loaded as true!
+        that.loaded = true
+
+        for (let course of parsed) {
+          course.prereqs = []
+          parse(course)
         }
 
         let simulation = d3.forceSimulation(that.nodes)
@@ -253,10 +265,10 @@ export default {
 
         simulation.nodes(that.nodes).on('tick', () => {
           link
-            .attr('x1', link => add(link.source, radiusVector(link)).x, this.radius)
-            .attr('y1', link => add(link.source, radiusVector(link)).y, this.radius)
-            .attr('x2', link => sub(link.target, radiusVector(link)).x, this.radius)
-            .attr('y2', link => sub(link.target, radiusVector(link)).y, this.radius)
+            .attr('x1', link => add(link.source, radiusVector(link, this.radius)).x, this.radius)
+            .attr('y1', link => add(link.source, radiusVector(link, this.radius)).y, this.radius)
+            .attr('x2', link => sub(link.target, radiusVector(link, this.radius)).x, this.radius)
+            .attr('y2', link => sub(link.target, radiusVector(link, this.radius)).y, this.radius)
           that.node
             .attr('cx', node => Math.max(this.radius, Math.min(this.width - this.radius, node.x)))
             .attr('cy', node => Math.max(64 + this.radius, Math.min(64 + this.height - this.radius, node.y)))
@@ -271,42 +283,19 @@ export default {
         if (!this.loaded) {
           return
         }
-        return this.courses.map(course => { return {id: course.name} })
+        return this.parsed.map(course => ({id: course.name}))
       },
       links () {
         if (!this.loaded) {
           return
         }
         const links = []
-        this.courses.map((course, index) => {
-          course.prerequisites.map(({prerequisite, alternative}) => {
-            for (const id of [prerequisite, alternative]) {
-              if (id === null || id === undefined) {
-                continue
-              }
-
-              const target = this.courseIndexById(id)
-              if (target === undefined) {
-                throw new Error('Target is not defined')
-              }
-              links.push({source: target, target: index, directed: true})
+        this.parsed.map((course, index) => {
+          course.prereqs.map(prereq => {
+            if (prereq in this.courseLookup) {
+              const target = this.courseLookup[prereq].index
+              links.push({source: target, target: index})
             }
-          })
-
-          course.recommended.map(req => {
-            const target = this.courseIndexById(req)
-            if (target === undefined) {
-              throw new Error('Target is not defined')
-            }
-            links.push({source: target, target: index, directed: true})
-          })
-
-          course.corequisites.map(corequisite => {
-            const target = this.courseIndexById(corequisite)
-            if (target === undefined) {
-              throw new Error('Target is not defined')
-            }
-            links.push({source: index, target: target, directed: false})
           })
         })
 
