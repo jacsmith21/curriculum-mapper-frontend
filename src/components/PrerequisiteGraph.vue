@@ -42,13 +42,13 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <!--<v-subheader>Corequisites</v-subheader>-->
-        <!--<v-list-tile v-for="corequisite in get(selectedCourse, 'corequisites')" @click="() => colorize(corequisite.name)" :key="corequisite._id">-->
-          <!--<v-list-tile-content>-->
-            <!--<v-list-tile-title>{{ corequisite.name }}</v-list-tile-title>-->
-            <!--<v-list-tile-sub-title>{{ corequisite.title || 'No Title' }}</v-list-tile-sub-title>-->
-          <!--</v-list-tile-content>-->
-        <!--</v-list-tile>-->
+        <v-subheader>Corequisites</v-subheader>
+        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="() => colorize(coreq)" :key="coreq">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ coreq }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ coreq.title || 'No Title' }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
 
       </v-list>
     </v-navigation-drawer>
@@ -326,15 +326,16 @@
               links.push({source: target, target: index})
             }
           })
+
+          course.coreqs.map(coreq => {
+            if (coreq in this.courseLookup) {
+              const target = this.courseLookup[coreq].index
+              links.push({source: index, target: target})
+            }
+          })
         })
 
         return links
-      },
-      options () {
-        if (this._.isEmpty(this.selectedCourse)) {
-          return []
-        }
-        // TODO: Finish this
       }
     },
     mounted () {
