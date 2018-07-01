@@ -19,20 +19,20 @@
 
       <v-list two-line subheader>
 
-        <v-btn-toggle v-model="toggle_one" mandatory>
-          <v-btn flat>
-            Left
-          </v-btn>
-          <v-btn flat>
-            Center
-          </v-btn>
-          <v-btn flat>
-            Right
-          </v-btn>
-          <v-btn flat>
-            Justify
-          </v-btn>
-        </v-btn-toggle>
+        <!--<v-btn-toggle v-model="toggle_one" mandatory>-->
+          <!--<v-btn flat>-->
+            <!--Left-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Center-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Right-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Justify-->
+          <!--</v-btn>-->
+        <!--</v-btn-toggle>-->
 
         <v-subheader>Prerequisites</v-subheader>
         <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="() => colorize(prereq)" :key="prereq">
