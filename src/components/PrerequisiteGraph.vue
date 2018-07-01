@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container ref="container">
     <v-navigation-drawer
       v-model="open"
       clipped
@@ -16,21 +16,47 @@
         </v-list-tile>
       </v-list>
       <v-divider></v-divider>
-      <v-list three-line subheader>
+
+      <v-list two-line subheader>
+
+        <!--<v-btn-toggle v-model="toggle_one" mandatory>-->
+          <!--<v-btn flat>-->
+            <!--Left-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Center-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Right-->
+          <!--</v-btn>-->
+          <!--<v-btn flat>-->
+            <!--Justify-->
+          <!--</v-btn>-->
+        <!--</v-btn-toggle>-->
+
         <v-subheader>Prerequisites</v-subheader>
-        <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" @click="() => colorize(prerequisite.name)" :key="prerequisite._id">
+        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="() => colorize(prereq)" :key="prereq">
           <v-list-tile-content>
-            <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
+            <v-list-tile-title>{{ prereq }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ prereq.title || 'No Title' }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <v-subheader>Corequisites</v-subheader>
+        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="() => colorize(coreq)" :key="coreq">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ coreq }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ coreq.title || 'No Title' }}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
       </v-list>
     </v-navigation-drawer>
 
-    <toolbar></toolbar>
+    <toolbar ref="toolbar"></toolbar>
 
     <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-      <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;" ref="component">
+      <svg ref="svg" style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
         <g :id="links"></g>
         <g :id="nodes"></g>
       </svg>
@@ -38,138 +64,163 @@
   </v-container>
 </template>
 
+<!--suppress JSUnresolvedVariable -->
 <script>
   import * as d3 from 'd3'
+  import { add, sub, radiusVector } from '@/components/vector'
   import Toolbar from '@/components/Toolbar'
 
-export default {
+  export default {
     name: 'PrerequisiteGraph',
     components: {Toolbar},
     data () {
       return {
         simulation: null,
         color: d3.scaleOrdinal(d3.schemeCategory10),
-        courses: null,
+        parsed: null,
         courseLookup: {},
         loaded: false,
         radius: 15,
         fontSize: 15,
         node: null,
         open: false,
-        selectedCourse: {}
+        selectedCourse: {},
+        width: window.innerWidth,
+        height: window.innerHeight - 64 - 32,
+        toggle_one: 0
       }
     },
     methods: {
-      courseIndexById (id) {
-        const courses = this.$store.state.courses
-        for (let i = 0; i < courses.length; i++) {
-          if (courses[i]._id === id) {
-            return i
-          }
-        }
-      },
       clicked (clickedNode) {
-        console.log(`Clicked on ${clickedNode.id}`)
         this.open = true
 
         d3.event.stopPropagation()
         this.colorize(clickedNode.id)
       },
-      colorize (id) {
-        console.log(`Colorizing: ${id}`)
+      colorize (name) {
+        if (!(name in this.courseLookup)) {
+          return
+        }
+
+        console.log(`Colorizing: ${name}`)
 
         const options = {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
-        // initialize to nothing
-        for (const course of this.courses) {
+        // initialize each course to nothing
+        for (const course of this.parsed) {
           states[course.name] = options.none
         }
 
-        const dfs = (course, key, option, start, seen) => {
-          seen = seen || {}
-
+        const dfs = (course, key, option, notStart) => {
           if (course === undefined) {
             return
           }
 
-          if (course.name in seen) {
-            return
+          // Have we already seen this node before?
+          if (states[course.name] !== options.none) {
+            // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
+            if (notStart) {
+              return
+            }
           } else {
-            seen[course.name] = true
-          }
-
-          if (!start) {
             states[course.name] = option
           }
 
           for (const id of course[key] || []) {
-            let c = this.courseLookup[id]
-            dfs(c, key, option, false)
+            dfs(this.courseLookup[id], key, option, true)
           }
         }
 
-        this.selectedCourse = this.courses.filter(course => course.name === id)[0]
+        this.selectedCourse = this.courseLookup[name]
         states[this.selectedCourse.name] = options.current
-        dfs(this.selectedCourse, 'prerequisites', options.prereq, true)
-        dfs(this.selectedCourse, 'corequisites', options.coreq, true)  // TODO make sure this works (maybe add seen variable)
-        dfs(this.selectedCourse, 'post', options.post, true)
+        dfs(this.selectedCourse, 'prereqs', options.prereq)
+        dfs(this.selectedCourse, 'coreqs', options.coreq)
+        dfs(this.selectedCourse, 'post', options.post)
 
-        console.debug(`The final states:`)
-        console.debug(states)
         this.node.style('fill', node => states[node.id])
       },
-      normalize (vector) {
-        return this.div(vector, this.length(vector))
-      },
-      length ({ x, y }) {
-        return Math.sqrt(x * x + y * y)
-      },
-      div ({ x, y }, scalar) {
-        return {x: x / scalar, y: y / scalar}
-      },
-      add ({x: x1, y: y1}, {x: x2, y: y2}) {
-        return {x: x1 + x2, y: y1 + y2}
-      },
-      sub ({x: x1, y: y1}, {x: x2, y: y2}) {
-        return {x: x1 - x2, y: y1 - y2}
-      },
-      scale (vector, scalar) {
-        return this.prod(this.normalize(vector), scalar)
-      },
-      prod ({x, y}, scalar) {
-        return {x: x * scalar, y: y * scalar}
-      },
-      radiusVector (link) {
-        return this.scale(this.sub(link.target, link.source), this.radius)
-      },
-      getPrerequisites (course) {
-        const prerequisites = course.prerequisites || []
-        return prerequisites.map(id => this.courseLookup[id])
+      get (course, key) {
+        if (this._.isEmpty(course)) {
+          return []
+        }
+
+        const items = course[key] || []
+        return items.map(prereq => {
+          if (prereq in this.courseLookup) {
+            return this.courseLookup[prereq]
+          } else {
+            return prereq
+          }
+        })
       }
     },
     created () {
+      console.debug(this.$refs)
+
       const that = this
-      this.$store.dispatch('loadCourses').then(courses => {
-        that.courses = courses
-        that.loaded = true
+      this.$store.dispatch('loadParsed').then(parsed => {
+        console.info(parsed)
+        that.parsed = parsed
 
         // add courses to the lookup
-        for (const course of courses) {
-          that.courseLookup[course._id] = course
+        for (const [i, course] of parsed.entries()) {
+          that.courseLookup[course.name] = course
+          course.index = i
         }
 
-        for (const course of courses) {
-          for (const id of course.prerequisites) {
-            let prereq = that.courseLookup[id]
-            prereq.post = prereq.post || []
-            prereq.post.push(course._id)
+        // TODO: Save information
+        const parsePrereqs = (root, node = root.prereqTree) => {
+          if (node.leaf) {
+            const prereqName = node.value
+            if (prereqName in that.courseLookup) {
+              let prereq = that.courseLookup[prereqName]
+              prereq.post = prereq.post || []
+              prereq.post.push(root.name)
+            }
+            root.prereqs.push(prereqName)
+          } else {
+            if (node.value === 'and') {
+              parsePrereqs(root, node.left)
+              parsePrereqs(root, node.right)
+            } else if (node.value === 'or') {
+              parsePrereqs(root, node.left)
+            } else {
+              throw new Error(`Unknown node value: ${node.value}`)
+            }
           }
+        }
+
+        const parse = (root, prop, node = root.coreqTree) => {
+          if (node.leaf) {
+            const prereqName = node.value
+            root[prop].push(prereqName)
+          } else {
+            if (node.value === 'and') {
+              parsePrereqs(root, node.left)
+              parsePrereqs(root, node.right)
+            } else if (node.value === 'or') {
+              parsePrereqs(root, node.left)
+            } else {
+              throw new Error(`Unknown node value: ${node.value}`)
+            }
+          }
+        }
+
+        // Ok now we set loaded as true!
+        that.loaded = true
+
+        for (let course of parsed) {
+          course.prereqs = []
+          parsePrereqs(course)
+
+          course.coreqs = []
+          parse(course, 'coreqs')
         }
 
         let simulation = d3.forceSimulation(that.nodes)
           .force('link', d3.forceLink(that.links).distance(100).strength(0.1))
-          .force('charge', d3.forceManyBody().strength(-140).distanceMax(300).distanceMin(5))
+          .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))
           .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
         const svg = d3.select('svg')
@@ -243,13 +294,13 @@ export default {
 
         simulation.nodes(that.nodes).on('tick', () => {
           link
-            .attr('x1', link => this.add(link.source, this.radiusVector(link)).x) // computes the edge of the circle
-            .attr('y1', link => this.add(link.source, this.radiusVector(link)).y)
-            .attr('x2', link => this.sub(link.target, this.radiusVector(link)).x)
-            .attr('y2', link => this.sub(link.target, this.radiusVector(link)).y)
+            .attr('x1', link => add(link.source, radiusVector(link, this.radius)).x, this.radius)
+            .attr('y1', link => add(link.source, radiusVector(link, this.radius)).y, this.radius)
+            .attr('x2', link => sub(link.target, radiusVector(link, this.radius)).x, this.radius)
+            .attr('y2', link => sub(link.target, radiusVector(link, this.radius)).y, this.radius)
           that.node
-            .attr('cx', node => node.x)
-            .attr('cy', node => node.y)
+            .attr('cx', node => Math.max(this.radius, Math.min(this.width - this.radius, node.x)))
+            .attr('cy', node => Math.max(64 + this.radius, Math.min(64 + this.height - this.radius, node.y)))
           label
             .attr('x', label => label.x)
             .attr('y', label => label.y)
@@ -261,30 +312,37 @@ export default {
         if (!this.loaded) {
           return
         }
-        return this.courses.map(course => { return {id: course.name} })
+        return this.parsed.map(course => ({id: course.name}))
       },
       links () {
         if (!this.loaded) {
           return
         }
         const links = []
-        this.courses.map((course, index) => {
-          course.prerequisites.map(prerequisite => {
-            const target = this.courseIndexById(prerequisite)
-            if (target === undefined) {
-              throw new Error('Target is not defined')
+        this.parsed.map((course, index) => {
+          course.prereqs.map(prereq => {
+            if (prereq in this.courseLookup) {
+              const target = this.courseLookup[prereq].index
+              links.push({source: target, target: index})
             }
-            links.push({source: target, target: index})
+          })
+
+          course.coreqs.map(coreq => {
+            if (coreq in this.courseLookup) {
+              const target = this.courseLookup[coreq].index
+              links.push({source: index, target: target})
+            }
           })
         })
+
         return links
-      },
-      height () {
-        return this.$refs.component.clientHeight
-      },
-      width () {
-        return this.$refs.component.clientWidth
       }
+    },
+    mounted () {
+      window.addEventListener('resize', () => {
+        this.width = window.innerWidth
+        this.height = window.innerWidth - 64 - 32
+      })
     }
   }
 </script>

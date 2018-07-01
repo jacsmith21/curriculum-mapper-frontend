@@ -1,8 +1,16 @@
 <template>
-  <v-flex xs12>
-    <v-layout row wrap :style="{marginLeft: 0 + 'px'}">
+  <v-flex xs12 style="padding-left: 0">
+    <v-layout row wrap style="margin-left: 0">
       <template v-for="(item, index) in items">
-        <slot v-bind:item="item" v-bind:index="index" v-bind:last-index="items.length - 1 === index" v-bind:clickedIcon="clickedIcon"></slot>
+        <slot v-bind:item="item" v-bind:index="index" v-bind:last-index="items.length - 1 === index" v-bind:clickedIcon="clickedDynamicInput"></slot>
+
+        <v-flex xs1>
+          <!--suppress JSCheckFunctionSignatures -->
+          <v-btn flat :style="btnStyle" icon @click="() => clickedDynamicInput({key: identifier, index: index})">
+            <v-icon v-if="items.length - 1 === index">add</v-icon>
+            <v-icon v-else>close</v-icon>
+          </v-btn>
+        </v-flex>
       </template>
     </v-layout>
   </v-flex>
@@ -13,16 +21,14 @@
 
   export default {
     name: 'DynamicField',
-    props: ['items'],
-    methods: {
-      clickedIcon (key, index, item) {
-        item = item || 'form'
-        const that = this
-        return () => {
-          that.clickedDynamicInput({key: key, index: index, item: item})
+    props: ['items', 'identifier'],
+    data () {
+      return {
+        btnStyle: {
+          marginTop: '16px'
         }
-      },
-      ...mapMutations(['clickedDynamicInput'])
-    }
+      }
+    },
+    methods: mapMutations(['clickedDynamicInput'])
   }
 </script>
