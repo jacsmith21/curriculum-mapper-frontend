@@ -16,26 +16,39 @@
         </v-list-tile>
       </v-list>
       <v-divider></v-divider>
+
       <v-list two-line subheader>
 
+        <v-btn-toggle v-model="toggle_one" mandatory>
+          <v-btn flat>
+            Left
+          </v-btn>
+          <v-btn flat>
+            Center
+          </v-btn>
+          <v-btn flat>
+            Right
+          </v-btn>
+          <v-btn flat>
+            Justify
+          </v-btn>
+        </v-btn-toggle>
+
         <v-subheader>Prerequisites</v-subheader>
-        <v-list-tile v-for="prerequisite in getPrerequisites(selectedCourse)" @click="() => colorize(prerequisite.name)" :key="prerequisite._id">
-          <v-list-tile-content v-if="prerequisite instanceof String">
-            <v-list-tile-title>{{ prerequisite }}</v-list-tile-title>
-          </v-list-tile-content>
+        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="() => colorize(prereq)" :key="prereq">
           <v-list-tile-content>
-            <v-list-tile-title>{{ prerequisite.name }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ prerequisite.title || 'No Title' }}</v-list-tile-sub-title>
+            <v-list-tile-title>{{ prereq }}</v-list-tile-title>
+            <v-list-tile-sub-title>{{ prereq.title || 'No Title' }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-subheader>Corequisites</v-subheader>
-        <v-list-tile v-for="corequisite in get(selectedCourse, 'corequisites')" @click="() => colorize(corequisite.name)" :key="corequisite._id">
-          <v-list-tile-content>
-            <v-list-tile-title>{{ corequisite.name }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ corequisite.title || 'No Title' }}</v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
+        <!--<v-subheader>Corequisites</v-subheader>-->
+        <!--<v-list-tile v-for="corequisite in get(selectedCourse, 'corequisites')" @click="() => colorize(corequisite.name)" :key="corequisite._id">-->
+          <!--<v-list-tile-content>-->
+            <!--<v-list-tile-title>{{ corequisite.name }}</v-list-tile-title>-->
+            <!--<v-list-tile-sub-title>{{ corequisite.title || 'No Title' }}</v-list-tile-sub-title>-->
+          <!--</v-list-tile-content>-->
+        <!--</v-list-tile>-->
 
       </v-list>
     </v-navigation-drawer>
@@ -51,12 +64,13 @@
   </v-container>
 </template>
 
+<!--suppress JSUnresolvedVariable -->
 <script>
   import * as d3 from 'd3'
   import { add, sub, radiusVector } from '@/components/vector'
   import Toolbar from '@/components/Toolbar'
 
-export default {
+  export default {
     name: 'PrerequisiteGraph',
     components: {Toolbar},
     data () {
@@ -72,24 +86,28 @@ export default {
         open: false,
         selectedCourse: {},
         width: window.innerWidth,
-        height: window.innerHeight - 64 - 32
+        height: window.innerHeight - 64 - 32,
+        toggle_one: 0
       }
     },
     methods: {
       clicked (clickedNode) {
-        console.log(`Clicked on ${clickedNode.id}`)
         this.open = true
 
         d3.event.stopPropagation()
         this.colorize(clickedNode.id)
       },
-      colorize (id) {
-        console.log(`Colorizing: ${id}`)
+      colorize (name) {
+        if (!(name in this.courseLookup)) {
+          return
+        }
+
+        console.log(`Colorizing: ${name}`)
 
         const options = {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
-        // initialize to nothing
+        // initialize each course to nothing
         for (const course of this.parsed) {
           states[course.name] = options.none
         }
@@ -101,7 +119,7 @@ export default {
 
           // Have we already seen this node before?
           if (states[course.name] !== options.none) {
-            // Only return if we are not at the start. We still don't want to set the color as the start is set to 'current'
+            // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
             if (notStart) {
               return
             }
@@ -114,33 +132,27 @@ export default {
           }
         }
 
-        this.selectedCourse = this.parsed.filter(course => course.name === id)[0]
+        this.selectedCourse = this.courseLookup[name]
         states[this.selectedCourse.name] = options.current
         dfs(this.selectedCourse, 'prereqs', options.prereq)
-        // dfs(this.selectedCourse, 'corequisites', options.coreq)
-        // dfs(this.selectedCourse, 'selectedPost', options.post)
-        // dfs(this.selectedCourse, 'post', options.post)
+        dfs(this.selectedCourse, 'coreqs', options.coreq)
+        dfs(this.selectedCourse, 'post', options.post)
 
-        console.debug(`The final states:`)
-        console.debug(states)
         this.node.style('fill', node => states[node.id])
       },
-      getPrerequisites (course) {
+      get (course, key) {
         if (this._.isEmpty(course)) {
           return []
         }
 
-        return course.prereqs.map(prereq => {
+        const items = course[key] || []
+        return items.map(prereq => {
           if (prereq in this.courseLookup) {
             return this.courseLookup[prereq]
           } else {
             return prereq
           }
         })
-      },
-      get (course, key) {
-        const items = course[key] || []
-        return items.map(id => this.courseLookup[id])
       }
     },
     created () {
@@ -157,10 +169,8 @@ export default {
           course.index = i
         }
 
-        const parse = (root, node) => {
-          node = node || root
-
-          // noinspection JSUnresolvedVariable
+        // TODO: Save information
+        const parsePrereqs = (root, node = root.prereqTree) => {
           if (node.leaf) {
             const prereqName = node.value
             if (prereqName in that.courseLookup) {
@@ -171,10 +181,26 @@ export default {
             root.prereqs.push(prereqName)
           } else {
             if (node.value === 'and') {
-              parse(root, node.left)
-              parse(root, node.right)
+              parsePrereqs(root, node.left)
+              parsePrereqs(root, node.right)
             } else if (node.value === 'or') {
-              parse(root, node.left)
+              parsePrereqs(root, node.left)
+            } else {
+              throw new Error(`Unknown node value: ${node.value}`)
+            }
+          }
+        }
+
+        const parse = (root, prop, node = root.coreqTree) => {
+          if (node.leaf) {
+            const prereqName = node.value
+            root[prop].push(prereqName)
+          } else {
+            if (node.value === 'and') {
+              parsePrereqs(root, node.left)
+              parsePrereqs(root, node.right)
+            } else if (node.value === 'or') {
+              parsePrereqs(root, node.left)
             } else {
               throw new Error(`Unknown node value: ${node.value}`)
             }
@@ -186,7 +212,10 @@ export default {
 
         for (let course of parsed) {
           course.prereqs = []
-          parse(course)
+          parsePrereqs(course)
+
+          course.coreqs = []
+          parse(course, 'coreqs')
         }
 
         let simulation = d3.forceSimulation(that.nodes)
@@ -300,6 +329,12 @@ export default {
         })
 
         return links
+      },
+      options () {
+        if (this._.isEmpty(this.selectedCourse)) {
+          return []
+        }
+        // TODO: Finish this
       }
     },
     mounted () {
