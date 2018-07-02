@@ -1,7 +1,6 @@
 <template>
   <v-container fluid :style="style">
     <v-layout row wrap>
-
       <v-flex xs12>
         <v-card>
 
@@ -21,7 +20,7 @@
           <v-card-actions>
             <v-btn flat>Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click="submit">Submit</v-btn>
+            <v-btn color="primary" flat @click="submit">{{ submitText }}</v-btn>
           </v-card-actions>
 
         </v-card>
@@ -45,7 +44,7 @@
         style: {margin: 0, overflow: 'auto'}
       }
     },
-    props: {title: String, submit: Function, snackbarText: String}
+    props: {title: String, submit: Function, snackbarText: String, submitText: {type: String, default: 'Submit'}}
   }
 </script>
 

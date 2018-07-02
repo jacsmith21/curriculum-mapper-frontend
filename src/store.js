@@ -13,7 +13,7 @@ const state = {
   title: 'Curriculum Mapper',
   courses: [],
   benchmarks: [],
-  form: {
+  blank: {
     name: '',
     title: '',
     maintainer: '',
@@ -35,12 +35,12 @@ const state = {
   benchmark: {name: ''}
 }
 
+// initialize blank form
+state.form = state.blank
+
 const getters = {
   courseByName: (state) => (name) => {
     return state.courses.filter(course => course.name === name)[0]
-  },
-  courseById: (state) => (id) => {
-    return state.courses.filter(course => course._id === id)[0]
   },
   getField
 }
@@ -149,6 +149,14 @@ const mutations = {
   },
   setBenchmarks (state, benchmarks) {
     state.benchmarks = benchmarks
+  },
+  resetForm (state, course) {
+    console.log('Resetting the form!')
+    course = course || {}
+    course = copy(course)
+    course.learningOutcomes = (course.learningOutcomes || []).map(outcome => ({value: outcome}))
+    delete course._id
+    state.form = {...state.blank, ...course}
   },
   updateField
 }

@@ -1,7 +1,7 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
   <sidebar-base>
-    <card-form title="Course Form" :submit="submit" snackbar-text="Course Added!">
+    <card-form title="Course Form" :submit="submit" snackbar-text="Course Added!" :submit-text="edit ? 'Save' : 'Submit'">
 
       <SectionBreak title="Basic Information"></SectionBreak>
       <TextInput v-model="name" label="Name" xs12></TextInput>
@@ -82,13 +82,14 @@
   import SectionBreak from '@/components/SectionBreak'
   import CardForm from '@/components/CardForm'
   import SidebarBase from '@/views/SidebarBase'
+  import router from '@/router'
 
   export default {
     name: 'CourseForm',
     components: { SidebarBase, CardForm, SectionBreak, DynamicField, ChipSelect, SelectInput, TextInput },
+    props: {edit: {type: Boolean, default: false}},
     data () {
       return {
-        snackbar: false,
         caebItems: ['I', 'D', 'A'],
         assessmentTypes: ['Test', 'Lab', 'Assignment']
       }
@@ -134,19 +135,30 @@
           'caebAttributes.ll',
           'benchmarks'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, 'form.assessments', 'form.sections'])
+      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`])
     },
     methods: {
       submit () {
-        this.$store.dispatch('addCourse').then(() => {
-          this.snackbar = true
-        }).catch(err => {
-          console.error(err)
-        })
+        if (this.edit) {
+          router.go(-1)
+        } else {
+          this.$store.dispatch('addCourse')
+            .catch(err => {
+              console.error(err)
+            })
+        }
       }
     },
     mounted () {
       this.$store.state.displayCourses = true
+    },
+    created () {
+      if (this.edit) {
+        const course = this.$store.getters.courseByName(this.$route.params.name)
+        this.$store.commit('resetForm', course)
+      } else {
+        this.$store.commit('resetForm')
+      }
     }
   }
 </script>

@@ -32,6 +32,12 @@ export default new Router({
       component: CourseCard
     },
     {
+      name: 'edit',
+      path: '/courses/:name/edit',
+      component: CourseForm,
+      props: {edit: true}
+    },
+    {
       path: '/visualize',
       component: BenchmarkGraph
     }
