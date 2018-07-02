@@ -4,7 +4,7 @@ import PrerequisiteGraph from '@/components/PrerequisiteGraph'
 import CourseForm from '@/components/CourseForm'
 import CourseCard from '@/components/CourseCard'
 import StrandForm from '@/components/StrandForm'
-import Test from '@/components/Test'
+import BenchmarkGraph from '@/components/BenchmarkGraph'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -32,8 +32,8 @@ export default new Router({
       component: CourseCard
     },
     {
-      path: '/test',
-      component: Test
+      path: '/visualize',
+      component: BenchmarkGraph
     }
   ]
 })
