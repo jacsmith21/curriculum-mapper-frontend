@@ -20,7 +20,7 @@ export const graph = {
     return {
       loaded: false,
       canvas: null,
-      color: d3.scaleOrdinal(d3.schemeCategory10),
+      ordinalScale: d3.scaleOrdinal(d3.schemeCategory10),
       width: window.innerWidth,
       height: window.innerHeight - 64 - 32,
       radius: 15,
@@ -72,7 +72,7 @@ export const graph = {
         .data(this.nodes)
         .enter().append('circle')
         .attr('r', this.radius)
-        .attr('fill', (_, i) => this.color(i))
+        .attr('fill', (node, i) => this.color(node, i))
         .on('mousedown', this.clicked)
         .call(d3.drag()
           .on('start', d => {
@@ -123,6 +123,9 @@ export const graph = {
       context.font = font
       let metrics = context.measureText(text)
       return metrics.width
+    },
+    color (_, i) {
+      return this.ordinalScale(i)
     }
   },
   mounted () {

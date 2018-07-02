@@ -60,9 +60,10 @@
     mixins: [graph],
     data () {
       return {
-        parsed: null,
+        parsed: [],
         courseLookup: {},
-        selectedCourse: {}
+        selectedCourse: {},
+        options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
       }
     },
     methods: {
@@ -79,23 +80,22 @@
 
         console.log(`Colorizing: ${name}`)
 
-        const options = {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
         let states = {}
 
         // initialize each course to nothing
         for (const course of this.parsed) {
-          states[course.name] = options.none
+          states[course.name] = this.options.none
         }
 
-        const dfs = (course, key, option, notStart) => {
+        const dfs = (course, key, option, start = false) => {
           if (course === undefined) {
             return
           }
 
           // Have we already seen this node before?
-          if (states[course.name] !== options.none) {
+          if (states[course.name] !== this.options.none) {
             // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
-            if (notStart) {
+            if (!start) {
               return
             }
           } else {
@@ -108,10 +108,10 @@
         }
 
         this.selectedCourse = this.courseLookup[name]
-        states[this.selectedCourse.name] = options.current
-        dfs(this.selectedCourse, 'prereqs', options.prereq)
-        dfs(this.selectedCourse, 'coreqs', options.coreq)
-        dfs(this.selectedCourse, 'post', options.post)
+        states[this.selectedCourse.name] = this.options.current
+        dfs(this.selectedCourse, 'prereqs', this.options.prereq)
+        dfs(this.selectedCourse, 'coreqs', this.options.coreq)
+        dfs(this.selectedCourse, 'post', this.options.post)
 
         this.node.style('fill', node => states[node.id])
       }
@@ -150,7 +150,7 @@
           }
         }
 
-        const parse = (root, prop, node = root.coreqTree) => {
+        const parseCoreqs = (root, prop, node = root.coreqTree) => {
           if (node.leaf) {
             const prereqName = node.value
             root[prop].push(prereqName)
@@ -174,7 +174,7 @@
           parsePrereqs(course)
 
           course.coreqs = []
-          parse(course, 'coreqs')
+          parseCoreqs(course, 'coreqs')
         }
 
         that.initiate()
@@ -182,15 +182,9 @@
     },
     computed: {
       nodes () {
-        if (!this.loaded) {
-          return
-        }
         return this.parsed.map(course => ({id: course.name}))
       },
       links () {
-        if (!this.loaded) {
-          return
-        }
         const links = []
         this.parsed.map((course, index) => {
           course.prereqs.map(prereq => {
