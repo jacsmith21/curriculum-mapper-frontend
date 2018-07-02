@@ -91,7 +91,8 @@
     data () {
       return {
         caebItems: ['I', 'D', 'A'],
-        assessmentTypes: ['Test', 'Lab', 'Assignment']
+        assessmentTypes: ['Test', 'Lab', 'Assignment'],
+        course: null
       }
     },
     computed: {
@@ -135,12 +136,21 @@
           'caebAttributes.ll',
           'benchmarks'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`])
+      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`]),
+      name () {
+        return this.$route.params.name
+      }
     },
     methods: {
       submit () {
         if (this.edit) {
-          router.go(-1)
+          this.$store.dispatch('patchCourse', this.course)
+            .then(() => {
+              router.go(-1)
+            })
+            .catch(err => {
+              console.error(err)
+            })
         } else {
           this.$store.dispatch('addCourse')
             .catch(err => {
@@ -154,8 +164,8 @@
     },
     created () {
       if (this.edit) {
-        const course = this.$store.getters.courseByName(this.$route.params.name)
-        this.$store.commit('resetForm', course)
+        this.course = this.$store.getters.courseByName(this.name)
+        this.$store.commit('resetForm', this.course)
       } else {
         this.$store.commit('resetForm')
       }

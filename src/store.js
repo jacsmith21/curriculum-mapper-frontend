@@ -2,8 +2,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
-import { copy } from '@/_'
+import { copy, iterable } from '@/_'
+import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
+import * as _ from 'lodash'
 
 const base = process.env.SERVER_BASE
 Vue.use(Vuex)
@@ -62,33 +64,58 @@ const actions = {
   addCourse ({ commit, state }) {
     let course = copy(state.form)
     course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
-    axios.post(base + '/courses', course).then(() => {
+    axios.post(`/courses`, course).then(() => {
       commit('addCourse', course)
     })
   },
   deleteCourse ({ commit }, course) {
-    axios.delete(base + '/courses/' + course._id).then(() => {
+    axios.delete(`/courses/${course._id}`).then(() => {
       commit('removeCourse', course)
     })
     router.go(-1)
   },
-  editCourse ({ commit, getters }, edit) {
-    const course = edit.instance
-    course[edit.key] = edit.value
-    axios.put(base + '/courses/' + course._id, course).then(() => {
-      commit('editCourse', course)
+  patchCourse ({ commit, getters, state }, oldCourse) {
+    const filter = (obj) => {
+      if (iterable(obj)) {
+        let indices = []
+        for (const [i, item] of obj.entries()) {
+          if (!filter(item)) {
+            indices.push(i)
+          }
+        }
+        for (const i of indices.reverse()) {
+          obj.splice(i, 1)
+        }
+        return obj.length !== 0
+      } else if (typeof obj === 'object') {
+        for (const key of Object.keys(obj)) {
+          if (!filter(obj[key])) {
+            delete obj[key]
+          }
+        }
+        return !_.isEmpty(obj)
+      } else {
+        return !!obj
+      }
+    }
+
+    // TODO: Finish this
+    oldCourse.learningOutcomes = (oldCourse.learningOutcomes || []).map(outcome => ({value: outcome}))
+    const patch = jsonpatch.compare(oldCourse, state.form)
+    axios.patch(`/courses/${oldCourse._id}`, patch).then(() => {
+      commit('patchCourse', oldCourse)
     })
-    router.push('/courses/' + course.name)
+    router.push('/courses/' + oldCourse.name)
   },
   addBenchmark ({ commit, state }) {
-    axios.post(base + '/benchmarks', state.benchmark).then(() => {
+    axios.post(`/benchmarks`, state.benchmark).then(() => {
       commit('addBenchmark', state.benchmark)
     })
   },
   loadBenchmarks ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get(base + '/benchmarks')
+        .get(`/benchmarks`)
         .then(r => r.data)
         .then(benchmarks => {
           commit('setBenchmarks', benchmarks)
@@ -100,7 +127,7 @@ const actions = {
   },
   loadParsed () {
     return new Promise((resolve, reject) => {
-      axios.get(base + '/parse')
+      axios.get(`/parse`)
         .then(r => r.data)
         .then(parsed => {
           resolve(parsed)
@@ -124,7 +151,7 @@ const mutations = {
   removeCourse (state, course) {
     state.courses = state.courses.filter(c => c.name !== course.name)
   },
-  editCourse (state, course) {
+  patchCourse (state, course) {
     state.courses[course.index] = course
   },
   addBenchmark (state, strand) {
