@@ -136,10 +136,7 @@
           'caebAttributes.ll',
           'benchmarks'
         ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`]),
-      name () {
-        return this.$route.params.name
-      }
+      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`])
     },
     methods: {
       submit () {
@@ -164,7 +161,7 @@
     },
     created () {
       if (this.edit) {
-        this.course = this.$store.getters.courseByName(this.name)
+        this.course = this.$store.getters.courseByName(this.$route.params.name)
         this.$store.commit('resetForm', this.course)
       } else {
         this.$store.commit('resetForm')

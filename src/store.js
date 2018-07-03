@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '@/router'
-import { copy, iterable } from '@/_'
+import { copy } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 import * as _ from 'lodash'
@@ -38,7 +38,7 @@ const state = {
 }
 
 // initialize blank form
-state.form = state.blank
+state.form = copy(state.blank)
 
 const getters = {
   courseByName: (state) => (name) => {
@@ -64,19 +64,19 @@ const actions = {
   addCourse ({ commit, state }) {
     let course = copy(state.form)
     course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
-    axios.post(`/courses`, course).then(() => {
+    axios.post(`${base}/courses`, course).then(() => {
       commit('addCourse', course)
     })
   },
   deleteCourse ({ commit }, course) {
-    axios.delete(`/courses/${course._id}`).then(() => {
+    axios.delete(`${base}/courses/${course._id}`).then(() => {
       commit('removeCourse', course)
     })
     router.go(-1)
   },
   patchCourse ({ commit, getters, state }, oldCourse) {
     const filter = (obj) => {
-      if (iterable(obj)) {
+      if (Array.isArray(obj)) {
         let indices = []
         for (const [i, item] of obj.entries()) {
           if (!filter(item)) {
@@ -99,23 +99,36 @@ const actions = {
       }
     }
 
-    // TODO: Finish this
-    oldCourse.learningOutcomes = (oldCourse.learningOutcomes || []).map(outcome => ({value: outcome}))
-    const patch = jsonpatch.compare(oldCourse, state.form)
-    axios.patch(`/courses/${oldCourse._id}`, patch).then(() => {
-      commit('patchCourse', oldCourse)
+    let newCourse = copy(state.form)
+    filter(newCourse)
+
+    // TODO: Make sure iterable is what we want. Maybe change it to `typeof obj === 'array'`?
+    oldCourse = copy(oldCourse)
+    const index = oldCourse.index
+    const _id = oldCourse._id
+    delete oldCourse._id
+    delete oldCourse.index
+    filter(oldCourse)
+
+    if (oldCourse.learningOutcomes) {
+      oldCourse.learningOutcomes = oldCourse.learningOutcomes.map(outcome => ({value: outcome}))
+    }
+
+    const patch = jsonpatch.compare(oldCourse, newCourse)
+    axios.patch(`${base}/courses/${_id}`, patch).then(() => {
+      commit('patchCourse', [newCourse, index])
+      router.push(`/courses/${oldCourse.name}`)
     })
-    router.push('/courses/' + oldCourse.name)
   },
   addBenchmark ({ commit, state }) {
-    axios.post(`/benchmarks`, state.benchmark).then(() => {
+    axios.post(`${base}/benchmarks`, state.benchmark).then(() => {
       commit('addBenchmark', state.benchmark)
     })
   },
   loadBenchmarks ({ commit }) {
     return new Promise((resolve, reject) => {
       axios
-        .get(`/benchmarks`)
+        .get(`${base}/benchmarks`)
         .then(r => r.data)
         .then(benchmarks => {
           commit('setBenchmarks', benchmarks)
@@ -127,7 +140,7 @@ const actions = {
   },
   loadParsed () {
     return new Promise((resolve, reject) => {
-      axios.get(`/parse`)
+      axios.get(`${base}/parse`)
         .then(r => r.data)
         .then(parsed => {
           resolve(parsed)
@@ -151,8 +164,8 @@ const mutations = {
   removeCourse (state, course) {
     state.courses = state.courses.filter(c => c.name !== course.name)
   },
-  patchCourse (state, course) {
-    state.courses[course.index] = course
+  patchCourse (state, [course, index]) {
+    state.courses[index] = course
   },
   addBenchmark (state, strand) {
     state.benchmarks.push(strand)
@@ -181,8 +194,11 @@ const mutations = {
     console.log('Resetting the form!')
     course = course || {}
     course = copy(course)
-    course.learningOutcomes = (course.learningOutcomes || []).map(outcome => ({value: outcome}))
+    if (course.learningOutcomes) {
+      course.learningOutcomes = course.learningOutcomes.map(outcome => ({value: outcome}))
+    }
     delete course._id
+    delete course.index
     state.form = {...state.blank, ...course}
   },
   updateField

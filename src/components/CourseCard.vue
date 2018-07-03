@@ -59,6 +59,7 @@
           ['Name', this.course.name],
           ['Title', this.course.title],
           ['Description', this.course.description],
+          ['Maintainer', this.course.maintainer],
           ['Prerequisites', this.course.prerequisites],
           ['Corequisites', this.course.corequisites],
           ['Recommended', this.course.recommended]

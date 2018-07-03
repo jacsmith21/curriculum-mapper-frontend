@@ -128,8 +128,11 @@
           course.index = i
         }
 
-        // TODO: Save information
         const parsePrereqs = (root, node = root.prereqTree) => {
+          if (node === null) {
+            return
+          }
+
           if (node.leaf) {
             const prereqName = node.value
             if (prereqName in that.courseLookup) {
@@ -150,10 +153,14 @@
           }
         }
 
-        const parseCoreqs = (root, prop, node = root.coreqTree) => {
+        const parseCoreqs = (root, node = root.coreqTree) => {
+          if (node === null) {
+            return
+          }
+
           if (node.leaf) {
             const prereqName = node.value
-            root[prop].push(prereqName)
+            root.coreqs.push(prereqName)
           } else {
             if (node.value === 'and') {
               parsePrereqs(root, node.left)
@@ -174,7 +181,7 @@
           parsePrereqs(course)
 
           course.coreqs = []
-          parseCoreqs(course, 'coreqs')
+          parseCoreqs(course)
         }
 
         that.initiate()
