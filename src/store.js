@@ -34,7 +34,8 @@ const state = {
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
     benchmarks: []
   },
-  benchmark: {name: ''}
+  benchmark: {name: ''},
+  history: {}
 }
 
 // initialize blank form
@@ -115,7 +116,7 @@ const actions = {
     }
 
     const patch = jsonpatch.compare(oldCourse, newCourse)
-    axios.patch(`${base}/courses/${_id}`, patch).then(() => {
+    axios.history(`${base}/courses/${_id}`, patch).then(() => {
       commit('patchCourse', [newCourse, index])
       router.push(`/courses/${oldCourse.name}`)
     })
@@ -147,6 +148,20 @@ const actions = {
         }, err => {
           reject(err)
         })
+    })
+  },
+  loadHistory ({ commit, state }, _id) {
+    return new Promise((resolve, reject) => {
+      if (!(_id in state.history)) {
+        axios.get(`${base}/courses/${_id}/patch`)
+          .then(res => {
+            commit('addPatch', {patch: res.data, _id: _id})
+            resolve()
+          }, err => {
+            reject(err)
+          })
+      }
+      resolve(state.history[_id])
     })
   }
 }
@@ -200,6 +215,10 @@ const mutations = {
     delete course._id
     delete course.index
     state.form = {...state.blank, ...course}
+  },
+  addPatch (state, {patch, _id}) {
+    console.info('Adding patch!')
+    Vue.set(state.history, _id, patch)
   },
   updateField
 }
