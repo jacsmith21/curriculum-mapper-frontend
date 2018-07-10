@@ -35,7 +35,8 @@ const state = {
     benchmarks: []
   },
   benchmark: {name: ''},
-  history: {}
+  history: {},
+  course: null
 }
 
 // initialize blank form
@@ -153,7 +154,7 @@ const actions = {
   loadHistory ({ commit, state }, _id) {
     return new Promise((resolve, reject) => {
       if (!(_id in state.history)) {
-        axios.get(`${base}/courses/${_id}/patch`)
+        axios.get(`${base}/courses/${_id}/history`)
           .then(res => {
             commit('addPatch', {patch: res.data, _id: _id})
             resolve()
@@ -163,6 +164,14 @@ const actions = {
       }
       resolve(state.history[_id])
     })
+  },
+  loadCourseAtDate ({ commit }, { _id, date }) {
+    axios.get(`${base}/courses/${_id}?date=${date}`)
+      .then(res => {
+        commit('setCourse', res.data)
+      }, err => {
+        console.error(err)
+      })
   }
 }
 
@@ -219,6 +228,9 @@ const mutations = {
   addPatch (state, {patch, _id}) {
     console.info('Adding patch!')
     Vue.set(state.history, _id, patch)
+  },
+  setCourse (state, course) {
+    state.course = course
   },
   updateField
 }

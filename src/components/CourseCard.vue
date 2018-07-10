@@ -4,7 +4,6 @@
       <v-layout row wrap>
         <v-flex xs12>
           <v-card>
-            <v-card-title class="headline" primary-title>Courses Information</v-card-title>
 
             <v-list three-line v-if="course">
               <template v-for="(item, index) in data">
@@ -19,6 +18,29 @@
             </v-list>
 
             <v-card-actions>
+
+              <v-menu
+                ref="menu"
+                :close-on-content-click="false"
+                v-model="menu"
+                :nudge-right="40"
+                :return-value.sync="date"
+                lazy
+                transition="scale-transition"
+                offset-y
+                full-width
+                min-width="290px"
+                style="width: 300px; margin-left: 10px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="date"
+                  label="Choose date"
+                  prepend-icon="event"
+                ></v-text-field>
+                <v-date-picker v-model="date" @input="handleDateInput"></v-date-picker>
+              </v-menu>
+
               <v-spacer></v-spacer>
               <v-btn flat @click="clickedHistory">
                 <v-icon right left>history</v-icon>
@@ -46,12 +68,18 @@
       <v-list two-line>
         <v-subheader>Version History</v-subheader>
         <template v-for="(patch, index) in patches">
-          <v-list-tile ripple :key="index" class="tile">
+          <v-list-tile ripple :key="index" class="tile" @click="">
+
             <v-list-tile-content>
-              <v-list-tile-title>{{ patch.op }}</v-list-tile-title>
-              <v-list-tile-sub-title class="text--primary">{{ patch.path }}</v-list-tile-sub-title>
-              <v-list-tile-sub-title>{{ patch.value }}</v-list-tile-sub-title>
+              <v-list-tile-title>{{ opLabelMap[patch.op] }} {{ processKey(patch.path) }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ patch.value || 'None' }}</v-list-tile-sub-title>
             </v-list-tile-content>
+
+            <v-list-tile-action>
+              <v-list-tile-action-text>{{ patch.time }}</v-list-tile-action-text>
+              <v-list-tile-action-text></v-list-tile-action-text>
+            </v-list-tile-action>
+
           </v-list-tile>
           <v-divider v-if="index + 1 < patch.length" :key="index"></v-divider>
         </template>
@@ -69,7 +97,10 @@
     components: { SidebarBase },
     data () {
       return {
-        showHistory: false
+        showHistory: false,
+        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'},
+        date: null,
+        menu: false
       }
     },
     computed: {
@@ -84,14 +115,21 @@
           return []
         }
 
+        let course = null
+        if (this.$store.state.course === null) {
+          course = this.course
+        } else {
+          course = this.$store.state.course
+        }
+
         return [
-          ['Name', this.course.name],
-          ['Title', this.course.title],
-          ['Description', this.course.description],
-          ['Maintainer', this.course.maintainer],
-          ['Prerequisites', this.course.prerequisites],
-          ['Corequisites', this.course.corequisites],
-          ['Recommended', this.course.recommended]
+          ['Name', course.name],
+          ['Title', course.title],
+          ['Description', course.description],
+          ['Maintainer', course.maintainer],
+          ['Prerequisites', course.prerequisites],
+          ['Corequisites', course.corequisites],
+          ['Recommended', course.recommended]
         ]
       },
       patches () {
@@ -108,7 +146,22 @@
           this.$store.dispatch('loadHistory', this.course._id)
         }
         this.showHistory = !this.showHistory
+      },
+      processKey (key) {
+        const keys = key.split('/')
+        const lastKey = keys[keys.length - 1]
+        return this.firstLetterUpper(lastKey)
+      },
+      firstLetterUpper (string) {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+      },
+      handleDateInput (date) {
+        this.$refs.menu.save(date)
+        this.$store.dispatch('loadCourseAtDate', {date: date, _id: this.course._id})
       }
+    },
+    mounted () {
+      this.$store.commit('setCourse', null)
     }
   }
 </script>
