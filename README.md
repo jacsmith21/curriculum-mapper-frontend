@@ -1,6 +1,12 @@
-# Curriculum Mapping
+# Course Management
+This is an open source course management software being developed as an
+independent project for SWE4913.
 
-> A Vue.js project for SWE4913
+Demo [here](https://serene-lovelace-d0079e.netlify.com/#/).
+
+## Goal
+The goal of this project is to create a modern system to manage courses.
+
 
 ## Environment Setup
 
