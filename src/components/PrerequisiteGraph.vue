@@ -87,7 +87,7 @@
           states[course.name] = this.options.none
         }
 
-        const dfs = (course, key, option, start = false) => {
+        const dfs = (course, key, option, start = true) => {
           if (course === undefined) {
             return
           }
@@ -102,13 +102,15 @@
             states[course.name] = option
           }
 
-          for (const id of course[key] || []) {
-            dfs(this.courseLookup[id], key, option, true)
+          for (const name of course[key] || []) {
+            dfs(this.courseLookup[name], key, option, true)
           }
         }
 
         this.selectedCourse = this.courseLookup[name]
         states[this.selectedCourse.name] = this.options.current
+
+        console.log(this.selectedCourse)
         dfs(this.selectedCourse, 'prereqs', this.options.prereq)
         dfs(this.selectedCourse, 'coreqs', this.options.coreq)
         dfs(this.selectedCourse, 'post', this.options.post)
@@ -128,8 +130,11 @@
           course.index = i
         }
 
-        // TODO: Save information
         const parsePrereqs = (root, node = root.prereqTree) => {
+          if (node === null) {
+            return
+          }
+
           if (node.leaf) {
             const prereqName = node.value
             if (prereqName in that.courseLookup) {
@@ -150,10 +155,14 @@
           }
         }
 
-        const parseCoreqs = (root, prop, node = root.coreqTree) => {
+        const parseCoreqs = (root, node = root.coreqTree) => {
+          if (node === null) {
+            return
+          }
+
           if (node.leaf) {
             const prereqName = node.value
-            root[prop].push(prereqName)
+            root.coreqs.push(prereqName)
           } else {
             if (node.value === 'and') {
               parsePrereqs(root, node.left)
@@ -174,7 +183,7 @@
           parsePrereqs(course)
 
           course.coreqs = []
-          parseCoreqs(course, 'coreqs')
+          parseCoreqs(course)
         }
 
         that.initiate()

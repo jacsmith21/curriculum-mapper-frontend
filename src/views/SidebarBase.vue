@@ -25,9 +25,10 @@
       </v-list>
     </v-navigation-drawer>
 
+    <slot></slot>
+
     <toolbar :clicked="clicked"></toolbar>
 
-    <slot></slot>
   </v-container>
 </template>
 
