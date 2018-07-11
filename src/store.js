@@ -117,7 +117,7 @@ const actions = {
     }
 
     const patch = jsonpatch.compare(oldCourse, newCourse)
-    axios.history(`${base}/courses/${_id}`, patch).then(() => {
+    axios.patch(`${base}/courses/${_id}`, patch).then(() => {
       commit('patchCourse', [newCourse, index])
       router.push(`/courses/${oldCourse.name}`)
     })
