@@ -87,7 +87,7 @@
           states[course.name] = this.options.none
         }
 
-        const dfs = (course, key, option, start = false) => {
+        const dfs = (course, key, option, start = true) => {
           if (course === undefined) {
             return
           }
@@ -102,13 +102,15 @@
             states[course.name] = option
           }
 
-          for (const id of course[key] || []) {
-            dfs(this.courseLookup[id], key, option, true)
+          for (const name of course[key] || []) {
+            dfs(this.courseLookup[name], key, option, true)
           }
         }
 
         this.selectedCourse = this.courseLookup[name]
         states[this.selectedCourse.name] = this.options.current
+
+        console.log(this.selectedCourse)
         dfs(this.selectedCourse, 'prereqs', this.options.prereq)
         dfs(this.selectedCourse, 'coreqs', this.options.coreq)
         dfs(this.selectedCourse, 'post', this.options.post)

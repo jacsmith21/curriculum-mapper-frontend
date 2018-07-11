@@ -19,27 +19,9 @@
 
             <v-card-actions>
 
-              <v-menu
-                ref="menu"
-                :close-on-content-click="false"
-                v-model="menu"
-                :nudge-right="40"
-                :return-value.sync="date"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                min-width="290px"
-                style="width: 300px; margin-left: 10px"
-              >
-                <v-text-field
-                  slot="activator"
-                  v-model="date"
-                  label="Choose date"
-                  prepend-icon="event"
-                ></v-text-field>
-                <v-date-picker v-model="date" @input="handleDateInput"></v-date-picker>
-              </v-menu>
+              <date v-model="date1" @input="handleDateInput"></date>
+              <date v-model="date2" @input="compare"></date>
+
 
               <v-spacer></v-spacer>
               <v-btn flat @click="clickedHistory">
@@ -91,15 +73,18 @@
 
 <script>
   import SidebarBase from '@/views/SidebarBase'
+  import router from '@/router'
+  import Date from '@/components/inputs/Date'
 
   export default {
     name: 'CourseCard',
-    components: { SidebarBase },
+    components: { SidebarBase, Date },
     data () {
       return {
         showHistory: false,
         opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'},
-        date: null,
+        date1: null,
+        date2: null,
         menu: false
       }
     },
@@ -133,6 +118,10 @@
         ]
       },
       patches () {
+        if (this.course === undefined) {
+          return []
+        }
+
         console.log('Computing patches!')
         return this.$store.state.history[this.course._id] || []
       }
@@ -156,8 +145,14 @@
         return string.charAt(0).toUpperCase() + string.slice(1)
       },
       handleDateInput (date) {
-        this.$refs.menu.save(date)
         this.$store.dispatch('loadCourseAtDate', {date: date, _id: this.course._id})
+      },
+      compare () {
+        if (!this.date1 || !this.date2) {
+          return
+        }
+
+        router.push({name: 'compare', params: {_id: this.course._id, then: this.date1, now: this.date2}})
       }
     },
     mounted () {

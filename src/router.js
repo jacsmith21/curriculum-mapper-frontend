@@ -5,6 +5,7 @@ import CourseForm from '@/components/CourseForm'
 import CourseCard from '@/components/CourseCard'
 import StrandForm from '@/components/StrandForm'
 import BenchmarkGraph from '@/components/BenchmarkGraph'
+import Compare from '@/views/Compare'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -40,6 +41,11 @@ export default new Router({
     {
       path: '/visualize',
       component: BenchmarkGraph
+    },
+    {
+      name: 'compare',
+      path: '/courses/:name/compare/:then/:now',
+      component: Compare
     }
   ]
 })
