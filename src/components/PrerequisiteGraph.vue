@@ -72,61 +72,35 @@
     data () {
       return {
         parsed: [],
-        selectedCourse: {},
         options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'},
-        filter: ''
+        filter: '',
+        selected: null
       }
     },
     methods: {
       clicked (clickedNode) {
         this.open = true
-
         d3.event.stopPropagation()
-        this.colorize(clickedNode.id)
+        this.selected = clickedNode.id
       },
-      colorize (name) {
-        if (!(name in this.courseLookup)) {
+      dfs (course, key, option, states, start = true) {
+        if (course === undefined) {
           return
         }
 
-        console.log(`Colorizing: ${name}`)
-
-        let states = {}
-
-        // initialize each course to nothing
-        for (const course of this.courses) {
-          states[course.name] = this.options.none
-        }
-
-        const dfs = (course, key, option, start = true) => {
-          if (course === undefined) {
+        // Have we already seen this node before?
+        if (states[course.name] !== this.options.none) {
+          // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
+          if (!start) {
             return
           }
-
-          // Have we already seen this node before?
-          if (states[course.name] !== this.options.none) {
-            // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
-            if (!start) {
-              return
-            }
-          } else {
-            states[course.name] = option
-          }
-
-          for (const name of course[key] || []) {
-            dfs(this.courseLookup[name], key, option, true)
-          }
+        } else {
+          states[course.name] = option
         }
 
-        this.selectedCourse = this.courseLookup[name]
-        states[this.selectedCourse.name] = this.options.current
-
-        console.log(this.selectedCourse)
-        dfs(this.selectedCourse, 'prereqs', this.options.prereq)
-        dfs(this.selectedCourse, 'coreqs', this.options.coreq)
-        dfs(this.selectedCourse, 'post', this.options.post)
-
-        this.node.style('fill', node => states[node.id])
+        for (const name of course[key] || []) {
+          this.dfs(this.courseLookup[name], key, option, states, false)
+        }
       }
     },
     created () {
@@ -220,7 +194,6 @@
             }
           })
         })
-
         return links
       },
       courses () {
@@ -228,11 +201,38 @@
       },
       courseLookup () {
         return this.courses.reduce((lookup, course) => { lookup[course.name] = course; return lookup }, {})
+      },
+      selectedCourse () {
+        return this.courseLookup[this.selected] || {}
       }
     },
     watch: {
       nodes () {
         this.initiate()
+      },
+      selectedCourse () {
+        if (this._.isEmpty(this.selectedCourse)) {
+          console.debug(`${this.selected} is not in the course lookup`)
+          return
+        }
+
+        console.log(`Colorizing: ${this.selected}`)
+
+        let states = {}
+
+        // initialize each course to nothing
+        for (const course of this.courses) {
+          states[course.name] = this.options.none
+        }
+
+        // set the current course the `current`
+        states[this.selectedCourse.name] = this.options.current
+
+        this.dfs(this.selectedCourse, 'prereqs', this.options.prereq, states)
+        this.dfs(this.selectedCourse, 'coreqs', this.options.coreq, states)
+        this.dfs(this.selectedCourse, 'post', this.options.post, states)
+
+        this.node.style('fill', node => states[node.id])
       }
     }
   }

@@ -3,8 +3,8 @@
 
     <course-card :course="cardCourse">
       <template slot="actions">
-        <date v-model="date1" @input="handleDateInput"></date>
-        <date v-model="date2" @input="compare"></date>
+        <date v-model="date1"></date>
+        <date v-model="date2"></date>
 
 
         <v-spacer></v-spacer>
@@ -82,11 +82,14 @@
         return this.$store.state.history[this.course._id] || []
       },
       cardCourse () {
-        if (this.$store.state.course) {
-          return this.$store.state.course
+        if (this.date1) {
+          return this.states[this.date1] || {}
         } else {
           return this.course
         }
+      },
+      states () {
+        return this.$store.state.courseStates[this.course._id] || {}
       }
     },
     methods: {
@@ -106,24 +109,22 @@
       },
       firstLetterUpper (string) {
         return string.charAt(0).toUpperCase() + string.slice(1)
+      }
+    },
+    mounted () {
+      this.$store.commit('setCourse', null)
+    },
+    watch: {
+      date1 () {
+        this.$store.dispatch('loadCourseAtDate', {date: this.date1, _id: this.course._id})
       },
-      handleDateInput (date) {
-        this.$store.dispatch('loadCourseAtDate', {date: date, _id: this.course._id})
-      },
-      compare () {
+      date2 () {
         if (!this.date1 || !this.date2) {
           return
         }
 
         router.push({name: 'compare', params: {_id: this.course._id, then: this.date1, now: this.date2}})
       }
-    },
-    mounted () {
-      this.$store.commit('setCourse', null)
     }
   }
 </script>
-
-<style scoped>
-
-</style>

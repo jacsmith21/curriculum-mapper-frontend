@@ -17,15 +17,6 @@
   export default {
     name: 'SelectInput',
     mixins: [vmodel],
-    props: ['items', 'label'],
-    computed: {
-      classes () {
-        return Object.keys(this.$attrs).join(' ')
-      }
-    }
+    props: ['items', 'label']
   }
 </script>
-
-<style scoped>
-
-</style>

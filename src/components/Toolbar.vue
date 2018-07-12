@@ -3,7 +3,6 @@
     <v-btn v-show="clicked" icon @click.stop="clicked">
       <v-icon>menu</v-icon>
     </v-btn>
-    <!--<v-btn class="headline" :ripple="false" focused v-text="title" to="/"></v-btn>-->
     <v-toolbar-title>{{ title }}</v-toolbar-title>
 
     <v-spacer></v-spacer>

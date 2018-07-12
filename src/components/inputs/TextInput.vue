@@ -29,11 +29,6 @@
       mask: {required: false},
       suffix: {type: String},
       disabled: {default: false}
-    },
-    computed: {
-      classes () {
-        return Object.keys(this.$attrs).join(' ')
-      }
     }
   }
 </script>

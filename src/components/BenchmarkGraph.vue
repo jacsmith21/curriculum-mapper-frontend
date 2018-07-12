@@ -1,11 +1,6 @@
 <template>
-  <v-container>
-    <v-navigation-drawer
-      v-model="open"
-      clipped
-      fixed
-      right
-      app>
+  <graph :links="links" :nodes="nodes" :loaded="loaded" :color="color" :clickedNode="clicked">
+    <template slot="drawer">
       <v-list two-line subheader>
         <v-subheader>{{ selected.type }}</v-subheader>
         <v-list-tile>
@@ -26,29 +21,17 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-    </v-navigation-drawer>
-
-    <toolbar></toolbar>
-
-    <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-      <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
-        <g :id="links"></g>
-        <g :id="nodes"></g>
-      </svg>
-    </v-container>
-  </v-container>
+    </template>
+  </graph>
 </template>
 
-<!--suppress JSUnresolvedVariable -->
 <script>
-  import * as d3 from 'd3'
   import Toolbar from '@/components/Toolbar'
-  import { graph } from '@/mixins'
+  import Graph from '@/components/Graph'
 
-export default {
+  export default {
     name: 'BenchmarkGraph',
-    components: {Toolbar},
-    mixins: [graph],
+    components: {Graph, Toolbar},
     data () {
       return {
         courses: [],
@@ -56,13 +39,12 @@ export default {
         benchmarkLookup: {},
         courseLookup: {},
         colors: {benchmark: '#15abff', course: '#ffe800'},
-        selected: {}
+        selected: {},
+        loaded: false
       }
     },
     methods: {
       clicked (node) {
-        this.open = true
-
         let type = null
         let subTitle = null
         let items = null
@@ -83,7 +65,6 @@ export default {
           subTitle: subTitle,
           items: items
         }
-        d3.event.stopPropagation()
       },
       color (node) {
         return node.benchmark ? this.colors.benchmark : this.colors.course
@@ -113,7 +94,6 @@ export default {
           }
 
           that.loaded = true
-          that.initiate()
         })
       })
     },
@@ -139,20 +119,3 @@ export default {
     }
   }
 </script>
-
-<style>
-  .node text {
-    pointer-events: none;
-    font: 10px sans-serif;
-  }
-
-  /*noinspection CssUnusedSymbol*/
-  .unselectable {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-</style>
-

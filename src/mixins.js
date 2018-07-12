@@ -12,6 +12,11 @@ export const vmodel = {
     input () {
       this.$emit('input', this.content)
     }
+  },
+  computed: {
+    classes () {
+      return Object.keys(this.$attrs)
+    }
   }
 }
 

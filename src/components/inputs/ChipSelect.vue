@@ -18,15 +18,6 @@
   export default {
     name: 'ChipSelect',
     props: ['items', 'label'],
-    mixins: [vmodel],
-    computed: {
-      classes () {
-        return Object.keys(this.$attrs).join(' ')
-      }
-    }
+    mixins: [vmodel]
   }
 </script>
-
-<style scoped>
-
-</style>

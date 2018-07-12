@@ -19,7 +19,6 @@
       prepend-icon="event"
     ></v-text-field>
     <v-date-picker v-model="content" @input="handleInput"></v-date-picker>
-
   </v-menu>
 </template>
 
