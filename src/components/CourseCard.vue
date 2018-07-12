@@ -3,7 +3,7 @@
     <v-list three-line v-if="course">
       <template v-for="(item, index) in items">
         <v-divider v-if="index !== 0"></v-divider>
-        <v-list-tile>
+        <v-list-tile :style="tileStyle(item.key)">
           <v-list-tile-content>
             <v-list-tile-title>{{ item.label }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ course[item.key] || 'None' }}</v-list-tile-sub-title>
@@ -27,7 +27,10 @@
   export default {
     name: 'CourseCard',
     components: { SidebarBase, Date },
-    props: {course: {type: Object, required: true}},
+    props: {
+      course: {type: Object, required: true},
+      tileStyle: {type: Function, default: () => ({})}
+    },
     computed: {
       items () {
         return [

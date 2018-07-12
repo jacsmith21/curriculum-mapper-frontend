@@ -105,7 +105,6 @@ const actions = {
     let newCourse = copy(state.form)
     filter(newCourse)
 
-    // TODO: Make sure iterable is what we want. Maybe change it to `typeof obj === 'array'`?
     oldCourse = copy(oldCourse)
     const index = oldCourse.index
     const _id = oldCourse._id
@@ -167,7 +166,7 @@ const actions = {
   loadCourseAtDate ({ commit }, { _id, date }) {
     axios.get(`${base}/courses/${_id}?date=${date}`)
       .then(res => {
-        commit('setCourse', res.data)
+        commit('setCourseState', {course: res.data, date: date})
       }, err => {
         console.error(err)
       })
@@ -230,6 +229,13 @@ const mutations = {
   },
   setCourse (state, course) {
     state.course = course
+  },
+  setCourseState (state, { course, date }) {
+    if (!(course._id in state.courseStates)) {
+      Vue.set(state.courseStates, course._id, {})
+    }
+
+    Vue.set(state.courseStates[course._id], date, course)
   },
   updateField
 }
