@@ -43,6 +43,9 @@ export const graph = {
         .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
       const svg = d3.select('svg')
+        .style('z-index', 0)
+
+      svg.selectAll('*').remove()
 
       svg.append('svg:defs').selectAll('marker')
         .data(['end'])  // Different link/path types can be defined here
