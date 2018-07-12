@@ -136,6 +136,5 @@ export const graph = {
       this.width = window.innerWidth
       this.height = window.innerWidth - 64 - 32
     })
-    // this.$emit('resize') TODO: use this
   }
 }

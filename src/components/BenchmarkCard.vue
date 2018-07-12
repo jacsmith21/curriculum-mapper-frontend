@@ -3,7 +3,7 @@
     <v-card>
 
       <v-list three-line>
-        <template v-for="(item, index) in data">
+        <template v-for="(item, index) in items">
           <v-divider v-if="index !== 0"></v-divider>
           <v-list-tile>
             <v-list-tile-content>
@@ -42,7 +42,7 @@
       benchmark: function () {
         return this.$store.state.benchmarks.filter(benchmark => benchmark.name === this.name)[0]
       },
-      data () {
+      items () {
         if (this.benchmark === undefined) {
           return []
         }

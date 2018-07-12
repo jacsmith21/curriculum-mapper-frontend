@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import PrerequisiteGraph from '@/components/PrerequisiteGraph'
 import CourseForm from '@/components/CourseForm'
-import CourseCard from '@/components/CourseCard'
+import Course from '@/views/Course'
 import StrandForm from '@/components/StrandForm'
 import BenchmarkGraph from '@/components/BenchmarkGraph'
 import BenchmarkCard from '@/components/BenchmarkCard'
@@ -35,7 +35,7 @@ export default new Router({
     },
     {
       path: '/courses/:name',
-      component: CourseCard
+      component: Course
     },
     {
       name: 'edit',

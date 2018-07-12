@@ -36,7 +36,8 @@ const state = {
   },
   benchmark: {name: ''},
   history: {},
-  course: null
+  course: null,
+  courseStates: {}
 }
 
 // initialize blank form
@@ -131,10 +132,9 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios
         .get(`${base}/benchmarks`)
-        .then(r => r.data)
-        .then(benchmarks => {
-          commit('setBenchmarks', benchmarks)
-          resolve(benchmarks)
+        .then(r => {
+          commit('setBenchmarks', r.data)
+          resolve(r.data)
         }, err => {
           reject(err)
         })
@@ -143,9 +143,8 @@ const actions = {
   loadParsed () {
     return new Promise((resolve, reject) => {
       axios.get(`${base}/parse`)
-        .then(r => r.data)
-        .then(parsed => {
-          resolve(parsed)
+        .then(r => {
+          resolve(r.data)
         }, err => {
           reject(err)
         })
