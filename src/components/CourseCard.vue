@@ -1,44 +1,38 @@
 <template>
   <sidebar-base>
-    <v-container fluid style="margin: 0">
-      <v-layout row wrap>
-        <v-flex xs12>
-          <v-card>
+    <v-card>
 
-            <v-list three-line v-if="course">
-              <template v-for="(item, index) in data">
-                <v-divider v-if="index !== 0"></v-divider>
-                <v-list-tile>
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{ item[0] }}</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ item[1] || 'None' }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </template>
-            </v-list>
+      <v-list three-line v-if="course">
+        <template v-for="(item, index) in data">
+          <v-divider v-if="index !== 0"></v-divider>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item[0] }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ item[1] || 'None' }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
+      </v-list>
 
-            <v-card-actions>
+      <v-card-actions>
 
-              <date v-model="date1" @input="handleDateInput"></date>
-              <date v-model="date2" @input="compare"></date>
+        <date v-model="date1" @input="handleDateInput"></date>
+        <date v-model="date2" @input="compare"></date>
 
 
-              <v-spacer></v-spacer>
-              <v-btn flat @click="clickedHistory">
-                <v-icon right left>history</v-icon>
-              </v-btn>
-              <v-btn flat to="edit" append>
-                <v-icon right left>edit</v-icon>
-              </v-btn>
-              <v-btn flat @click="deleteCourse">
-                <v-icon right left>delete</v-icon>
-              </v-btn>
-            </v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn flat @click="clickedHistory">
+          <v-icon right left>history</v-icon>
+        </v-btn>
+        <v-btn flat to="edit" append>
+          <v-icon right left>edit</v-icon>
+        </v-btn>
+        <v-btn flat @click="deleteCourse">
+          <v-icon right left>delete</v-icon>
+        </v-btn>
+      </v-card-actions>
 
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    </v-card>
 
     <v-navigation-drawer
       v-model="showHistory"

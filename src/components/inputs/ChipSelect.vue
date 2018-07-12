@@ -1,15 +1,14 @@
 <template>
   <v-flex :class="classes">
-    <v-select
+    <v-autocomplete
       :items="items"
       :label="label"
       v-model="content"
       multiple
       chips
       deletable-chips
-      autocomplete
       @input="input"
-    ></v-select>
+    ></v-autocomplete>
   </v-flex>
 </template>
 

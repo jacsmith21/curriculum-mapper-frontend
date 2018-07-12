@@ -5,6 +5,7 @@ import CourseForm from '@/components/CourseForm'
 import CourseCard from '@/components/CourseCard'
 import StrandForm from '@/components/StrandForm'
 import BenchmarkGraph from '@/components/BenchmarkGraph'
+import BenchmarkCard from '@/components/BenchmarkCard'
 import Compare from '@/views/Compare'
 
 // noinspection JSUnresolvedFunction
@@ -23,6 +24,10 @@ export default new Router({
     {
       path: '/benchmarks',
       component: StrandForm
+    },
+    {
+      path: '/benchmarks/:name',
+      component: BenchmarkCard
     },
     {
       path: '/prerequisites',

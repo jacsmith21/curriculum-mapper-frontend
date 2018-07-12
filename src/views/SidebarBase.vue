@@ -9,11 +9,13 @@
       <v-list two-line>
         <v-list-tile>
           <v-text-field
-            class="mx-3"
-            label="Search"
+            label="Filter"
+            :flat="!focused"
             prepend-inner-icon="search"
             solo
             v-model="search"
+            @focus="focused = true"
+            @blur="focused = false"
           ></v-text-field>
         </v-list-tile>
 
@@ -35,7 +37,13 @@
       </v-list>
     </v-navigation-drawer>
 
-    <slot></slot>
+    <v-container fluid style="margin: 0; overflow: auto">
+      <v-layout row wrap>
+        <v-flex xs12>
+          <slot></slot>
+        </v-flex>
+      </v-layout>
+    </v-container>
 
     <toolbar :clicked="clicked"></toolbar>
 
@@ -49,7 +57,8 @@
     data () {
       return {
         open: true,
-        search: ''
+        search: '',
+        focused: false
       }
     },
     components: {Toolbar},
@@ -63,7 +72,7 @@
         } else {
           return state.benchmarks
             .filter(this.filterFunction)
-            .map(benchmark => { return {title: benchmark.name, headline: 'No Title'} })
+            .map(benchmark => { return {title: benchmark.name, headline: 'No Title', to: `/benchmarks/${benchmark.name}`} })
         }
       },
       searchTerm () {
@@ -90,5 +99,6 @@
 
   .sub-title {
     color: rgba(0, 0, 0, .65);
+    font-weight: 400!important;
   }
 </style>

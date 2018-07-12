@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="position: absolute">
     <v-navigation-drawer
       v-model="open"
       clipped
@@ -39,8 +39,19 @@
 
     <toolbar></toolbar>
 
+    <v-toolbar dense floating class="j-toolbar" style="z-index: 1; position: relative; left: 0; padding: 0">
+      <v-text-field
+        label="Filter"
+        hide-details
+        prepend-inner-icon="search"
+        solo
+        v-model="filter"
+      ></v-text-field>
+    </v-toolbar>
+
     <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-      <svg style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
+
+      <svg style="width:100%; height:100%; position:fixed; top:0; left:0; bottom:0; right:0;">
         <g :id="links"></g>
         <g :id="nodes"></g>
       </svg>
@@ -61,9 +72,9 @@
     data () {
       return {
         parsed: [],
-        courseLookup: {},
         selectedCourse: {},
-        options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
+        options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'},
+        filter: ''
       }
     },
     methods: {
@@ -83,7 +94,7 @@
         let states = {}
 
         // initialize each course to nothing
-        for (const course of this.parsed) {
+        for (const course of this.courses) {
           states[course.name] = this.options.none
         }
 
@@ -126,7 +137,6 @@
 
         // add courses to the lookup
         for (const [i, course] of parsed.entries()) {
-          that.courseLookup[course.name] = course
           course.index = i
         }
 
@@ -191,11 +201,11 @@
     },
     computed: {
       nodes () {
-        return this.parsed.map(course => ({id: course.name}))
+        return this.courses.map(course => ({id: course.name}))
       },
       links () {
         const links = []
-        this.parsed.map((course, index) => {
+        this.courses.map((course, index) => {
           course.prereqs.map(prereq => {
             if (prereq in this.courseLookup) {
               const target = this.courseLookup[prereq].index
@@ -212,7 +222,24 @@
         })
 
         return links
+      },
+      courses () {
+        return this.parsed.filter(course => course.name.startsWith(this.filter))
+      },
+      courseLookup () {
+        return this.courses.reduce((lookup, course) => { lookup[course.name] = course; return lookup }, {})
+      }
+    },
+    watch: {
+      nodes () {
+        this.initiate()
       }
     }
   }
 </script>
+
+<style>
+  .j-toolbar .v-toolbar__content {
+    padding: 0;
+  }
+</style>
