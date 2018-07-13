@@ -26,12 +26,11 @@
 </template>
 
 <script>
-  import Toolbar from '@/components/Toolbar'
   import Graph from '@/components/Graph'
 
   export default {
     name: 'BenchmarkGraph',
-    components: {Graph, Toolbar},
+    components: {Graph},
     data () {
       return {
         courses: [],

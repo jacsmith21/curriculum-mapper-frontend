@@ -1,6 +1,6 @@
 <template>
   <v-toolbar app clipped-left clipped-right color="amber">
-    <v-btn v-show="clicked" icon @click.stop="clicked">
+    <v-btn v-show="hamburger" icon @click.stop="() => $emit('barClick')">
       <v-icon>menu</v-icon>
     </v-btn>
     <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -19,7 +19,7 @@
   import { mapState } from 'vuex'
 
   export default {
-    props: {clicked: Function},
+    props: {hamburger: Boolean},
     computed: mapState(['title'])
   }
 </script>

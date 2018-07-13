@@ -1,11 +1,8 @@
 <template>
-  <v-container style="position: absolute">
-    <v-navigation-drawer
-      v-model="open"
-      clipped
-      fixed
-      right
-      app>
+  <graph :links="links" :nodes="nodes" :loaded="loaded" :clickedNode="clicked" :node-style="nodeStyle">
+    <!--suppress JSUnresolvedVariable -->
+    <template slot="drawer">
+
       <v-list two-line subheader>
         <v-subheader>Information</v-subheader>
         <v-list-tile>
@@ -19,7 +16,7 @@
 
       <v-list two-line subheader>
         <v-subheader>Prerequisites</v-subheader>
-        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="() => colorize(prereq)" :key="prereq">
+        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="selected = prereq" :key="prereq">
           <v-list-tile-content>
             <v-list-tile-title>{{ prereq }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ prereq.title || 'No Title' }}</v-list-tile-sub-title>
@@ -27,7 +24,7 @@
         </v-list-tile>
 
         <v-subheader>Corequisites</v-subheader>
-        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="() => colorize(coreq)" :key="coreq">
+        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="selected = coreq" :key="coreq">
           <v-list-tile-content>
             <v-list-tile-title>{{ coreq }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ coreq.title || 'No Title' }}</v-list-tile-sub-title>
@@ -35,11 +32,9 @@
         </v-list-tile>
 
       </v-list>
-    </v-navigation-drawer>
+    </template>
 
-    <toolbar></toolbar>
-
-    <v-toolbar dense floating class="j-toolbar" style="z-index: 1; position: relative; left: 0; padding: 0">
+    <v-toolbar dense floating class="j-toolbar">
       <v-text-field
         label="Filter"
         hide-details
@@ -49,39 +44,32 @@
       ></v-text-field>
     </v-toolbar>
 
-    <v-container v-bind:style="{padding: 0}" fluid @click="open = false">
-
-      <svg style="width:100%; height:100%; position:fixed; top:0; left:0; bottom:0; right:0;">
-        <g :id="links"></g>
-        <g :id="nodes"></g>
-      </svg>
-    </v-container>
-  </v-container>
+  </graph>
 </template>
 
 <!--suppress JSUnresolvedVariable -->
 <script>
   import * as d3 from 'd3'
-  import Toolbar from '@/components/Toolbar'
-  import { graph } from '@/mixins'
+  import Graph from '@/components/Graph'
 
   export default {
     name: 'PrerequisiteGraph',
-    components: {Toolbar},
-    mixins: [graph],
+    components: {Graph},
     data () {
       return {
         parsed: [],
         options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'},
         filter: '',
-        selected: null
+        selected: null,
+        loaded: false,
+        nodeStyle: undefined
       }
     },
     methods: {
       clicked (clickedNode) {
         this.open = true
         d3.event.stopPropagation()
-        this.selected = clickedNode.id
+        this.selected = clickedNode.id  // id is the course name
       },
       dfs (course, key, option, states, start = true) {
         if (course === undefined) {
@@ -106,7 +94,6 @@
     created () {
       const that = this
       this.$store.dispatch('loadParsed').then(parsed => {
-        console.info(parsed)
         that.parsed = parsed
 
         // add courses to the lookup
@@ -159,9 +146,6 @@
           }
         }
 
-        // Ok now we set loaded as true!
-        that.loaded = true
-
         for (let course of parsed) {
           course.prereqs = []
           parsePrereqs(course)
@@ -170,7 +154,8 @@
           parseCoreqs(course)
         }
 
-        that.initiate()
+        // Ok now we set loaded as true!
+        that.loaded = true
       })
     },
     computed: {
@@ -208,7 +193,9 @@
     },
     watch: {
       nodes () {
-        this.initiate()
+        // force refresh
+        this.loaded = false
+        this.$nextTick(() => { this.loaded = true })
       },
       selectedCourse () {
         if (this._.isEmpty(this.selectedCourse)) {
@@ -232,12 +219,24 @@
         this.dfs(this.selectedCourse, 'coreqs', this.options.coreq, states)
         this.dfs(this.selectedCourse, 'post', this.options.post, states)
 
-        this.node.style('fill', node => states[node.id])
+        // noinspection JSUnusedGlobalSymbols
+        this.nodeStyle = {fill: node => states[node.id]}
       }
     }
   }
 </script>
 
+<style scoped>
+  .j-toolbar {
+    z-index: 1;
+    position: relative;
+    left: 0;
+    padding: 0;
+    margin-top: 16px!important;
+  }
+</style>
+
+<!--suppress CssUnusedSymbol -->
 <style>
   .j-toolbar .v-toolbar__content {
     padding: 0;

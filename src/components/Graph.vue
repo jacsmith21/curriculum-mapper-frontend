@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="outer-container">
     <v-navigation-drawer
       v-model="open"
       clipped
@@ -9,7 +9,8 @@
       <slot name="drawer"></slot>
     </v-navigation-drawer>
 
-    <toolbar></toolbar>
+
+    <slot></slot>
 
     <v-container class="container" fluid @click="open = false">
       <svg>
@@ -25,6 +26,8 @@
   import { add, sub, radiusVector } from '@/components/vector'
   import Toolbar from '@/components/Toolbar'
 
+  const ordinalScale = d3.scaleOrdinal(d3.schemeCategory10)
+
   export default {
     name: 'Graph',
     components: {Toolbar},
@@ -32,13 +35,13 @@
       nodes: {required: true, type: Array},
       links: {required: true, type: Array},
       loaded: {required: true, type: Boolean},
-      color: {default: (_, i) => this.ordinalScale(i), type: Function},
-      clickedNode: Function
+      color: {default: (_, i) => ordinalScale(i), type: Function},
+      clickedNode: Function,
+      nodeStyle: Object
     },
     data () {
       return {
         canvas: null,
-        ordinalScale: d3.scaleOrdinal(d3.schemeCategory10),
         width: window.innerWidth,
         height: window.innerHeight - 64 - 32,
         radius: 15,
@@ -157,6 +160,9 @@
             .attr('x', label => label.x)
             .attr('y', label => label.y)
         })
+      },
+      nodeStyle () {
+        Object.keys(this.nodeStyle).map(name => this.node.style(name, this.nodeStyle[name]))
       }
     }
   }
@@ -175,5 +181,9 @@
 
   .container {
     padding: 0;
+  }
+
+  .outer-container {
+    position: absolute;
   }
 </style>

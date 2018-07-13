@@ -14,10 +14,12 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      name: 'home',
       path: '/',
       component: CourseForm
     },
     {
+      name: 'courses',
       path: '/courses',
       component: CourseForm
     },
@@ -30,6 +32,7 @@ export default new Router({
       component: BenchmarkCard
     },
     {
+      name: 'prereqGraph',
       path: '/prerequisites',
       component: PrerequisiteGraph
     },
@@ -44,6 +47,7 @@ export default new Router({
       props: {edit: true}
     },
     {
+      name: 'benchmarkGraph',
       path: '/visualize',
       component: BenchmarkGraph
     },
