@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import PrerequisiteGraph from '@/components/PrerequisiteGraph'
+import PrerequisiteGraph from '@/views/PrerequisiteGraph'
 import CourseForm from '@/components/CourseForm'
 import Course from '@/views/Course'
 import StrandForm from '@/components/StrandForm'
-import BenchmarkGraph from '@/components/BenchmarkGraph'
-import BenchmarkCard from '@/components/BenchmarkCard'
+import BenchmarkGraph from '@/views/BenchmarkGraph'
+import Benchmark from '@/views/Benchmark'
 import Compare from '@/views/Compare'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
 
-export default new Router({
+export const router = new Router({
   routes: [
     {
       name: 'home',
@@ -29,7 +29,7 @@ export default new Router({
     },
     {
       path: '/benchmarks/:name',
-      component: BenchmarkCard
+      component: Benchmark
     },
     {
       name: 'prereqGraph',
@@ -41,9 +41,15 @@ export default new Router({
       component: Course
     },
     {
-      name: 'edit',
+      name: 'courses/edit',
       path: '/courses/:name/edit',
       component: CourseForm,
+      props: {edit: true}
+    },
+    {
+      name: 'benchmarks/edit',
+      path: '/benchmarks/:name/edit',
+      component: StrandForm,
       props: {edit: true}
     },
     {
@@ -58,3 +64,18 @@ export default new Router({
     }
   ]
 })
+
+// TODO: Make this work
+export const mapParams = (params) => {
+  return {
+    name () {
+      return this.$route.params.name
+    }
+  }
+  // const functions = params.reduce((functions, param) => {
+  //   functions[param] = () => router.currentRoute.params[param]
+  //   return functions
+  // }, {})
+  // console.log(functions)
+  // return functions
+}

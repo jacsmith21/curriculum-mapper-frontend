@@ -23,14 +23,12 @@
 
 <script>
   import * as d3 from 'd3'
-  import { add, sub, radiusVector } from '@/components/vector'
-  import Toolbar from '@/components/Toolbar'
+  import { add, sub, radiusVector } from '@/vector'
 
   const ordinalScale = d3.scaleOrdinal(d3.schemeCategory10)
 
   export default {
     name: 'Graph',
-    components: {Toolbar},
     props: {
       nodes: {required: true, type: Array},
       links: {required: true, type: Array},

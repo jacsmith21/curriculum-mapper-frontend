@@ -6,7 +6,7 @@
 
         <v-flex xs1>
           <!--suppress JSCheckFunctionSignatures -->
-          <v-btn flat :style="btnStyle" icon @click="clickedDynamicInput({key: identifier, index: index})">
+          <v-btn flat :style="btnStyle" icon @click="clickedDynamicInput({object: identifier, index: index})">
             <v-icon v-if="items.length - 1 === index">add</v-icon>
             <v-icon v-else>close</v-icon>
           </v-btn>

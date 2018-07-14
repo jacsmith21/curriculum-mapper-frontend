@@ -1,71 +1,70 @@
-<!--suppress HtmlUnknownAttribute -->
 <template>
   <sidebar-base>
     <card-form title="Course Form" :submit="submit" snackbar-text="Course Added!" :submit-text="edit ? 'Save' : 'Submit'">
 
-      <SectionBreak title="Basic Information"></SectionBreak>
-      <TextInput v-model="name" label="Name" xs12></TextInput>
-      <TextInput v-model="title" label="Title" xs12></TextInput>
-      <TextInput v-model="maintainer" label="Maintainer" xs12></TextInput>
-      <TextInput v-model="description" label="Description" xs12></TextInput>
+      <j-form-break title="Basic Information"></j-form-break>
+      <j-text-field v-model="name" label="Name" xs12></j-text-field>
+      <j-text-field v-model="title" label="Title" xs12></j-text-field>
+      <j-text-field v-model="maintainer" label="Maintainer" xs12></j-text-field>
+      <j-text-field v-model="description" label="Description" xs12></j-text-field>
 
-      <text-input xs12 label="Prerequisites" v-model="prerequisites"></text-input>
-      <text-input xs12 label="Recommended" v-model="recommended"></text-input>
-      <text-input xs12 label="Corequisites" v-model="corequisites"></text-input>
-      <chip-select xs12 label="Benchmarks" :items="benchmarkItems" v-model="benchmarks"></chip-select>
+      <j-text-field xs12 label="Prerequisites" v-model="prerequisites"></j-text-field>
+      <j-text-field xs12 label="Recommended" v-model="recommended"></j-text-field>
+      <j-text-field xs12 label="Corequisites" v-model="corequisites"></j-text-field>
+      <j-chip-select xs12 label="Benchmarks" :items="benchmarkItems" v-model="benchmarks"></j-chip-select>
 
-      <SectionBreak title="Grades"></SectionBreak>
-      <TextInput v-model="averageGrade" label="Average Grade" xs6></TextInput>
-      <TextInput v-model="percentFailure" label="Percent Failure" type="number" xs6></TextInput>
+      <j-form-break title="Grades"></j-form-break>
+      <j-text-field v-model="averageGrade" label="Average Grade" xs6></j-text-field>
+      <j-text-field v-model="percentFailure" label="Percent Failure" type="number" xs6></j-text-field>
 
-      <SectionBreak title="Content Breakdown"></SectionBreak>
-      <TextInput xs2 v-model="math" label="Math" type="number" suffix="%"></TextInput>
-      <TextInput xs2 v-model="naturalScience" label="Natural Science" type="number" suffix="%"></TextInput>
-      <TextInput xs2 v-model="complementaryStudies" label="Complementary Studies" type="number" suffix="%"></TextInput>
-      <TextInput xs2 v-model="engineeringScience" label="Engineering Science" type="number" suffix="%"></TextInput>
-      <TextInput xs2 v-model="engineeringDesign" label="Engineering Design" type="number" suffix="%"></TextInput>
-      <TextInput xs2 disabled></TextInput>
+      <j-form-break title="Content Breakdown"></j-form-break>
+      <j-text-field xs2 v-model="math" label="Math" type="number" suffix="%"></j-text-field>
+      <j-text-field xs2 v-model="naturalScience" label="Natural Science" type="number" suffix="%"></j-text-field>
+      <j-text-field xs2 v-model="complementaryStudies" label="Complementary Studies" type="number" suffix="%"></j-text-field>
+      <j-text-field xs2 v-model="engineeringScience" label="Engineering Science" type="number" suffix="%"></j-text-field>
+      <j-text-field xs2 v-model="engineeringDesign" label="Engineering Design" type="number" suffix="%"></j-text-field>
+      <j-text-field xs2 disabled></j-text-field>
 
-      <SectionBreak title="Credit Hours"></SectionBreak>
-      <TextInput v-model="inClass" label="Class Credit Hours" xs4 type="number"></TextInput>
-      <TextInput v-model="inLab" label="Lab Credit Hours" xs4 type="number"></TextInput>
+      <j-form-break title="Credit Hours"></j-form-break>
+      <j-text-field v-model="inClass" label="Class Credit Hours" xs4 type="number"></j-text-field>
+      <j-text-field v-model="inLab" label="Lab Credit Hours" xs4 type="number"></j-text-field>
       <v-flex xs4><span>Total Credit Hours: {{ totalCreditHours }}</span></v-flex>
 
 
-      <SectionBreak title="CAEB Attributes"></SectionBreak>
-      <select-input xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></select-input>
-      <select-input xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></select-input>
-      <select-input xs2 v-model="investigation" label="Investigation" :items="caebItems"></select-input>
-      <select-input xs2 v-model="design" label="Design" :items="caebItems"></select-input>
-      <select-input xs2 v-model="tools" label="Tools" :items="caebItems"></select-input>
-      <select-input xs2 v-model="team" label="Team" :items="caebItems"></select-input>
-      <select-input xs2 v-model="communication" label="Communication" :items="caebItems"></select-input>
-      <select-input xs2 v-model="professionalism" label="Professionalism" :items="caebItems"></select-input>
-      <select-input xs2 v-model="impacts" label="Impacts" :items="caebItems"></select-input>
-      <select-input xs2 v-model="ethics" label="Ethics" :items="caebItems"></select-input>
-      <select-input xs2 v-model="economics" label="Economics" :items="caebItems"></select-input>
-      <select-input xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></select-input>
+      <j-form-break title="CAEB Attributes"></j-form-break>
+      <j-select xs2 v-model="knowledgeBase" label="Knowledge Base" :items="caebItems"></j-select>
+      <j-select xs2 v-model="problemAnalysis" label="Problem Analysis" :items="caebItems"></j-select>
+      <j-select xs2 v-model="investigation" label="Investigation" :items="caebItems"></j-select>
+      <j-select xs2 v-model="design" label="Design" :items="caebItems"></j-select>
+      <j-select xs2 v-model="tools" label="Tools" :items="caebItems"></j-select>
+      <j-select xs2 v-model="team" label="Team" :items="caebItems"></j-select>
+      <j-select xs2 v-model="communication" label="Communication" :items="caebItems"></j-select>
+      <j-select xs2 v-model="professionalism" label="Professionalism" :items="caebItems"></j-select>
+      <j-select xs2 v-model="impacts" label="Impacts" :items="caebItems"></j-select>
+      <j-select xs2 v-model="ethics" label="Ethics" :items="caebItems"></j-select>
+      <j-select xs2 v-model="economics" label="Economics" :items="caebItems"></j-select>
+      <j-select xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></j-select>
 
-      <section-break title="Learning Outcomes"></section-break>
+      <j-form-break title="Learning Outcomes"></j-form-break>
       <dynamic-field :items="learningOutcomes" identifier="form.learningOutcomes">
         <template slot-scope="{ item }">
-          <text-input xs11 label="Learning Outcome" v-model="item.value"></text-input>
+          <j-text-field xs11 label="Learning Outcome" v-model="item.value"></j-text-field>
         </template>
       </dynamic-field>
 
-      <section-break title="Assessments"></section-break>
+      <j-form-break title="Assessments"></j-form-break>
       <dynamic-field :items="assessments" identifier="form.assessments">
         <template slot-scope="{ item }">
-          <select-input xs2 label="Type" :items="assessmentTypes" v-model="item.assessmentType"></select-input>
-          <text-input xs9 label="Description" v-model="item.description"></text-input>
+          <j-select xs2 label="Type" :items="assessmentTypes" v-model="item.assessmentType"></j-select>
+          <j-text-field xs9 label="Description" v-model="item.description"></j-text-field>
         </template>
       </dynamic-field>
 
-      <section-break title="Instructors"></section-break>
+      <j-form-break title="Instructors"></j-form-break>
       <dynamic-field :items="sections" identifier="form.sections">
         <template slot-scope="{ item }">
-          <text-input xs6 label="Instructor" v-model="item.instructor"></text-input>
-          <text-input xs5 label="Section" v-model="item.section"></text-input>
+          <j-text-field xs6 label="Instructor" v-model="item.instructor"></j-text-field>
+          <j-text-field xs5 label="Section" v-model="item.section"></j-text-field>
         </template>
       </dynamic-field>
 
@@ -74,19 +73,19 @@
 </template>
 
 <script>
-  import TextInput from '@/components/inputs/TextInput'
+  import JTextField from '@/components/inputs/JTextField'
   import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
-  import SelectInput from '@/components/inputs/SelectInput'
-  import ChipSelect from '@/components/inputs/ChipSelect'
+  import JSelect from '@/components/inputs/JSelect'
+  import JChipSelect from '@/components/inputs/JChipSelect'
   import DynamicField from '@/components/inputs/DynamicField'
-  import SectionBreak from '@/components/SectionBreak'
+  import JFormBreak from '@/components/JFormBreak'
   import CardForm from '@/components/CardForm'
   import SidebarBase from '@/views/SidebarBase'
-  import router from '@/router'
+  import { router } from '@/router'
 
   export default {
     name: 'CourseForm',
-    components: { SidebarBase, CardForm, SectionBreak, DynamicField, ChipSelect, SelectInput, TextInput },
+    components: { SidebarBase, CardForm, JFormBreak, DynamicField, JChipSelect, JSelect, JTextField },
     props: {edit: {type: Boolean, default: false}},
     data () {
       return {
@@ -161,7 +160,7 @@
     },
     created () {
       if (this.edit) {
-        this.course = this.$store.getters.courseByName(this.$route.params.name)
+        this.course = this.$store.getters.courseNameLookup[this.$route.params.name]
         this.$store.commit('resetForm', this.course)
       } else {
         this.$store.commit('resetForm')

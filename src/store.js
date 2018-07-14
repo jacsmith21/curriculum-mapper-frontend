@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import router from '@/router'
-import { copy } from '@/_'
+import { router } from '@/router'
+import { copy, makeLookup } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 import * as _ from 'lodash'
@@ -37,15 +37,20 @@ const state = {
   benchmark: {name: ''},
   history: {},
   course: null,
-  courseStates: {}
+  // the states of the objects (courses / benchmarks at various datetimes)
+  // for example {[an_id]: {'June 14': {...}}, [another_id]: {...}}
+  states: {}
 }
 
 // initialize blank form
 state.form = copy(state.blank)
 
 const getters = {
-  courseByName: (state) => (name) => {
-    return state.courses.filter(course => course.name === name)[0]
+  courseNameLookup: (state) => {
+    return makeLookup(state.courses)
+  },
+  benchmarkNameLookup: (state) => {
+    return makeLookup(state.benchmarks)
   },
   getField
 }
@@ -71,9 +76,9 @@ const actions = {
       commit('addCourse', course)
     })
   },
-  deleteCourse ({ commit }, course) {
-    axios.delete(`${base}/courses/${course._id}`).then(() => {
-      commit('removeCourse', course)
+  deleteItem ({ commit }, {object, _id}) {
+    axios.delete(`${base}/${object}/${_id}`).then(() => {
+      commit('removeItem', {object: object, _id: _id})
     })
     router.go(-1)
   },
@@ -149,10 +154,10 @@ const actions = {
         })
     })
   },
-  loadHistory ({ commit, state }, _id) {
+  loadHistory ({ commit, state }, {object, _id}) {
     return new Promise((resolve, reject) => {
       if (!(_id in state.history)) {
-        axios.get(`${base}/courses/${_id}/history`)
+        axios.get(`${base}/${object}/${_id}/history`)
           .then(res => {
             commit('addPatch', {patch: res.data, _id: _id})
             resolve()
@@ -163,10 +168,10 @@ const actions = {
       resolve(state.history[_id])
     })
   },
-  loadCourseAtDate ({ commit }, { _id, date }) {
-    axios.get(`${base}/courses/${_id}?date=${date}`)
+  loadAtDate ({ commit }, { object, _id, date }) {
+    axios.get(`${base}/${object}/${_id}?date=${date}`)
       .then(res => {
-        commit('setCourseState', {course: res.data, date: date})
+        commit('setObjectState', {object: object, course: res.data, date: date})
       }, err => {
         console.error(err)
       })
@@ -183,8 +188,8 @@ const mutations = {
     }
     state.courses = courses
   },
-  removeCourse (state, course) {
-    state.courses = state.courses.filter(c => c.name !== course.name)
+  removeItem (state, {object, _id}) {
+    state[object] = state[object].filter(item => _id !== item._id)
   },
   patchCourse (state, [course, index]) {
     state.courses[index] = course
@@ -230,12 +235,12 @@ const mutations = {
   setCourse (state, course) {
     state.course = course
   },
-  setCourseState (state, { course, date }) {
-    if (!(course._id in state.courseStates)) {
-      Vue.set(state.courseStates, course._id, {})
+  setObjectState (state, { course, date }) {
+    if (!(course._id in state.states)) {
+      Vue.set(state.states, course._id, {})
     }
 
-    Vue.set(state.courseStates[course._id], date, course)
+    Vue.set(state.states[course._id], date, course)
   },
   updateField
 }

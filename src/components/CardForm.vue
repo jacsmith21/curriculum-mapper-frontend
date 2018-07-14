@@ -25,7 +25,7 @@
 
 <script>
   export default {
-    props: {title: String, submit: Function, snackbarText: String, submitText: {type: String, default: 'Submit'}}
+    props: {title: String, submit: Function, submitText: {type: String, default: 'Submit'}}
   }
 </script>
 

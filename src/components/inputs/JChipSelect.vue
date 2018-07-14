@@ -1,13 +1,14 @@
 <template>
   <v-flex :class="classes">
-    <v-select
+    <v-autocomplete
       :items="items"
-      v-model="content"
       :label="label"
-      item-value="text"
-      clearable
+      v-model="content"
+      multiple
+      chips
+      deletable-chips
       @input="input"
-    ></v-select>
+    ></v-autocomplete>
   </v-flex>
 </template>
 
@@ -15,8 +16,8 @@
   import { vmodel } from '@/mixins'
 
   export default {
-    name: 'SelectInput',
-    mixins: [vmodel],
-    props: ['items', 'label']
+    name: 'JChipSelect',
+    props: ['items', 'label'],
+    mixins: [vmodel]
   }
 </script>

@@ -7,7 +7,7 @@
 
 <script>
   export default {
-    name: 'SectionBreak',
+    name: 'JFormBreak',
     props: ['title']
   }
 </script>

@@ -3,10 +3,10 @@
     <v-container grid-list-md text-xs-center style="padding: 0">
       <v-layout row wrap>
         <v-flex xs6>
-          <course-card :course="courseThen"></course-card>
+          <j-card :item="courseThen" :compute-items="computeCourseItems"></j-card>
         </v-flex>
         <v-flex xs6>
-          <course-card :course="courseNow" :tile-style="tileStyle"></course-card>
+          <j-card :item="courseNow" :compute-items="computeCourseItems"></j-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -16,11 +16,12 @@
 <script>
   import * as jsonpatch from 'fast-json-patch'
   import SidebarBase from '@/views/SidebarBase'
-  import CourseCard from '@/components/CourseCard'
+  import JCard from '@/components/JCard'
+  import { computeCourseItems } from '@/_'
 
-  export default {
+export default {
     name: 'Compare',
-    components: { CourseCard, SidebarBase },
+    components: { JCard, SidebarBase },
     data () {
       return {
         colorLookup: {
@@ -41,13 +42,13 @@
         return this.$route.params.now
       },
       course () {
-        return this.$store.getters.courseByName(this.name) || {}
+        return this.$store.getters.courseNameLookup[this.name] || {}
       },
       _id () {
         return this.course._id
       },
       states () {
-        return this.$store.state.courseStates[this._id] || {}
+        return this.$store.state.objectStates[this._id] || {}
       },
       courseThen () {
         return this.states[this.then] || {}
@@ -68,7 +69,8 @@
         return {
           backgroundColor: this.colorLookup[this.differences[key]]
         }
-      }
+      },
+      computeCourseItems
     },
     mounted () {
       this.$store.dispatch('loadCourseAtDate', {_id: this._id, date: this.then})

@@ -26,7 +26,7 @@
   import { vmodel } from '@/mixins'
 
   export default {
-    name: 'Date',
+    name: 'JDatePicker',
     props: {
       width: {type: Number, default: 300},
       label: {type: String, default: 'Choose Date'}

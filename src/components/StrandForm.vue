@@ -1,20 +1,20 @@
 <template>
   <sidebar-base>
-    <card-form title="Benchmark Form" :submit="submit" snackbar-text="Benchmark Added!">
-      <text-input label="Name" v-model="name" xs12></text-input>
+    <card-form title="Benchmark Form" :submit="submit">
+      <j-text-field label="Name" v-model="name" xs12></j-text-field>
     </card-form>
   </sidebar-base>
 </template>
 
 <script>
-  import TextInput from '@/components/inputs/TextInput'
+  import JTextField from '@/components/inputs/JTextField'
   import SidebarBase from '@/views/SidebarBase'
   import CardForm from '@/components/CardForm'
   import { mapFields } from 'vuex-map-fields'
 
   export default {
     name: 'StrandForm',
-    components: { SidebarBase, CardForm, TextInput },
+    components: { SidebarBase, CardForm, JTextField },
     computed: mapFields(['benchmark.name']),
     methods: {
       submit () {
