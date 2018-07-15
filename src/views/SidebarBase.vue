@@ -13,5 +13,3 @@
     name: 'SidebarBase'
   }
 </script>
-
-

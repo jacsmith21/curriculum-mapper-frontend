@@ -1,6 +1,7 @@
 <template>
   <v-container class="outer-container">
     <v-navigation-drawer
+      v-if="drawer"
       v-model="open"
       clipped
       fixed
@@ -34,9 +35,10 @@
       links: {required: true, type: Array},
       loaded: {required: true, type: Boolean},
       color: {default: (_, i) => ordinalScale(i), type: Function},
-      clickedNode: Function,
+      clickedNode: {type: Function, default: () => {}},
       nodeStyle: Object,
-      refresh: {type: Boolean, default: false}
+      refresh: {type: Boolean, default: false},
+      drawer: {type: Boolean, default: false}
     },
     data () {
       return {
@@ -67,6 +69,8 @@
         this.clickedNode(node)
       },
       render () {
+        this.$emit('render')
+
         let simulation = d3.forceSimulation(this.nodes)
           .force('link', d3.forceLink(this.links).distance(100).strength(0.1))
           .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))

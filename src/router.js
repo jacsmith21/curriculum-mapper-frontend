@@ -8,6 +8,7 @@ import BenchmarkGraph from '@/views/BenchmarkGraph'
 import Benchmark from '@/views/Benchmark'
 import CourseCompare from '@/views/CourseCompare'
 import BenchmarkCompare from '@/views/BenchmarkCompare'
+import Grouping from '@/views/Grouping'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -67,21 +68,11 @@ export const router = new Router({
       name: 'benchmarks/compare',
       path: '/benchmarks/:name/compare',
       component: BenchmarkCompare
+    },
+    {
+      name: 'GroupingGraph',
+      path: '/grouping',
+      component: Grouping
     }
   ]
 })
-
-// TODO: Make this work
-export const mapParams = (params) => {
-  return {
-    name () {
-      return this.$route.params.name
-    }
-  }
-  // const functions = params.reduce((functions, param) => {
-  //   functions[param] = () => router.currentRoute.params[param]
-  //   return functions
-  // }, {})
-  // console.log(functions)
-  // return functions
-}
