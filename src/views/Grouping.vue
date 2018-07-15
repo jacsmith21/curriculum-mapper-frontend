@@ -1,8 +1,8 @@
 <template>
   <v-container class="container" fluid>
     <svg>
-      <g :id="links"></g>
-      <g :id="nodes"></g>
+      <g id="links"></g>
+      <g id="nodes"></g>
     </svg>
   </v-container>
 </template>
@@ -23,21 +23,42 @@
         expand: {}, // expanded clusters,
         curve: d3.line().curve(d3.curveCardinalClosed.tension(0.85)),
         hullOffset: 15,
-        force: null,
         width: window.innerWidth,
         height: window.innerHeight - 64 - 32,
         node: null,
         link: null,
         hull: null,
-        radius: 4
+        radius: 4,
+        data: miserable
       }
     },
     methods: {
       renderGroups () {
         if (this.force) this.force.stop()
+        this.net = this.network()
 
-        let simulation = d3.forceSimulation(this.nodes)
-          .force('link', d3.forceLink(this.links).distance(100).strength(0.1)) // TODO: Using function to compute distance
+        let simulation = d3.forceSimulation(this.net.nodes)
+          .force('link', d3.forceLink(this.net.links).distance(l => {
+            // eslint-disable-next-line
+            let n1 = l.source, n2 = l.target
+
+            // larger distance for bigger groups:
+            // both between single nodes and _other_ groups (where size of own node group still counts),
+            // and between two group nodes.
+            //
+            // reduce distance for groups with very few outer links,
+            // again both in expanded and grouped form, i.e. between individual nodes of a group and
+            // nodes of another group or other group node or between two group nodes.
+            //
+            // The latter was done to keep the single-link groups ('blue', rose, ...) close.
+            // noinspection JSUnresolvedVariable
+            return 30 +
+              Math.min(
+                20 * Math.min((n1.size || (n1.group !== n2.group ? n1.group_data.size : 0)), (n2.size || (n1.group !== n2.group ? n2.group_data.size : 0))),
+                -30 + 30 * Math.min((n1.link_count || (n1.group !== n2.group ? n1.group_data.link_count : 0)), (n2.link_count || (n1.group !== n2.group ? n2.group_data.link_count : 0))),
+                100
+              )
+          }).strength(0.1)) // TODO: Using function to compute distance
           .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))
           .force('center', d3.forceCenter(this.width / 2, this.height / 2))
 
@@ -49,10 +70,10 @@
         this.hull = svg.append('g')
           .attr('class', 'hulls')
           .selectAll('path')
-          .data(this.convexHulls)
+          .data(this.convexHulls())
           .enter().append('path')
           .attr('class', 'hull')
-          .attr('d', (d) => this.curve(d.path))
+          .attr('d', d => this.curve(d.path))
           .style('fill', this.fill)
           .on('click', d => {
             console.log('hull click', d, arguments, this, this.expand[d.group])
@@ -63,7 +84,7 @@
         this.link = svg.append('g')
           .attr('class', 'links')
           .selectAll('line')
-          .data(this.links, this.linkid)
+          .data(this.net.links, this.linkid)
           .enter().append('line')
           .attr('class', 'link')
           .style('stroke-width', d => d.size || 1)
@@ -71,11 +92,11 @@
         this.node = svg.append('g')
           .attr('class', 'nodes')
           .selectAll('circle')
-          .data(this.nodes, this.nodeid)
+          .data(this.net.nodes, this.nodeid)
           .enter().append('circle')
           .attr('class', d => 'node' + (d.size ? '' : ' leaf'))
           .attr('r', d => d.size ? d.size + this.radius : this.radius + 1)
-          .style('fill', node => ordinalScale[node.group])
+          .style('fill', this.fill)
           .on('click', node => {
             console.log('node click', node, arguments, this, this.expand[node.group])
             this.expand[node.group] = true
@@ -96,10 +117,10 @@
               d.fy = null
             }))
 
-        simulation.nodes(this.nodes).on('tick', () => {
+        simulation.nodes(this.net.nodes).on('tick', () => {
           if (!this.hull.empty()) {
             this.hull
-              .data(this.convexHulls)
+              .data(this.convexHulls())
               .attr('d', d => this.curve(d.path))
           }
 
@@ -124,8 +145,8 @@
           links = []   // output links
 
         // process previous nodes for reuse or centroid calculation
-        if (this.net) {
-          this.nodes.filter(n => n.size).map(n => {
+        if (!this._.isEmpty(this.net)) {
+          this.net.nodes.filter(n => n.size).map(n => {
             gn[n.group] = n
             n.size = 0
           })
@@ -187,7 +208,7 @@
         return {nodes: nodes, links: links}
       },
       fill (d) {
-        return ordinalScale[d.group]
+        return ordinalScale(d.group)
       },
       nodeid (n) {
         return n.size ? '_g_' + n.group : n.name
@@ -196,32 +217,13 @@
         // eslint-disable-next-line
         let u = this.nodeid(l.source), v = this.nodeid(l.target)
         return u < v ? u + '|' + v : v + '|' + u
-      }
-    },
-    computed: {
-      links () {
-        return this.net.links || []
-      },
-      nodes () {
-        console.log(this.net)
-        return this.net.nodes || []
-      },
-      loaded () {
-        return !this._.isEmpty(this.nodes) && !this._.isEmpty(this.links)
-      },
-      data () {
-        miserable.links.map(link => {
-          link.source = miserable.nodes[link.source]
-          link.target = miserable.nodes[link.target]
-        })
-        return miserable
       },
       convexHulls () {
         let hulls = {}
         let offset = this.hullOffset
 
         // create point sets
-        this.nodes.filter(n => !n.size).map(n => {
+        this.net.nodes.filter(n => !n.size).map(n => {
           // eslint-disable-next-line
           let i = n.group, l = hulls[i] || (hulls[i] = [])
           l.push([n.x - offset, n.y - offset])
@@ -240,13 +242,18 @@
       }
     },
     mounted () {
-      this.net = this.network()
+      this.data.links.map(link => {
+        link.source = miserable.nodes[link.source]
+        link.target = miserable.nodes[link.target]
+      })
       this.renderGroups()
     }
   }
 </script>
 
-<style scoped>
+<!--TODO: Make this scoped-->
+<!--suppress CssUnusedSymbol -->
+<style>
   svg {
     border: 1px solid #ccc
   }

@@ -15,8 +15,8 @@
 
     <v-container class="container" fluid @click="open = false">
       <svg>
-        <g :id="links"></g>
-        <g :id="nodes"></g>
+        <g id="links"></g>
+        <g id="nodes"></g>
       </svg>
     </v-container>
   </v-container>
