@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import PrerequisiteGraph from '@/views/PrerequisiteGraph'
-import CourseForm from '@/components/CourseForm'
+import CourseForm from '@/views/CourseForm'
 import Course from '@/views/Course'
-import StrandForm from '@/components/StrandForm'
+import BenchmarkForm from '@/views/BenchmarkForm'
 import BenchmarkGraph from '@/views/BenchmarkGraph'
 import Benchmark from '@/views/Benchmark'
 import Compare from '@/views/Compare'
@@ -25,7 +25,7 @@ export const router = new Router({
     },
     {
       path: '/benchmarks',
-      component: StrandForm
+      component: BenchmarkForm
     },
     {
       path: '/benchmarks/:name',
@@ -49,7 +49,7 @@ export const router = new Router({
     {
       name: 'benchmarks/edit',
       path: '/benchmarks/:name/edit',
-      component: StrandForm,
+      component: BenchmarkForm,
       props: {edit: true}
     },
     {

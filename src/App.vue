@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
 
-      <v-navigation-drawer :value="open" clipped fixed app>
+      <v-navigation-drawer v-show="hamburger" :value="open && hamburger" clipped fixed app>
         <v-list two-line>
           <v-list-tile>
             <v-text-field
@@ -82,7 +82,7 @@
         }
       },
       hamburger () {
-        return !!this.items
+        return !!this.items.length
       },
       routeName () {
         return this.$router.currentRoute.name || ''
@@ -100,8 +100,8 @@
       }
     },
     created () {
-      this.$store.dispatch('loadCourses')
-      this.$store.dispatch('loadBenchmarks')
+      this.$store.dispatch('loadItems', 'courses')
+      this.$store.dispatch('loadItems', 'benchmarks')
     }
 }
 </script>

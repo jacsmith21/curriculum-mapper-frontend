@@ -39,7 +39,9 @@ const state = {
   course: null,
   // the states of the objects (courses / benchmarks at various datetimes)
   // for example {[an_id]: {'June 14': {...}}, [another_id]: {...}}
-  states: {}
+  // This contains both courses and benchmarks; however, the _id values are unlikely to overlap
+  states: {},
+  parsed: []
 }
 
 // initialize blank form
@@ -52,23 +54,16 @@ const getters = {
   benchmarkNameLookup: (state) => {
     return makeLookup(state.benchmarks)
   },
+  courseIdLookup: (state) => {
+    return makeLookup(state.courses, '_id')
+  },
+  benchmarkIdLookup: (state) => {
+    return makeLookup(state.benchmarks, '_id')
+  },
   getField
 }
 
 const actions = {
-  loadCourses ({ commit }) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(base + '/courses')
-        .then(r => r.data)
-        .then(courses => {
-          commit('setCourses', courses)
-          resolve(courses)
-        }, err => {
-          reject(err)
-        })
-    })
-  },
   addCourse ({ commit, state }) {
     let course = copy(state.form)
     course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
@@ -132,23 +127,21 @@ const actions = {
       commit('addBenchmark', state.benchmark)
     })
   },
-  loadBenchmarks ({ commit }) {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${base}/benchmarks`)
-        .then(r => {
-          commit('setBenchmarks', r.data)
-          resolve(r.data)
-        }, err => {
-          reject(err)
-        })
-    })
+  loadItems ({ commit }, object) {
+    axios
+      .get(`${base}/${object}`)
+      .then(r => {
+        commit('setItems', {items: r.data, object: object})
+      })
+      .catch(err => {
+        console.error(err)
+      })
   },
-  loadParsed () {
+  loadParsed ({ commit }) {
     return new Promise((resolve, reject) => {
       axios.get(`${base}/parse`)
         .then(r => {
-          resolve(r.data)
+          commit('setParsed', r.data)
         }, err => {
           reject(err)
         })
@@ -182,12 +175,6 @@ const mutations = {
   addCourse (state, course) {
     state.courses.push(course)
   },
-  setCourses: (state, courses) => {
-    for (let i = 0; i < courses.length; i++) {
-      courses[i].index = i
-    }
-    state.courses = courses
-  },
   removeItem (state, {object, _id}) {
     state[object] = state[object].filter(item => _id !== item._id)
   },
@@ -214,8 +201,11 @@ const mutations = {
       array.splice(index, 1)
     }
   },
-  setBenchmarks (state, benchmarks) {
-    state.benchmarks = benchmarks
+  setItems (state, { items, object }) {
+    for (let i = 0; i < items.length; i++) {
+      items[i].index = i
+    }
+    state[object] = items
   },
   resetForm (state, course) {
     console.log('Resetting the form!')
@@ -232,15 +222,15 @@ const mutations = {
     console.info('Adding patch!')
     Vue.set(state.history, _id, patch)
   },
-  setCourse (state, course) {
-    state.course = course
-  },
   setObjectState (state, { course, date }) {
     if (!(course._id in state.states)) {
       Vue.set(state.states, course._id, {})
     }
 
     Vue.set(state.states[course._id], date, course)
+  },
+  setParsed (state, parsed) {
+    state.parsed = parsed
   },
   updateField
 }

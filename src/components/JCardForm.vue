@@ -25,6 +25,7 @@
 
 <script>
   export default {
+    name: 'JCardForm',
     props: {title: String, submit: Function, submitText: {type: String, default: 'Submit'}}
   }
 </script>

@@ -20,7 +20,7 @@
   import { mapMutations } from 'vuex'
 
   export default {
-    name: 'DynamicField',
+    name: 'JDynamicField',
     props: ['items', 'identifier'],
     data () {
       return {

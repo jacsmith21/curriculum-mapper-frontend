@@ -23,19 +23,20 @@
 
 <script>
   import * as d3 from 'd3'
-  import { add, sub, radiusVector } from '@/vector'
+  import {add, sub, radiusVector, sleep} from '@/_'
 
   const ordinalScale = d3.scaleOrdinal(d3.schemeCategory10)
 
   export default {
-    name: 'Graph',
+    name: 'JGraph',
     props: {
       nodes: {required: true, type: Array},
       links: {required: true, type: Array},
       loaded: {required: true, type: Boolean},
       color: {default: (_, i) => ordinalScale(i), type: Function},
       clickedNode: Function,
-      nodeStyle: Object
+      nodeStyle: Object,
+      refresh: {type: Boolean, default: false}
     },
     data () {
       return {
@@ -47,7 +48,8 @@
         open: false,
         node: null,
         link: null,
-        text: null
+        text: null,
+        rendered: false
       }
     },
     methods: {
@@ -63,20 +65,8 @@
         this.open = true
         d3.event.stopPropagation()
         this.clickedNode(node)
-      }
-    },
-    mounted () {
-      window.addEventListener('resize', () => {
-        this.width = window.innerWidth
-        this.height = window.innerWidth - 64 - 32
-      })
-    },
-    watch: {
-      loaded () {
-        if (!this.loaded) {
-          return
-        }
-
+      },
+      render () {
         let simulation = d3.forceSimulation(this.nodes)
           .force('link', d3.forceLink(this.links).distance(100).strength(0.1))
           .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))
@@ -157,10 +147,34 @@
           this.label
             .attr('x', label => label.x)
             .attr('y', label => label.y)
+
+          this.rendered = true
         })
-      },
+      }
+    },
+    async mounted () {
+      window.addEventListener('resize', () => {
+        this.width = window.innerWidth
+        this.height = window.innerWidth - 64 - 32
+      })
+
+      while (!this.loaded) {
+        await sleep(10)
+      }
+      this.render()
+    },
+    watch: {
       nodeStyle () {
         Object.keys(this.nodeStyle).map(name => this.node.style(name, this.nodeStyle[name]))
+      },
+      refresh () {
+        if (this.refresh) {
+          // This works to refresh the graph; however, I believe this render call occurs during the initial render.
+          // This means that we render the graph twice during startup. It's not a huge problem, but something that could
+          // be fixed
+          console.debug('Refreshing the graph!')
+          this.render()
+        }
       }
     }
   }

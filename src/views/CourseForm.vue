@@ -1,6 +1,6 @@
 <template>
   <sidebar-base>
-    <card-form title="Course Form" :submit="submit" snackbar-text="Course Added!" :submit-text="edit ? 'Save' : 'Submit'">
+    <j-card-form title="Course Form" :submit="submit" snackbar-text="Course Added!" :submit-text="edit ? 'Save' : 'Submit'">
 
       <j-form-break title="Basic Information"></j-form-break>
       <j-text-field v-model="name" label="Name" xs12></j-text-field>
@@ -46,29 +46,29 @@
       <j-select xs2 v-model="ll" label="Lifelong Learning" :items="caebItems"></j-select>
 
       <j-form-break title="Learning Outcomes"></j-form-break>
-      <dynamic-field :items="learningOutcomes" identifier="form.learningOutcomes">
+      <j-dynamic-field :items="learningOutcomes" identifier="form.learningOutcomes">
         <template slot-scope="{ item }">
           <j-text-field xs11 label="Learning Outcome" v-model="item.value"></j-text-field>
         </template>
-      </dynamic-field>
+      </j-dynamic-field>
 
       <j-form-break title="Assessments"></j-form-break>
-      <dynamic-field :items="assessments" identifier="form.assessments">
+      <j-dynamic-field :items="assessments" identifier="form.assessments">
         <template slot-scope="{ item }">
           <j-select xs2 label="Type" :items="assessmentTypes" v-model="item.assessmentType"></j-select>
           <j-text-field xs9 label="Description" v-model="item.description"></j-text-field>
         </template>
-      </dynamic-field>
+      </j-dynamic-field>
 
       <j-form-break title="Instructors"></j-form-break>
-      <dynamic-field :items="sections" identifier="form.sections">
+      <j-dynamic-field :items="sections" identifier="form.sections">
         <template slot-scope="{ item }">
           <j-text-field xs6 label="Instructor" v-model="item.instructor"></j-text-field>
           <j-text-field xs5 label="Section" v-model="item.section"></j-text-field>
         </template>
-      </dynamic-field>
+      </j-dynamic-field>
 
-    </card-form>
+    </j-card-form>
   </sidebar-base>
 </template>
 
@@ -77,15 +77,15 @@
   import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
   import JSelect from '@/components/inputs/JSelect'
   import JChipSelect from '@/components/inputs/JChipSelect'
-  import DynamicField from '@/components/inputs/DynamicField'
+  import JDynamicField from '@/components/inputs/JDynamicField'
   import JFormBreak from '@/components/JFormBreak'
-  import CardForm from '@/components/CardForm'
+  import JCardForm from '@/components/JCardForm'
   import SidebarBase from '@/views/SidebarBase'
   import { router } from '@/router'
 
   export default {
     name: 'CourseForm',
-    components: { SidebarBase, CardForm, JFormBreak, DynamicField, JChipSelect, JSelect, JTextField },
+    components: { SidebarBase, JCardForm, JFormBreak, JDynamicField, JChipSelect, JSelect, JTextField },
     props: {edit: {type: Boolean, default: false}},
     data () {
       return {

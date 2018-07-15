@@ -1,5 +1,6 @@
 <template>
-  <graph :links="links" :nodes="nodes" :loaded="loaded" :color="color" :clickedNode="clicked">
+  <j-graph :links="links" :nodes="nodes" :loaded="loaded" :color="color" :clickedNode="clicked">
+    <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
       <v-list two-line subheader>
         <v-subheader>{{ selected.type }}</v-subheader>
@@ -22,24 +23,20 @@
         </v-list-tile>
       </v-list>
     </template>
-  </graph>
+  </j-graph>
 </template>
 
 <script>
-  import Graph from '@/components/Graph'
+  import JGraph from '@/components/JGraph'
+  import { mapState, mapGetters } from 'vuex'
 
   export default {
     name: 'BenchmarkGraph',
-    components: {Graph},
+    components: {JGraph},
     data () {
       return {
-        courses: [],
-        benchmarks: [],
-        benchmarkLookup: {},
-        courseLookup: {},
         colors: {benchmark: '#15abff', course: '#ffe800'},
-        selected: {},
-        loaded: false
+        selected: {}
       }
     },
     methods: {
@@ -51,7 +48,7 @@
         if (node.benchmark) {
           type = 'Benchmark'
           subTitle = 'Courses'
-          items = (this.benchmarkLookup[node._id].courses || []).map(_id => this.courseLookup[_id.$oid])
+          items = (this.coursesLookup[node._id] || []).map(_id => this.courseLookup[_id.$oid])
         } else {
           type = 'Course'
           subTitle = 'Benchmarks'
@@ -69,33 +66,6 @@
         return node.benchmark ? this.colors.benchmark : this.colors.course
       }
     },
-    created () {
-      const that = this
-      this.$store.dispatch('loadCourses').then(courses => {
-        that.courses = courses
-        for (const course of courses) {
-          that.courseLookup[course._id] = course
-        }
-
-        that.$store.dispatch('loadBenchmarks').then(benchmarks => {
-          that.benchmarks = benchmarks
-          for (const [i, benchmark] of benchmarks.entries()) {
-            that.benchmarkLookup[benchmark._id] = benchmark
-            benchmark.index = courses.length + i
-          }
-
-          for (const course of courses) {
-            for (const _id of course.benchmarks || []) {
-              let benchmark = that.benchmarkLookup[_id.$oid]
-              benchmark.courses = benchmark.courses || []
-              benchmark.courses.push({$oid: course._id})
-            }
-          }
-
-          that.loaded = true
-        })
-      })
-    },
     computed: {
       nodes () {
         return this.courses.map(item => ({id: item.name, _id: item._id, benchmark: false}))
@@ -109,12 +79,28 @@
         let links = []
         this.courses.map((course, index) => {
           for (const _id of course.benchmarks || []) {
-            links.push({source: this.benchmarkLookup[_id.$oid].index, target: index})
+            links.push({source: this.benchmarkLookup[_id.$oid].index + this.courses.length, target: index})
           }
         })
 
         return links
-      }
+      },
+      coursesLookup () {
+        let coursesLookup = {}
+        for (const course of this.courses) {
+          for (const _id of course.benchmarks || []) {
+            let benchmark = this.benchmarkLookup[_id.$oid]
+            coursesLookup[benchmark._id] = this.coursesLookup[benchmark._id] || []
+            this.coursesLookup[benchmark._id].push({$oid: course._id})
+          }
+        }
+        return coursesLookup
+      },
+      loaded () {
+        return !this._.isEmpty(this.courses) && !this._.isEmpty(this.benchmarks)
+      },
+      ...mapState(['courses', 'benchmarks']),
+      ...mapGetters({benchmarkLookup: 'benchmarkIdLookup', courseLookup: 'courseIdLookup'})
     }
   }
 </script>

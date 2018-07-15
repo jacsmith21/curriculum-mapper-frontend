@@ -1,5 +1,5 @@
 <template>
-  <graph :links="links" :nodes="nodes" :loaded="loaded" :clickedNode="clicked" :node-style="nodeStyle">
+  <j-graph :links="links" :nodes="nodes" :loaded="loaded" :clickedNode="clicked" :node-style="nodeStyle" :refresh="refresh">
     <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
 
@@ -44,25 +44,25 @@
       ></v-text-field>
     </v-toolbar>
 
-  </graph>
+  </j-graph>
 </template>
 
 <!--suppress JSUnresolvedVariable -->
 <script>
   import * as d3 from 'd3'
-  import Graph from '@/components/Graph'
+  import JGraph from '@/components/JGraph'
+  import { mapState } from 'vuex'
 
   export default {
     name: 'PrerequisiteGraph',
-    components: {Graph},
+    components: {JGraph},
     data () {
       return {
-        parsed: [],
         options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'},
         filter: '',
         selected: null,
-        loaded: false,
-        nodeStyle: undefined
+        nodeStyle: undefined,
+        refresh: false
       }
     },
     methods: {
@@ -89,92 +89,71 @@
         for (const name of course[key] || []) {
           this.dfs(this.courseLookup[name], key, option, states, false)
         }
+      },
+      parseCoreqs (root, node = root.coreqTree) {
+        if (node === null) {
+          return
+        }
+
+        if (node.leaf) {
+          const prereqName = node.value
+          root.coreqs.push(prereqName)
+        } else {
+          if (node.value === 'and') {
+            this.parseCoreqs(root, node.left)
+            this.parseCoreqs(root, node.right)
+          } else if (node.value === 'or') {
+            this.parseCoreqs(root, node.left)
+          } else {
+            throw new Error(`Unknown node value: ${node.value}`)
+          }
+        }
+      },
+      parsePrereqs (root, node = root.prereqTree) {
+        if (node === null) {
+          return
+        }
+
+        if (node.leaf) {
+          const prereqName = node.value
+          if (prereqName in this.courseLookup) {
+            let prereq = this.courseLookup[prereqName]
+            prereq.post = prereq.post || []
+            prereq.post.push(root.name)
+          }
+          root.prereqs.push(prereqName)
+        } else {
+          if (node.value === 'and') {
+            this.parsePrereqs(root, node.left)
+            this.parsePrereqs(root, node.right)
+          } else if (node.value === 'or') {
+            this.parsePrereqs(root, node.left)
+          } else {
+            throw new Error(`Unknown node value: ${node.value}`)
+          }
+        }
       }
     },
     created () {
-      const that = this
-      this.$store.dispatch('loadParsed').then(parsed => {
-        that.parsed = parsed
-
-        // add courses to the lookup
-        for (const [i, course] of parsed.entries()) {
-          course.index = i
-        }
-
-        const parsePrereqs = (root, node = root.prereqTree) => {
-          if (node === null) {
-            return
-          }
-
-          if (node.leaf) {
-            const prereqName = node.value
-            if (prereqName in that.courseLookup) {
-              let prereq = that.courseLookup[prereqName]
-              prereq.post = prereq.post || []
-              prereq.post.push(root.name)
-            }
-            root.prereqs.push(prereqName)
-          } else {
-            if (node.value === 'and') {
-              parsePrereqs(root, node.left)
-              parsePrereqs(root, node.right)
-            } else if (node.value === 'or') {
-              parsePrereqs(root, node.left)
-            } else {
-              throw new Error(`Unknown node value: ${node.value}`)
-            }
-          }
-        }
-
-        const parseCoreqs = (root, node = root.coreqTree) => {
-          if (node === null) {
-            return
-          }
-
-          if (node.leaf) {
-            const prereqName = node.value
-            root.coreqs.push(prereqName)
-          } else {
-            if (node.value === 'and') {
-              parsePrereqs(root, node.left)
-              parsePrereqs(root, node.right)
-            } else if (node.value === 'or') {
-              parsePrereqs(root, node.left)
-            } else {
-              throw new Error(`Unknown node value: ${node.value}`)
-            }
-          }
-        }
-
-        for (let course of parsed) {
-          course.prereqs = []
-          parsePrereqs(course)
-
-          course.coreqs = []
-          parseCoreqs(course)
-        }
-
-        // Ok now we set loaded as true!
-        that.loaded = true
-      })
+      this.$store.dispatch('loadParsed')
     },
     computed: {
       nodes () {
-        return this.courses.map(course => ({id: course.name}))
+        return this.filteredCourses.map(course => ({id: course.name}))
       },
       links () {
         const links = []
-        this.courses.map((course, index) => {
+        this.filteredCourses.map((course, index) => {
           course.prereqs.map(prereq => {
-            if (prereq in this.courseLookup) {
-              const target = this.courseLookup[prereq].index
+            if (prereq in this.indexLookup) {
+              const target = this.indexLookup[prereq]
               links.push({source: target, target: index})
             }
           })
 
           course.coreqs.map(coreq => {
-            if (coreq in this.courseLookup) {
-              const target = this.courseLookup[coreq].index
+            if (coreq in this.indexLookup) {
+              const target = this.indexLookup[coreq]
               links.push({source: index, target: target})
             }
           })
@@ -182,20 +161,44 @@
         return links
       },
       courses () {
-        return this.parsed.filter(course => course.name.startsWith(this.filter))
+        return this.parsed.map(course => {
+          // This probably isn't the best thing to do as we are modifying the state directly.
+          // The best solution may be to create prereq and coreq lookups instead.
+          // However, this solution works fine.
+          course.prereqs = []
+          this.parsePrereqs(course)
+
+          course.coreqs = []
+          this.parseCoreqs(course)
+
+          return course
+        })
+      },
+      filteredCourses () {
+        return this.courses.filter(course => course.name.startsWith(this.filter))
       },
       courseLookup () {
-        return this.courses.reduce((lookup, course) => { lookup[course.name] = course; return lookup }, {})
+        return this.parsed.reduce((lookup, course) => { lookup[course.name] = course; return lookup }, {})
+      },
+      indexLookup () {
+        let i = 0
+        return this.parsed.reduce((lookup, course) => { lookup[course.name] = i; i++; return lookup }, {})
       },
       selectedCourse () {
         return this.courseLookup[this.selected] || {}
-      }
+      },
+      loaded () {
+        return !this.refresh && !this._.isEmpty(this.parsed)
+      },
+      ...mapState(['parsed'])
     },
     watch: {
       nodes () {
-        // force refresh
-        this.loaded = false
-        this.$nextTick(() => { this.loaded = true })
+        if (this.loaded) {
+          // force refresh
+          this.refresh = true
+          this.$nextTick(() => { this.refresh = false })
+        }
       },
       selectedCourse () {
         if (this._.isEmpty(this.selectedCourse)) {
@@ -232,7 +235,7 @@
     position: relative;
     left: 0;
     padding: 0;
-    margin-top: 16px!important;
+    margin-top: 20px!important;
   }
 </style>
 
