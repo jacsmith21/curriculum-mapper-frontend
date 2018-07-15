@@ -51,7 +51,7 @@
         node: null,
         link: null,
         text: null,
-        rendered: false
+        something: true
       }
     },
     methods: {
@@ -70,6 +70,9 @@
       },
       render () {
         this.$emit('render')
+        if (this.something) {
+          return
+        }
 
         let simulation = d3.forceSimulation(this.nodes)
           .force('link', d3.forceLink(this.links).distance(100).strength(0.1))
@@ -151,8 +154,6 @@
           this.label
             .attr('x', label => label.x)
             .attr('y', label => label.y)
-
-          this.rendered = true
         })
       }
     },
