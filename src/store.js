@@ -34,7 +34,7 @@ const state = {
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
     benchmarks: []
   },
-  benchmark: {name: ''},
+  benchmark: {name: '', accreditor: ''},
   history: {},
   course: null,
   // the states of the objects (courses / benchmarks at various datetimes)

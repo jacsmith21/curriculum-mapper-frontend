@@ -1,6 +1,6 @@
 <template>
   <sidebar-base>
-    <j-card :item="course" actions :compute-items="computeCourseItems" object="courses"></j-card>
+    <j-card :item="course" actions date :compute-items="computeCourseItems" object="courses"></j-card>
   </sidebar-base>
 </template>
 

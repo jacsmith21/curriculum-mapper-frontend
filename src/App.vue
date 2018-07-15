@@ -85,7 +85,7 @@
         return !!this.items.length
       },
       routeName () {
-        return this.$router.currentRoute.name || ''
+        return this.$route.name || ''
       },
       searchTerm () {
         return this.filter.toLowerCase()

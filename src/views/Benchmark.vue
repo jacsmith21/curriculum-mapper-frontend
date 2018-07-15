@@ -1,12 +1,13 @@
 <template>
   <sidebar-base>
-    <j-card :compute-items="items" :item="benchmark" object="benchmarks"></j-card>
+    <j-card :compute-items="computeBenchmarkItems" :item="benchmark" object="benchmarks" actions></j-card>
   </sidebar-base>
 </template>
 
 <script>
   import SidebarBase from '@/views/SidebarBase'
   import JCard from '@/components/JCard'
+  import { computeBenchmarkItems } from '@/_'
 
   export default {
     name: 'Benchmark',
@@ -20,9 +21,7 @@
       }
     },
     methods: {
-      items (benchmark) {
-        return [['Name', benchmark.name], ['Accreditor', benchmark.accreditor]]
-      }
+      computeBenchmarkItems
     }
   }
 </script>

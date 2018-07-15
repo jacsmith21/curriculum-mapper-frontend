@@ -15,13 +15,20 @@ export const sleep = (ms) => {
 
 export const computeCourseItems = (course) => {
   return [
-    ['Name', course.name],
-    ['Title', course.title],
-    ['Description', course.description],
-    ['Maintainer', course.maintainer],
-    ['Prerequisites', course.prerequisites],
-    ['Corequisites', course.corequisites],
-    ['Recommended', course.recommended]
+    ['Name', 'name', course.name],
+    ['Title', 'title', course.title],
+    ['Description', 'description', course.description],
+    ['Maintainer', 'maintainer', course.maintainer],
+    ['Prerequisites', 'prerequisites', course.prerequisites],
+    ['Corequisites', 'corequisites', course.corequisites],
+    ['Recommended', 'recommended', course.recommended]
+  ]
+}
+
+export const computeBenchmarkItems = (benchmark) => {
+  return [
+    ['Name', 'name', benchmark.name],
+    ['Accreditor', 'accreditor', benchmark.accreditor]
   ]
 }
 

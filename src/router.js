@@ -6,7 +6,8 @@ import Course from '@/views/Course'
 import BenchmarkForm from '@/views/BenchmarkForm'
 import BenchmarkGraph from '@/views/BenchmarkGraph'
 import Benchmark from '@/views/Benchmark'
-import Compare from '@/views/Compare'
+import CourseCompare from '@/views/CourseCompare'
+import BenchmarkCompare from '@/views/BenchmarkCompare'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -58,9 +59,14 @@ export const router = new Router({
       component: BenchmarkGraph
     },
     {
-      name: 'compare',
-      path: '/courses/:name/compare/:then/:now',
-      component: Compare
+      name: 'courses/compare',
+      path: '/courses/:name/compare',
+      component: CourseCompare
+    },
+    {
+      name: 'benchmarks/compare',
+      path: '/benchmarks/:name/compare',
+      component: BenchmarkCompare
     }
   ]
 })
