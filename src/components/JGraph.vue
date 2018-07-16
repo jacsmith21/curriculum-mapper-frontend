@@ -50,8 +50,7 @@
         open: false,
         node: null,
         link: null,
-        text: null,
-        something: true
+        text: null
       }
     },
     methods: {
@@ -69,11 +68,6 @@
         this.clickedNode(node)
       },
       render () {
-        this.$emit('render')
-        if (this.something) {
-          return
-        }
-
         let simulation = d3.forceSimulation(this.nodes)
           .force('link', d3.forceLink(this.links).distance(100).strength(0.1))
           .force('charge', d3.forceManyBody().strength(-140).distanceMax(150).distanceMin(5))
