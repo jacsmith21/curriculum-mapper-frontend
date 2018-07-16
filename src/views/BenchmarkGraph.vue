@@ -1,5 +1,11 @@
 <template>
-  <j-graph :links="links" :nodes="nodes" :loaded="loaded" :color="color" :clickedNode="clicked">
+  <j-graph
+    :links="links"
+    :nodes="nodes"
+    :loaded="loaded"
+    :color="color"
+    drawer
+    :clickedNode="clicked">
     <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
       <v-list two-line subheader>

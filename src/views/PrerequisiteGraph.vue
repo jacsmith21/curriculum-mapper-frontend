@@ -1,5 +1,12 @@
 <template>
-  <j-graph :links="links" :nodes="nodes" :loaded="loaded" :clickedNode="clicked" :node-style="nodeStyle" :refresh="refresh">
+  <j-graph
+    :links="links"
+    :nodes="nodes"
+    :loaded="loaded"
+    :clickedNode="clicked"
+    :node-style="nodeStyle"
+    drawer
+    :refresh="refresh">
     <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
 
@@ -16,7 +23,7 @@
 
       <v-list two-line subheader>
         <v-subheader>Prerequisites</v-subheader>
-        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="selected = prereq" :key="prereq">
+        <v-list-tile v-for="prereq in selectedCourse.prereqs" @click="clicked" :key="prereq">
           <v-list-tile-content>
             <v-list-tile-title>{{ prereq }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ prereq.title || 'No Title' }}</v-list-tile-sub-title>
@@ -24,7 +31,7 @@
         </v-list-tile>
 
         <v-subheader>Corequisites</v-subheader>
-        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="selected = coreq" :key="coreq">
+        <v-list-tile v-for="coreq in selectedCourse.coreqs" @click="clicked" :key="coreq">
           <v-list-tile-content>
             <v-list-tile-title>{{ coreq }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ coreq.title || 'No Title' }}</v-list-tile-sub-title>
@@ -67,6 +74,11 @@
     },
     methods: {
       clicked (clickedNode) {
+        if (!(clickedNode.id in this.courseLookup)) {
+          console.info(`You clicked on something that isn't a course!`)
+          return
+        }
+
         this.open = true
         d3.event.stopPropagation()
         this.selected = clickedNode.id  // id is the course name

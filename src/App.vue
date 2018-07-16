@@ -79,7 +79,7 @@
             .map(course => ({title: course.name, headline: course.title || 'No Title', to: `/courses/${course.name}`}))
         } else {
           return state.benchmarks
-            .map(benchmark => ({title: benchmark.name, headline: 'No Title', to: `/benchmarks/${benchmark.name}`}))
+            .map(benchmark => ({title: benchmark.name, headline: benchmark.accreditor || 'No Accreditor', to: `/benchmarks/${benchmark.name}`}))
         }
       },
       hamburger () {

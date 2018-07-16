@@ -251,13 +251,26 @@
   }
 </script>
 
+<style scoped>
+  .container {
+    padding: 0;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid #ccc
+  }
+</style>
+
 <!--TODO: Make this scoped-->
 <!--suppress CssUnusedSymbol -->
 <style>
-  svg {
-    border: 1px solid #ccc
-  }
-
   body {
     font: 10px sans-serif
   }
@@ -284,17 +297,5 @@
     pointer-events: none
   }
 
-  svg {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
 
-  .container {
-    padding: 0;
-  }
 </style>
