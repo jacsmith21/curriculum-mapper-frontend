@@ -7,6 +7,7 @@
       @input="input"
       :suffix="suffix"
       :disabled="disabled"
+      required
     ></v-text-field>
   </v-flex>
 </template>

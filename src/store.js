@@ -41,7 +41,8 @@ const state = {
   // for example {[an_id]: {'June 14': {...}}, [another_id]: {...}}
   // This contains both courses and benchmarks; however, the _id values are unlikely to overlap
   states: {},
-  parsed: []
+  parsed: [],
+  token: localStorage.getItem('user-token') || ''
 }
 
 // initialize blank form
@@ -60,6 +61,7 @@ const getters = {
   benchmarkIdLookup: (state) => {
     return makeLookup(state.benchmarks, '_id')
   },
+  authenticated: state => !!state.token,
   getField
 }
 
@@ -168,6 +170,27 @@ const actions = {
       }, err => {
         console.error(err)
       })
+  },
+  login ({ commit, dispatch }, user) {
+    axios.post(`${base}/login`, user)
+      .then(r => {
+        localStorage.setItem('user-token', r.data)
+        axios.defaults.headers.common['Authorization'] = r.data
+        router.push({name: 'home'})
+      })
+      .catch(err => {
+        localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+        throw err
+      })
+  },
+  register ({ dispatch }, user) {
+    axios.post(`${base}/register`, user)
+      .then(() => dispatch('login', user))
+      .catch(err => { throw err })
+  },
+  logout: () => {
+    localStorage.removeItem('user-token')
+    router.push({name: 'login'})
   }
 }
 

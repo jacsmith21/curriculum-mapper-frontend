@@ -1,7 +1,11 @@
 <template>
   <v-card>
 
-    <v-card-title primary-title style="padding-left: 35px"><div class="headline">{{ title }}</div></v-card-title>
+    <v-card-title
+      primary-title
+      class="j-flex-center">
+      <div class="headline" style="font-size: 35px!important;">{{ title }}</div>
+    </v-card-title>
 
     <v-card-text>
       <v-form>
@@ -15,7 +19,7 @@
 
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
-      <v-btn flat>Cancel</v-btn>
+      <v-btn v-if="cancelText" flat @click="cancel">{{ cancelText }}</v-btn>
       <v-spacer></v-spacer>
       <v-btn color="primary" flat @click="submit">{{ submitText }}</v-btn>
     </v-card-actions>
@@ -26,7 +30,13 @@
 <script>
   export default {
     name: 'JCardForm',
-    props: {title: String, submit: Function, submitText: {type: String, default: 'Submit'}}
+    props: {
+      title: String,
+      submit: {type: Function, required: true},
+      cancel: Function,
+      submitText: {type: String, default: 'Submit'},
+      cancelText: String
+    }
   }
 </script>
 

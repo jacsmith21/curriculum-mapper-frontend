@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
 
-      <v-navigation-drawer v-show="hamburger" :value="open && hamburger" clipped fixed app>
+      <v-navigation-drawer v-if="hamburger" :value="open && hamburger" clipped fixed app>
         <v-list two-line>
           <v-list-tile>
             <v-text-field
@@ -33,7 +33,7 @@
       <router-view/>
 
       <v-toolbar app clipped-left clipped-right color="amber">
-        <v-btn v-show="hamburger" icon @click.stop="open = !open">
+        <v-btn v-if="hamburger" icon @click.stop="open = !open">
           <v-icon>menu</v-icon>
         </v-btn>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -44,6 +44,7 @@
           <v-btn flat to="/benchmarks">Add Benchmark</v-btn>
           <v-btn flat to="/visualize">Benchmark Graph</v-btn>
           <v-btn flat to="/prerequisites">Prerequisite Graph</v-btn>
+          <v-btn flat @click="logout">Logout</v-btn>
         </v-toolbar-items>
       </v-toolbar>
 
@@ -57,6 +58,9 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+  import axios from 'axios'
+
   export default {
     name: 'App',
     data () {
@@ -83,7 +87,7 @@
         }
       },
       hamburger () {
-        return !!this.items.length
+        return !!this.items.length && this.authenticated
       },
       routeName () {
         return this.$route.name || ''
@@ -93,14 +97,28 @@
       },
       filteredItems () {
         return this.items.filter(this.filterFunction)
-      }
+      },
+      ...mapGetters(['authenticated'])
     },
     methods: {
       filterFunction (item) {
         return item.title.toLowerCase().startsWith(this.searchTerm)
+      },
+      logout () {
+        this.$store.dispatch('logout')
       }
     },
     created () {
+      axios.interceptors.response.use(undefined, err => {
+        return new Promise(() => {
+          // noinspection JSUnresolvedVariable
+          if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+            this.$store.dispatch('logout')
+          }
+          throw err
+        })
+      })
+
       this.$store.dispatch('loadItems', 'courses')
       this.$store.dispatch('loadItems', 'benchmarks')
     }

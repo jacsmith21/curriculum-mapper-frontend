@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 import PrerequisiteGraph from '@/views/PrerequisiteGraph'
 import CourseForm from '@/views/CourseForm'
 import Course from '@/views/Course'
@@ -9,70 +10,102 @@ import Benchmark from '@/views/Benchmark'
 import CourseCompare from '@/views/CourseCompare'
 import BenchmarkCompare from '@/views/BenchmarkCompare'
 import Grouping from '@/views/Grouping'
+import Login from '@/views/Login'
+import Register from '@/views/Register'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
+
+const authenticate = (to, from, next) => {
+  if (store.getters.authenticated) {
+    next()
+  } else {
+    next({name: 'login'})
+  }
+}
 
 export const router = new Router({
   routes: [
     {
       name: 'home',
       path: '/',
-      component: CourseForm
+      component: CourseForm,
+      beforeEnter: authenticate
     },
     {
       name: 'courses',
       path: '/courses',
-      component: CourseForm
+      component: CourseForm,
+      beforeEnter: authenticate
     },
     {
       path: '/benchmarks',
-      component: BenchmarkForm
+      component: BenchmarkForm,
+      beforeEnter: authenticate
     },
     {
       path: '/benchmarks/:name',
-      component: Benchmark
+      component: Benchmark,
+      beforeEnter: authenticate
     },
     {
       name: 'prereqGraph',
       path: '/prerequisites',
-      component: PrerequisiteGraph
+      component: PrerequisiteGraph,
+      beforeEnter: authenticate
     },
     {
       path: '/courses/:name',
-      component: Course
+      component: Course,
+      beforeEnter: authenticate
     },
     {
       name: 'courses/edit',
       path: '/courses/:name/edit',
       component: CourseForm,
-      props: {edit: true}
+      props: {edit: true},
+      beforeEnter: authenticate
     },
     {
       name: 'benchmarks/edit',
       path: '/benchmarks/:name/edit',
       component: BenchmarkForm,
-      props: {edit: true}
+      props: {edit: true},
+      beforeEnter: authenticate
     },
     {
       name: 'benchmarkGraph',
       path: '/visualize',
-      component: BenchmarkGraph
+      component: BenchmarkGraph,
+      beforeEnter: authenticate
     },
     {
       name: 'courses/compare',
       path: '/courses/:name/compare',
-      component: CourseCompare
+      component: CourseCompare,
+      beforeEnter: authenticate
     },
     {
       name: 'benchmarks/compare',
       path: '/benchmarks/:name/compare',
-      component: BenchmarkCompare
+      component: BenchmarkCompare,
+      beforeEnter: authenticate
     },
     {
       name: 'GroupingGraph',
       path: '/grouping',
-      component: Grouping
+      component: Grouping,
+      beforeEnter: authenticate
+    },
+    {
+      name: 'login',
+      path: '/login',
+      component: Login
+    },
+    {
+      name: 'register',
+      path: '/register',
+      component: Register
     }
   ]
 })
