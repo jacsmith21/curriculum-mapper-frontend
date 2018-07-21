@@ -13,10 +13,11 @@ Vue.use(Vuex)
 const state = {
   displayCourses: true,
   title: 'Curriculum Mapper',
+  loading: false,
   courses: [],
   benchmarks: [],
   blank: {
-    name: '',
+    number: '',
     title: '',
     maintainer: '',
     description: '',
@@ -49,8 +50,8 @@ const state = {
 state.form = copy(state.blank)
 
 const getters = {
-  courseNameLookup: (state) => {
-    return makeLookup(state.courses)
+  courseNumberLookup: (state) => {
+    return makeLookup(state.courses, 'number')
   },
   benchmarkNameLookup: (state) => {
     return makeLookup(state.benchmarks)
@@ -121,7 +122,7 @@ const actions = {
     const patch = jsonpatch.compare(oldCourse, newCourse)
     axios.patch(`${base}/courses/${_id}`, patch).then(() => {
       commit('patchCourse', [newCourse, index])
-      router.push(`/courses/${oldCourse.name}`)
+      router.push(`/courses/${oldCourse.number}`)
     })
   },
   addBenchmark ({ commit, state }) {
@@ -183,10 +184,12 @@ const actions = {
         throw err
       })
   },
-  register ({ dispatch }, user) {
+  register ({ dispatch, commit }, user) {
     axios.post(`${base}/register`, user)
       .then(() => dispatch('login', user))
-      .catch(err => { throw err })
+      .catch(err => {
+        commit('setErrorMessage', err)
+      })
   },
   logout: () => {
     localStorage.removeItem('user-token')
@@ -254,6 +257,9 @@ const mutations = {
   },
   setParsed (state, parsed) {
     state.parsed = parsed
+  },
+  setErrorMessage (state, err) {
+    console.error(err.response.data)
   },
   updateField
 }

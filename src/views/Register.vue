@@ -6,6 +6,7 @@
         <j-text-field xs12 label="Initial" v-model="user.initial"></j-text-field>
         <j-text-field xs12 label="Password" v-model="user.password" type="password"></j-text-field>
         <j-text-field xs12 label="Confirm Password" v-model="user.confirmPassword" type="password"></j-text-field>
+        <j-text-field xs12 label="Code" v-model="user.code"></j-text-field>
         <p class="register">Already registered? <router-link :to="{name: 'login'}">Login</router-link></p>
       </j-card-form>
     </v-layout>
@@ -24,7 +25,8 @@
           username: '',
           password: '',
           confirmPassword: '',
-          initial: ''
+          initial: '',
+          code: ''
         }
       }
     },

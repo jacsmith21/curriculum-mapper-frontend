@@ -1,51 +1,30 @@
 <template>
   <v-app>
     <v-content>
-
-      <v-navigation-drawer v-if="hamburger" :value="open && hamburger" clipped fixed app>
-        <v-list two-line>
-          <v-list-tile>
-            <v-text-field
-              label="Filter"
-              :flat="!focused"
-              prepend-inner-icon="search"
-              solo
-              v-model="filter"
-              @focus="focused = true"
-              @blur="focused = false"
-            ></v-text-field>
-          </v-list-tile>
-          <template v-for="item in filteredItems">
-            <v-divider></v-divider>
-            <v-list-tile ripple :key="item.title" :to="item.to" class="tile">
-
-              <v-list-tile-content>
-                <v-list-tile-title class="title">{{ item.title }}</v-list-tile-title>
-                <v-list-tile-sub-title class="text--primary sub-title">{{ item.headline }}</v-list-tile-sub-title>
-                <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
-      </v-navigation-drawer>
-
-      <!--The main content goes here-->
       <router-view/>
 
       <v-toolbar app clipped-left clipped-right color="amber">
         <v-btn v-if="hamburger" icon @click.stop="open = !open">
           <v-icon>menu</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-spacer></v-spacer>
+        <!--<v-toolbar-title>{{ title }}</v-toolbar-title>-->
+
+        <v-btn fab icon :loading="loading"><v-icon medium>find_in_page</v-icon></v-btn>
         <v-toolbar-items class="hidden-sm-and-down">
-          <v-btn flat to="/grouping">Grouping</v-btn>
-          <v-btn flat to="/courses">Add Course</v-btn>
-          <v-btn flat to="/benchmarks">Add Benchmark</v-btn>
-          <v-btn flat to="/visualize">Benchmark Graph</v-btn>
-          <v-btn flat to="/prerequisites">Prerequisite Graph</v-btn>
-          <v-btn flat @click="logout">Logout</v-btn>
+          <v-btn flat to="/courses">Courses</v-btn>
+          <v-btn flat to="/benchmarks">Benchmarks</v-btn>
         </v-toolbar-items>
+
+        <v-spacer></v-spacer>
+        <j-toolbar-dropdown
+          :items="[['Course', {name: 'createCourse'}], ['Benchmark', {name: 'createBenchmark'}]]" label="Create">
+        </j-toolbar-dropdown>
+        <j-toolbar-dropdown
+          :items="[['Prerequisite Graph', {name: 'prereqGraph'}], ['Benchmark Graph', {name: 'benchmarkGraph'}], ['Grouping Graph', '/grouping'], ['Logout', logout]]">
+          <v-btn fab flat style="margin: 0">
+            <v-icon medium>account_circle</v-icon>
+          </v-btn>
+        </j-toolbar-dropdown>
       </v-toolbar>
 
     </v-content>
@@ -58,11 +37,13 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapState } from 'vuex'
   import axios from 'axios'
+  import JToolbarDropdown from '@/components/JToolbarDropdown'
 
   export default {
     name: 'App',
+    components: {JToolbarDropdown},
     data () {
       return {
         open: true,
@@ -73,14 +54,14 @@
     },
     computed: {
       items () {
-        if (this.routeName.endsWith('Graph')) {
+        if (this.routeName.endsWith('Graph') || 'lsdkfj') {
           return []
         }
 
         let state = this.$store.state
         if (state.displayCourses) {
           return state.courses
-            .map(course => ({title: course.name, headline: course.title || 'No Title', to: `/courses/${course.name}`}))
+            .map(course => ({title: course.number, headline: course.title || 'No Title', to: `/courses/${course.number}`}))
         } else {
           return state.benchmarks
             .map(benchmark => ({title: benchmark.name, headline: benchmark.accreditor || 'No Accreditor', to: `/benchmarks/${benchmark.name}`}))
@@ -92,47 +73,38 @@
       routeName () {
         return this.$route.name || ''
       },
-      searchTerm () {
-        return this.filter.toLowerCase()
-      },
       filteredItems () {
         return this.items.filter(this.filterFunction)
       },
-      ...mapGetters(['authenticated'])
+      ...mapGetters(['authenticated']),
+      ...mapState(['loading'])
     },
     methods: {
-      filterFunction (item) {
-        return item.title.toLowerCase().startsWith(this.searchTerm)
-      },
       logout () {
         this.$store.dispatch('logout')
       }
     },
     created () {
       axios.interceptors.response.use(undefined, err => {
+        console.log(err.config)
         return new Promise(() => {
-          // noinspection JSUnresolvedVariable
-          if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          if (err.config && err.response && err.response.status === 401) {
             this.$store.dispatch('logout')
           }
           throw err
         })
       })
-
-      this.$store.dispatch('loadItems', 'courses')
-      this.$store.dispatch('loadItems', 'benchmarks')
+    },
+    watch: {
+      authenticated: {
+        immediate: true,
+        handler () {
+          if (this.authenticated) {
+            this.$store.dispatch('loadItems', 'courses')
+            this.$store.dispatch('loadItems', 'benchmarks')
+          }
+        }
+      }
     }
 }
 </script>
-
-<style scoped>
-  .title {
-    font-weight: 400!important;
-    font-size: 16px!important;
-  }
-
-  .sub-title {
-    color: rgba(0, 0, 0, .65);
-    font-weight: 400!important;
-  }
-</style>

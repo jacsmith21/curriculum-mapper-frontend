@@ -14,7 +14,7 @@
         <v-subheader>Information</v-subheader>
         <v-list-tile>
           <v-list-tile-content>
-            <v-list-tile-title>{{ selectedCourse.name }}</v-list-tile-title>
+            <v-list-tile-title>{{ selectedCourse.number }}</v-list-tile-title>
             <v-list-tile-sub-title>{{ selectedCourse.title || 'No Title' }}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -89,13 +89,13 @@
         }
 
         // Have we already seen this node before?
-        if (states[course.name] !== this.options.none) {
+        if (states[course.number] !== this.options.none) {
           // Only return if we are not at the start. We don't want to set the color as the start is set to 'current'
           if (!start) {
             return
           }
         } else {
-          states[course.name] = option
+          states[course.number] = option
         }
 
         for (const name of course[key] || []) {
@@ -131,7 +131,7 @@
           if (prereqName in this.courseLookup) {
             let prereq = this.courseLookup[prereqName]
             prereq.post = prereq.post || []
-            prereq.post.push(root.name)
+            prereq.post.push(root.number)
           }
           root.prereqs.push(prereqName)
         } else {
@@ -151,7 +151,7 @@
     },
     computed: {
       nodes () {
-        return this.filteredCourses.map(course => ({id: course.name}))
+        return this.filteredCourses.map(course => ({id: course.number}))
       },
       links () {
         const links = []
@@ -187,14 +187,14 @@
         })
       },
       filteredCourses () {
-        return this.courses.filter(course => course.name.startsWith(this.filter))
+        return this.courses.filter(course => course.number.startsWith(this.filter))
       },
       courseLookup () {
-        return this.parsed.reduce((lookup, course) => { lookup[course.name] = course; return lookup }, {})
+        return this.parsed.reduce((lookup, course) => { lookup[course.number] = course; return lookup }, {})
       },
       indexLookup () {
         let i = 0
-        return this.parsed.reduce((lookup, course) => { lookup[course.name] = i; i++; return lookup }, {})
+        return this.parsed.reduce((lookup, course) => { lookup[course.number] = i; i++; return lookup }, {})
       },
       selectedCourse () {
         return this.courseLookup[this.selected] || {}
@@ -224,11 +224,11 @@
 
         // initialize each course to nothing
         for (const course of this.courses) {
-          states[course.name] = this.options.none
+          states[course.number] = this.options.none
         }
 
         // set the current course the `current`
-        states[this.selectedCourse.name] = this.options.current
+        states[this.selectedCourse.number] = this.options.current
 
         this.dfs(this.selectedCourse, 'prereqs', this.options.prereq, states)
         this.dfs(this.selectedCourse, 'coreqs', this.options.coreq, states)

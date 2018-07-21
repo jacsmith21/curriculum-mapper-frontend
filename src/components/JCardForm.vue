@@ -1,21 +1,13 @@
 <template>
-  <v-card>
+  <v-container class="form-container">
 
-    <v-card-title
-      primary-title
-      class="j-flex-center">
-      <div class="headline" style="font-size: 35px!important;">{{ title }}</div>
-    </v-card-title>
+    <h1>{{ title }}</h1>
 
-    <v-card-text>
-      <v-form>
-        <v-container grid-list-xl fluid>
-          <v-layout wrap>
-            <slot></slot>
-          </v-layout>
-        </v-container>
-      </v-form>
-    </v-card-text>
+    <v-form>
+      <v-container grid-list-lg style="padding-top: 0">
+        <slot></slot>
+      </v-container>
+    </v-form>
 
     <v-divider class="mt-5"></v-divider>
     <v-card-actions>
@@ -24,7 +16,7 @@
       <v-btn color="primary" flat @click="submit">{{ submitText }}</v-btn>
     </v-card-actions>
 
-  </v-card>
+  </v-container>
 </template>
 
 <script>
@@ -41,5 +33,15 @@
 </script>
 
 <style scoped>
+  h1 {
+    font-weight: 300;
+    font-size: 2.4rem;
+    -moz-osx-font-smoothing: inherit;
+    margin-bottom: 1.5rem;
+    padding-left: 16px;
+  }
 
+  .form-container {
+    max-width: 850px;
+  }
 </style>

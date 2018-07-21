@@ -33,13 +33,14 @@ export const router = new Router({
       beforeEnter: authenticate
     },
     {
-      name: 'courses',
-      path: '/courses',
+      name: 'createCourse',
+      path: '/courses/create',
       component: CourseForm,
       beforeEnter: authenticate
     },
     {
-      path: '/benchmarks',
+      name: 'createBenchmark',
+      path: '/benchmarks/create',
       component: BenchmarkForm,
       beforeEnter: authenticate
     },
@@ -55,7 +56,7 @@ export const router = new Router({
       beforeEnter: authenticate
     },
     {
-      path: '/courses/:name',
+      path: '/courses/:name?',
       component: Course,
       beforeEnter: authenticate
     },

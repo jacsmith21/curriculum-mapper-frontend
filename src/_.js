@@ -15,7 +15,7 @@ export const sleep = (ms) => {
 
 export const computeCourseItems = (course) => {
   return [
-    ['Name', 'name', course.name],
+    ['Number', 'number', course.number],
     ['Title', 'title', course.title],
     ['Description', 'description', course.description],
     ['Maintainer', 'maintainer', course.maintainer],

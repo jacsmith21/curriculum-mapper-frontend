@@ -1,8 +1,10 @@
 <template>
   <sidebar-base>
     <j-card-form title="Benchmark Form" :submit="submit">
-      <j-text-field label="Name" v-model="name" xs12></j-text-field>
-      <j-select label="Accreditor" v-model="accreditor" :items="['CAEB', 'CBEPS', 'IHO']" xs12></j-select>
+      <v-layout wrap>
+        <j-text-field label="Name" v-model="name" xs12></j-text-field>
+        <j-select label="Accreditor" v-model="accreditor" :items="['CAEB', 'CBEPS', 'IHO']" xs12></j-select>
+      </v-layout>
     </j-card-form>
   </sidebar-base>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <j-compare object="courses" :compute-items="computeCourseItems" :item="benchmark"></j-compare>
+  <j-compare object="courses" :compute-items="computeCourseItems" :item="course"></j-compare>
 </template>
 
 <script>
@@ -10,10 +10,10 @@
     name: 'CourseCompare',
     components: {JCompare},
     computed: {
-      benchmark () {
-        return this.$store.getters.courseNameLookup[this.name] || {}
+      course () {
+        return this.$store.getters.courseNumberLookup[this.number] || {}
       },
-      name () {
+      number () {
         return this.$route.params.name
       }
     },
