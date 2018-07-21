@@ -179,9 +179,6 @@
         }
       }
     },
-    mounted () {
-      this.$store.state.displayCourses = true
-    },
     created () {
       if (this.edit) {
         this.course = this.$store.getters.courseNumberLookup[this.$route.params.name]

@@ -27,9 +27,6 @@
           console.error(err)
         })
       }
-    },
-    mounted () {
-      this.$store.state.displayCourses = false
     }
   }
 </script>

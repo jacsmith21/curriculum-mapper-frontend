@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer :v-model="open" clipped fixed app>
+  <v-navigation-drawer v-model="open" :clipped="clipped" fixed app :mobile-break-point="mobileBreakPoint">
     <v-list two-line>
       <v-list-tile>
         <v-text-field
@@ -28,14 +28,17 @@
 </template>
 
 <script>
+  import { mapFields } from 'vuex-map-fields'
+  import { mapState } from 'vuex'
+
   export default {
     name: 'JDrawer',
     props: {items: {type: Array, default: []}},
     data () {
       return {
         focused: false,
-        open: true,
-        filter: ''
+        filter: '',
+        mobileBreakPoint: 1264
       }
     },
     computed: {
@@ -44,7 +47,12 @@
       },
       searchTerm () {
         return this.filter.toLowerCase()
-      }
+      },
+      clipped () {
+        return this.width >= this.mobileBreakPoint
+      },
+      ...mapFields(['open']),
+      ...mapState(['width'])
     },
     methods: {
       filterFunction (item) {

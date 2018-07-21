@@ -4,9 +4,7 @@
       <router-view/>
 
       <v-toolbar app clipped-left clipped-right color="amber">
-        <v-btn v-if="hamburger" icon @click.stop="open = !open">
-          <v-icon>menu</v-icon>
-        </v-btn>
+        <v-toolbar-side-icon @click.stop="open = !open"></v-toolbar-side-icon>
 
         <v-toolbar-items class="hidden-sm-and-down" style="margin-left: 10px;">
           <v-btn flat to="/courses">Courses</v-btn>
@@ -14,11 +12,9 @@
         </v-toolbar-items>
 
         <v-spacer></v-spacer>
-        <j-toolbar-dropdown
-          :items="[['Course', {name: 'createCourse'}], ['Benchmark', {name: 'createBenchmark'}]]" label="Create">
+        <j-toolbar-dropdown :items="createItems" label="Create">
         </j-toolbar-dropdown>
-        <j-toolbar-dropdown
-          :items="[['Prerequisite Graph', {name: 'prereqGraph'}], ['Benchmark Graph', {name: 'benchmarkGraph'}], ['Grouping Graph', '/grouping'], ['Logout', logout]]">
+        <j-toolbar-dropdown :items="userItems">
           <v-btn fab flat style="margin: 0">
             <v-icon medium>account_circle</v-icon>
           </v-btn>
@@ -35,7 +31,8 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
+  import { mapFields } from 'vuex-map-fields'
   import axios from 'axios'
   import JToolbarDropdown from '@/components/JToolbarDropdown'
 
@@ -44,25 +41,27 @@
     components: {JToolbarDropdown},
     data () {
       return {
-        open: true,
         title: 'Curriculum Mapper',
         filter: '',
         focused: false
       }
     },
     computed: {
-      hamburger () {
-        return this.authenticated
+      createItems () {
+        return [['Course', {name: 'createCourse'}], ['Benchmark', {name: 'createBenchmark'}]]
       },
-      routeName () {
-        return this.$route.name || ''
+      userItems () {
+        return [['Prerequisite Graph', {name: 'prereqGraph'}], ['Benchmark Graph', {name: 'benchmarkGraph'}], ['Grouping Graph', '/grouping'], ['Logout', this.logout]]
       },
-      ...mapGetters(['authenticated']),
-      ...mapState(['loading'])
+      ...mapGetters(['authenticated', 'hamburger']),
+      ...mapFields(['open', 'width'])
     },
     methods: {
       logout () {
         this.$store.dispatch('logout')
+      },
+      handleResize () {
+        this.width = window.innerWidth
       }
     },
     created () {
@@ -75,17 +74,11 @@
           throw err
         })
       })
+
+      window.addEventListener('resize', this.handleResize)
     },
-    watch: {
-      authenticated: {
-        immediate: true,
-        handler () {
-          if (this.authenticated) {
-            this.$store.dispatch('loadItems', 'courses')
-            this.$store.dispatch('loadItems', 'benchmarks')
-          }
-        }
-      }
+    destroyed () {
+      window.removeEventListener('resize', this.handleResize)
     }
 }
 </script>

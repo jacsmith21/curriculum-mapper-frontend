@@ -11,9 +11,6 @@ const base = process.env.SERVER_BASE
 Vue.use(Vuex)
 
 const state = {
-  displayCourses: true,
-  title: 'Curriculum Mapper',
-  loading: false,
   courses: [],
   benchmarks: [],
   blank: {
@@ -37,19 +34,23 @@ const state = {
   },
   benchmark: {name: '', accreditor: ''},
   history: {},
-  course: null,
   // the states of the objects (courses / benchmarks at various datetimes)
   // for example {[an_id]: {'June 14': {...}}, [another_id]: {...}}
   // This contains both courses and benchmarks; however, the _id values are unlikely to overlap
   states: {},
   parsed: [],
-  token: localStorage.getItem('user-token') || ''
+  token: localStorage.getItem('user-token') || '',
+  open: true,
+  width: window.innerWidth
 }
 
 // initialize blank form
 state.form = copy(state.blank)
 
 const getters = {
+  hamburger: (_, getters) => {
+    return getters.authenticated
+  },
   courseNumberLookup: (state) => {
     return makeLookup(state.courses, 'number')
   },

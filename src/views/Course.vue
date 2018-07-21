@@ -106,7 +106,10 @@
       ...mapState(['courses'])
 
     },
-    methods: {computeCourseItems}
+    methods: {computeCourseItems},
+    mounted () {
+      this.$store.dispatch('loadItems', 'courses')
+    }
   }
 </script>
 
