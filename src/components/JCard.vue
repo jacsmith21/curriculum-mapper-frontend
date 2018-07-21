@@ -3,15 +3,17 @@
 
     <v-card>
       <v-list three-line>
-        <template v-for="(item, index) in items">
-          <v-divider v-if="index !== 0"></v-divider>
-          <v-list-tile :style="tileStyle(item[1])">
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item[0] }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ item[2] || 'None' }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </template>
+        <slot>
+          <template v-for="(item, index) in items">
+            <v-divider v-if="index !== 0"></v-divider>
+            <v-list-tile :style="tileStyle(item[1])">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item[0] }}</v-list-tile-title>
+                <v-list-tile-sub-title>{{ item[2] || 'None' }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </template>
+        </slot>
       </v-list>
 
       <v-card-actions v-show="actions || date">

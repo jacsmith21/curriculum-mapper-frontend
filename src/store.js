@@ -30,7 +30,7 @@ const state = {
     assessments: [{assessmentType: '', description: ''}],
     averageGrade: '',
     percentFailure: '',
-    sections: [{section: '', instructor: ''}],
+    sections: [{section: '', instructor: '', sectionCount: 0}],
     auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
     caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
     benchmarks: []

@@ -7,10 +7,8 @@
         <v-btn v-if="hamburger" icon @click.stop="open = !open">
           <v-icon>menu</v-icon>
         </v-btn>
-        <!--<v-toolbar-title>{{ title }}</v-toolbar-title>-->
 
-        <v-btn fab icon :loading="loading"><v-icon medium>find_in_page</v-icon></v-btn>
-        <v-toolbar-items class="hidden-sm-and-down">
+        <v-toolbar-items class="hidden-sm-and-down" style="margin-left: 10px;">
           <v-btn flat to="/courses">Courses</v-btn>
           <v-btn flat to="/benchmarks">Benchmarks</v-btn>
         </v-toolbar-items>
@@ -53,28 +51,11 @@
       }
     },
     computed: {
-      items () {
-        if (this.routeName.endsWith('Graph') || 'lsdkfj') {
-          return []
-        }
-
-        let state = this.$store.state
-        if (state.displayCourses) {
-          return state.courses
-            .map(course => ({title: course.number, headline: course.title || 'No Title', to: `/courses/${course.number}`}))
-        } else {
-          return state.benchmarks
-            .map(benchmark => ({title: benchmark.name, headline: benchmark.accreditor || 'No Accreditor', to: `/benchmarks/${benchmark.name}`}))
-        }
-      },
       hamburger () {
-        return !!this.items.length && this.authenticated
+        return this.authenticated
       },
       routeName () {
         return this.$route.name || ''
-      },
-      filteredItems () {
-        return this.items.filter(this.filterFunction)
       },
       ...mapGetters(['authenticated']),
       ...mapState(['loading'])

@@ -9,7 +9,7 @@
       </v-container>
     </v-form>
 
-    <v-divider class="mt-5"></v-divider>
+    <v-divider class="mt-3"></v-divider>
     <v-card-actions>
       <v-btn v-if="cancelText" flat @click="cancel">{{ cancelText }}</v-btn>
       <v-spacer></v-spacer>

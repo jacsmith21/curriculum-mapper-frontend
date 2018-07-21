@@ -45,7 +45,7 @@ export const router = new Router({
       beforeEnter: authenticate
     },
     {
-      path: '/benchmarks/:name',
+      path: '/benchmarks/:name?',
       component: Benchmark,
       beforeEnter: authenticate
     },

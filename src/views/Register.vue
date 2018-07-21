@@ -1,7 +1,7 @@
 <template>
   <v-slide-y-transition mode="out-in">
     <v-layout class="j-flex-column j-flex-center">
-      <j-card-form title="Register" :submit="register" style="max-width: 600px" submit-text="Register">
+      <j-card-form title="Register" :submit="register" style="max-width: 600px; display: table" submit-text="Register">
         <j-text-field xs12 label="Username" v-model="user.username"></j-text-field>
         <j-text-field xs12 label="Initial" v-model="user.initial"></j-text-field>
         <j-text-field xs12 label="Password" v-model="user.password" type="password"></j-text-field>
@@ -41,7 +41,6 @@
 
 <style scoped>
   .register {
-    padding-left: 14px;
     color: #4a4a4a;
     margin-top: 10px;
   }
