@@ -16,9 +16,7 @@
         </slot>
       </v-list>
 
-      <v-card-actions v-show="actions || date">
-        <j-date-picker v-model="dateText" v-show="date"></j-date-picker>
-
+      <v-card-actions v-show="actions">
         <v-spacer></v-spacer>
         <v-btn v-for="button in buttons" flat @click="button.handle" v-show="actions" :key="button.icon">
           <v-icon right left>{{ button.icon }}</v-icon>
@@ -33,32 +31,68 @@
       app
       right
     >
-      <v-list two-line>
-        <v-subheader>Version History</v-subheader>
-        <template v-for="(patch, index) in patches">
-          <v-list-tile ripple :key="index" class="tile" @click="">
+      <v-tabs v-model="active" grow>
+        <v-tab ripple>Major</v-tab>
+        <v-tab ripple>Minor</v-tab>
+      </v-tabs>
 
-            <v-list-tile-content>
-              <v-list-tile-title>{{ opLabelMap[patch.op] }} {{ processKey(patch.path) }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ patch.value || 'None' }}</v-list-tile-sub-title>
-            </v-list-tile-content>
+      <v-tabs-items v-model="active">
+        <v-tab-item>
+          <v-list two-line>
+            <template v-for="(revision, index) in majorRevisions">
+              <v-list-tile ripple :key="index" class="tile" @click="">
 
-            <v-list-tile-action>
-              <v-list-tile-action-text>{{ patch.time }}</v-list-tile-action-text>
-              <v-list-tile-action-text></v-list-tile-action-text>
-            </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ firstLetterUpper(revision.type) }} Revision</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ revision.operations.length }} Operations</v-list-tile-sub-title>
+                  <!--<v-list-tile-title>{{ opLabelMap[revision.op] }} {{ processKey(revision.path) }}</v-list-tile-title>-->
+                  <!--<v-list-tile-sub-title>{{ revision.value || 'None' }}</v-list-tile-sub-title>-->
+                </v-list-tile-content>
 
-          </v-list-tile>
-          <v-divider v-if="index + 1 < patch.length" :key="index"></v-divider>
-        </template>
-      </v-list>
+                <v-list-tile-action>
+                  <v-list-tile-action-text>{{ revision.time }}</v-list-tile-action-text>
+                  <v-btn icon @click="expand(index)">
+                    <v-icon>expand_more</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+
+              </v-list-tile>
+              <v-divider v-if="index + 1 < majorRevisions.length" :key="index"></v-divider>
+            </template>
+          </v-list>
+        </v-tab-item>
+        <v-tab-item>
+          <v-list two-line>
+            <template v-for="(revision, index) in revisions">
+              <v-list-tile ripple :key="index" class="tile" @click="">
+
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ firstLetterUpper(revision.type) }} Revision</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ revision.operations.length }} Operations</v-list-tile-sub-title>
+                  <!--<v-list-tile-title>{{ opLabelMap[revision.op] }} {{ processKey(revision.path) }}</v-list-tile-title>-->
+                  <!--<v-list-tile-sub-title>{{ revision.value || 'None' }}</v-list-tile-sub-title>-->
+                </v-list-tile-content>
+
+                <v-list-tile-action>
+                  <v-list-tile-action-text>{{ revision.time }}</v-list-tile-action-text>
+                  <v-btn icon @click="expand(index)">
+                    <v-icon>expand_more</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+
+              </v-list-tile>
+              <v-divider v-if="index + 1 < majorRevisions.length" :key="index"></v-divider>
+            </template>
+          </v-list>
+        </v-tab-item>
+      </v-tabs-items>
+
     </v-navigation-drawer>
 
   </v-container>
 </template>
 
 <script>
-  import JDatePicker from '@/components/inputs/JDatePicker'
   import { router } from '@/router'
 
   export default {
@@ -68,16 +102,15 @@
       item: {required: true, type: Object},
       object: String,
       actions: {type: Boolean, default: false},
-      date: {type: Boolean, default: false},
       tileStyle: {type: Function, default: () => {}},
       dateChange: {type: Function, default: () => {}}
     },
-    components: {JDatePicker},
     data () {
       return {
         showHistory: false,
         dateText: null,
-        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'}
+        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'},
+        active: ''
       }
     },
     computed: {
@@ -87,6 +120,19 @@
         } else {
           return this.computeItems(this.item)
         }
+      },
+      majorRevisions () {
+        return this.revisions.filter(revision => revision.type === 'major')
+      },
+      revisions () {
+        let revisions = {}
+        this.patches.map(patch => {
+          if (!(patch.time in revisions)) {
+            revisions[patch.time] = {type: patch.type, time: patch.time, operations: []}
+          }
+          revisions[patch.time].operations.push(patch)
+        })
+        return Object.values(revisions)
       },
       patches () {
         return this.$store.state.history[this._id] || []
@@ -129,6 +175,10 @@
         router.push({name: `${this.object}/compare`, params: {name: this.name}})
       },
       processKey (key) {
+        if (!key) {
+          return key
+        }
+
         const keys = key.split('/')
         const lastKey = keys[keys.length - 1]
         return this.firstLetterUpper(lastKey)
@@ -136,6 +186,9 @@
       firstLetterUpper (string) {
         // noinspection JSUnresolvedFunction
         return string.charAt(0).toUpperCase() + string.slice(1)
+      },
+      expand (index) {
+
       }
     },
     mounted () {

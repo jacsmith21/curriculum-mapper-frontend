@@ -11,23 +11,83 @@
 
     <v-divider class="mt-3"></v-divider>
     <v-card-actions>
-      <v-btn v-if="cancelText" flat @click="cancel">{{ cancelText }}</v-btn>
+      <v-btn v-if="cancel" flat @click="handleCancel"> Cancel </v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" flat @click="submit">{{ submitText }}</v-btn>
+      <v-select v-if="edit" v-model="revisionType" :items="revisionItems" style="max-width: 150px" :error-messages="errorMessages"></v-select>
+      <v-btn color="primary" flat @click="handleSubmit">{{ submitText }}</v-btn>
     </v-card-actions>
 
   </v-container>
 </template>
 
 <script>
+  import { router } from '@/router'
+
   export default {
     name: 'JCardForm',
     props: {
       title: String,
-      submit: {type: Function, required: true},
-      cancel: Function,
-      submitText: {type: String, default: 'Submit'},
-      cancelText: String
+      cancel: {type: Boolean, default: false},
+      object: {type: String, required: true},
+      editItem: {type: Object, required: false}
+    },
+    data () {
+      return {
+        errorMessages: [],
+        revisionType: '',
+        revisionItems: ['Minor Revision', 'Major Revision'],
+        revisionMap: {
+          'Minor Revision': 'minor',
+          'Major Revision': 'major'
+        }
+      }
+    },
+    computed: {
+      submitText () {
+        if (this.edit) {
+          return 'Save'
+        } else {
+          return 'Submit'
+        }
+      },
+      edit () {
+        return !!this.editItem
+      },
+      type () {
+        return this.revisionMap[this.revisionType]
+      }
+    },
+    methods: {
+      handleSubmit () {
+        if (this.edit) {
+          if (!this.type) {
+            this.errorMessages = ['Revision type is required.']
+            return
+          }
+
+          this.$store.dispatch('patchItem', {object: this.object, item: this.editItem, type: this.type})
+            .then(() => {
+              router.go(-1)
+            })
+            .catch(err => {
+              throw err
+            })
+        } else {
+          this.$store.dispatch('addItem', this.object)
+            .catch(err => {
+              throw err
+            })
+        }
+      },
+      handleCancel () {}
+    },
+    watch: {
+      editItem: {
+        immediate: true,
+        handler () {
+          this.$store.commit('resetForm', {object: this.object, item: this.editItem})
+        }
+      }
     }
   }
 </script>
@@ -36,7 +96,6 @@
   h1 {
     font-weight: 300;
     font-size: 2.4rem;
-    -moz-osx-font-smoothing: inherit;
     margin-bottom: 1.5rem;
     padding-left: 16px;
   }

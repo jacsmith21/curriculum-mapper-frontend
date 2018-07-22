@@ -25,6 +25,7 @@ const authenticate = (to, from, next) => {
 }
 
 export const router = new Router({
+  mode: 'history',
   routes: [
     {
       name: 'home',

@@ -37,9 +37,6 @@
       ...mapGetters(['benchmarkNameLookup']),
       ...mapState(['benchmarks'])
     },
-    methods: {computeBenchmarkItems},
-    mounted () {
-      this.$store.dispatch('loadItems', 'benchmarks')
-    }
+    methods: {computeBenchmarkItems}
   }
 </script>

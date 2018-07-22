@@ -105,7 +105,10 @@
       loaded () {
         return !this._.isEmpty(this.courses) && !this._.isEmpty(this.benchmarks)
       },
-      ...mapState(['courses', 'benchmarks']),
+      courses () {
+        return this.$store.state.courses.map(course => ({...course, name: course.number}))
+      },
+      ...mapState(['benchmarks']),
       ...mapGetters({benchmarkLookup: 'benchmarkIdLookup', courseLookup: 'courseIdLookup'})
     }
   }

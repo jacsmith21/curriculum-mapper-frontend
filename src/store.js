@@ -7,32 +7,38 @@ import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 import * as _ from 'lodash'
 
-const base = process.env.SERVER_BASE
+const instance = axios.create({baseURL: process.env.SERVER_BASE})
+
 Vue.use(Vuex)
 
 const state = {
   courses: [],
   benchmarks: [],
-  blank: {
-    number: '',
-    title: '',
-    maintainer: '',
-    description: '',
-    inClass: '',
-    inLab: '',
-    learningOutcomes: [{value: ''}],
-    prerequisites: '',
-    recommended: '',
-    corequisites: '',
-    assessments: [{assessmentType: '', description: ''}],
-    averageGrade: '',
-    percentFailure: '',
-    sections: [{section: '', instructor: '', sectionCount: 0}],
-    auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
-    caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
-    benchmarks: []
+  forms: {
+    courses: {
+      number: '',
+      title: '',
+      maintainer: '',
+      description: '',
+      inClass: '',
+      inLab: '',
+      learningOutcomes: [{value: ''}],
+      prerequisites: '',
+      recommended: '',
+      corequisites: '',
+      assessments: [{assessmentType: '', description: ''}],
+      averageGrade: '',
+      percentFailure: '',
+      sections: [{section: '', instructor: '', sectionCount: 0}],
+      auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
+      caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
+      benchmarks: []
+    },
+    benchmarks: {
+      name: '',
+      accreditor: ''
+    }
   },
-  benchmark: {name: '', accreditor: ''},
   history: {},
   // the states of the objects (courses / benchmarks at various datetimes)
   // for example {[an_id]: {'June 14': {...}}, [another_id]: {...}}
@@ -44,8 +50,14 @@ const state = {
   width: window.innerWidth
 }
 
-// initialize blank form
-state.form = copy(state.blank)
+// duplicate forms for resetting
+Object.keys(state.forms).map(key => {
+  const form = state.forms[key]
+  state.forms[key] = {
+    blank: copy(form),
+    current: form
+  }
+})
 
 const getters = {
   hamburger: (_, getters) => {
@@ -68,20 +80,29 @@ const getters = {
 }
 
 const actions = {
-  addCourse ({ commit, state }) {
-    let course = copy(state.form)
-    course.learningOutcomes = course.learningOutcomes.map(outcome => outcome.value)
-    axios.post(`${base}/courses`, course).then(() => {
-      commit('addCourse', course)
-    })
+  addItem ({ commit, state }, object) {
+    let item = copy(state.forms[object].current)
+
+    if (object === 'courses') {
+      item.learningOutcomes = item.learningOutcomes.map(outcome => outcome.value)
+    }
+
+    instance.post(`/${object}`, item)
+      .then(() => {
+        commit('addItem', {item, object})
+      })
+      .catch(err => {
+        throw err
+      })
   },
   deleteItem ({ commit }, {object, _id}) {
-    axios.delete(`${base}/${object}/${_id}`).then(() => {
+    instance.delete(`/${object}/${_id}`).then(() => {
       commit('removeItem', {object: object, _id: _id})
     })
     router.go(-1)
   },
-  patchCourse ({ commit, getters, state }, oldCourse) {
+  patchItem ({ commit, getters, state }, { item, object, type }) {
+    let oldItem = item
     const filter = (obj) => {
       if (Array.isArray(obj)) {
         let indices = []
@@ -106,34 +127,33 @@ const actions = {
       }
     }
 
-    let newCourse = copy(state.form)
-    filter(newCourse)
+    let newItem = copy(state.forms[object].current)
+    filter(newItem)
 
-    oldCourse = copy(oldCourse)
-    const index = oldCourse.index
-    const _id = oldCourse._id
-    delete oldCourse._id
-    delete oldCourse.index
-    filter(oldCourse)
+    oldItem = copy(oldItem)
+    const index = oldItem.index
+    const _id = oldItem._id
+    delete oldItem._id
+    delete oldItem.index
+    filter(oldItem)
 
-    if (oldCourse.learningOutcomes) {
-      oldCourse.learningOutcomes = oldCourse.learningOutcomes.map(outcome => ({value: outcome}))
+    if (object === 'courses' && oldItem.learningOutcomes) {
+      oldItem.learningOutcomes = oldItem.learningOutcomes.map(outcome => ({value: outcome}))
     }
 
-    const patch = jsonpatch.compare(oldCourse, newCourse)
-    axios.patch(`${base}/courses/${_id}`, patch).then(() => {
-      commit('patchCourse', [newCourse, index])
-      router.push(`/courses/${oldCourse.number}`)
+    const patch = jsonpatch.compare(oldItem, newItem)
+    instance.patch(`/${object}/${_id}?type=${type}`, patch).then(() => {
+      commit('patchItem', {item: newItem, index, object})
+      router.go(-1)
     })
   },
   addBenchmark ({ commit, state }) {
-    axios.post(`${base}/benchmarks`, state.benchmark).then(() => {
+    instance.post(`/benchmarks`, state.benchmark).then(() => {
       commit('addBenchmark', state.benchmark)
     })
   },
   loadItems ({ commit }, object) {
-    axios
-      .get(`${base}/${object}`)
+    instance.get(`/${object}`)
       .then(r => {
         commit('setItems', {items: r.data, object: object})
       })
@@ -142,31 +162,27 @@ const actions = {
       })
   },
   loadParsed ({ commit }) {
-    return new Promise((resolve, reject) => {
-      axios.get(`${base}/parse`)
-        .then(r => {
-          commit('setParsed', r.data)
-        }, err => {
-          reject(err)
-        })
-    })
+    instance.get(`/parse`)
+      .then(r => {
+        commit('setParsed', r.data)
+      }, err => {
+        throw err
+      })
   },
   loadHistory ({ commit, state }, {object, _id}) {
-    return new Promise((resolve, reject) => {
-      if (!(_id in state.history)) {
-        axios.get(`${base}/${object}/${_id}/history`)
-          .then(res => {
-            commit('addPatch', {patch: res.data, _id: _id})
-            resolve()
-          }, err => {
-            reject(err)
-          })
-      }
-      resolve(state.history[_id])
-    })
+    if (_id in state.history) {
+      return
+    }
+
+    instance.get(`/${object}/${_id}/history`)
+      .then(res => {
+        commit('addPatch', {patch: res.data, _id: _id})
+      }, err => {
+        throw err
+      })
   },
   loadAtDate ({ commit }, { object, _id, date }) {
-    axios.get(`${base}/${object}/${_id}?date=${date}`)
+    instance.get(`/${object}/${_id}?date=${date}`)
       .then(res => {
         commit('setObjectState', {object: object, course: res.data, date: date})
       }, err => {
@@ -174,7 +190,7 @@ const actions = {
       })
   },
   login ({ commit, dispatch }, user) {
-    axios.post(`${base}/login`, user)
+    instance.post(`/login`, user)
       .then(r => {
         localStorage.setItem('user-token', r.data)
         axios.defaults.headers.common['Authorization'] = r.data
@@ -186,7 +202,7 @@ const actions = {
       })
   },
   register ({ dispatch, commit }, user) {
-    axios.post(`${base}/register`, user)
+    instance.post(`/register`, user)
       .then(() => dispatch('login', user))
       .catch(err => {
         commit('setErrorMessage', err)
@@ -199,17 +215,14 @@ const actions = {
 }
 
 const mutations = {
-  addCourse (state, course) {
-    state.courses.push(course)
+  addItem (state, {object, item}) {
+    state[object].push(item)
   },
   removeItem (state, {object, _id}) {
     state[object] = state[object].filter(item => _id !== item._id)
   },
-  patchCourse (state, [course, index]) {
-    state.courses[index] = course
-  },
-  addBenchmark (state, strand) {
-    state.benchmarks.push(strand)
+  patchItem (state, {object, item, index}) {
+    state[object][index] = item
   },
   clickedDynamicInput (state, {key, index}) {
     let array = state
@@ -234,16 +247,18 @@ const mutations = {
     }
     state[object] = items
   },
-  resetForm (state, course) {
-    console.log('Resetting the form!')
-    course = course || {}
-    course = copy(course)
-    if (course.learningOutcomes) {
-      course.learningOutcomes = course.learningOutcomes.map(outcome => ({value: outcome}))
+  resetForm (state, {object, item}) {
+    console.info('Resetting the form!', item)
+    item = item || {}
+    item = copy(item)
+    if (object === 'course') {
+      if (item.learningOutcomes) {
+        item.learningOutcomes = item.learningOutcomes.map(outcome => ({value: outcome}))
+      }
     }
-    delete course._id
-    delete course.index
-    state.form = {...state.blank, ...course}
+    delete item._id
+    delete item.index
+    state.forms[object].current = {...state.forms[object].blank, ...item}
   },
   addPatch (state, {patch, _id}) {
     console.info('Adding patch!')

@@ -166,13 +166,16 @@
       nodeStyle () {
         Object.keys(this.nodeStyle).map(name => this.node.style(name, this.nodeStyle[name]))
       },
-      refresh () {
-        if (this.refresh) {
-          // This works to refresh the graph; however, I believe this render call occurs during the initial render.
-          // This means that we render the graph twice during startup. It's not a huge problem, but something that could
-          // be fixed
-          console.debug('Refreshing the graph!')
-          this.render()
+      refresh: {
+        immediate: true,
+        handler () {
+          if (this.refresh) {
+            // This works to refresh the graph; however, I believe this render call occurs during the initial render.
+            // This means that we render the graph twice during startup. It's not a huge problem, but something that could
+            // be fixed
+            console.debug('Refreshing the graph!')
+            this.render()
+          }
         }
       }
     }

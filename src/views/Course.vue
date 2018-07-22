@@ -1,7 +1,7 @@
 <template>
   <sidebar-base>
     <j-drawer :items="items"></j-drawer>
-    <j-card :item="course" actions date :compute-items="computeCourseItems" object="courses">
+    <j-card :item="course" actions :compute-items="computeCourseItems" object="courses">
       <!--<vue-markdown :source="markdown" class="markdown"></vue-markdown>-->
       <v-container grid-list-lg>
         <v-layout wrap>
@@ -11,7 +11,7 @@
               {{ course.number }}: {{ course.title }}
             </h1>
           </v-flex>
-          <v-flex>
+          <v-flex xs12>
             <p>
               {{ course.description || 'No Description' }}
             </p>
@@ -36,25 +36,24 @@
             <p>{{ course.recommended || 'No Recommended' }}</p>
           </v-flex>
 
-          <v-flex><h3>Sections</h3></v-flex>
-          <v-flex xs8 v-if="hasSections">
+          <v-flex xs4 v-if="hasSections">
             <h3>Instructor</h3>
           </v-flex>
-          <v-flex xs2 v-if="hasSections">
+          <v-flex xs4 v-if="hasSections">
             <h3>Section</h3>
           </v-flex>
-          <v-flex xs2 v-if="hasSections">
+          <v-flex xs4 v-if="hasSections">
             <h3>Section Count</h3>
           </v-flex>
           <template v-for="section in course.sections">
-            <v-flex xs8>
+            <v-flex>
               <p>{{ section.instructor }}</p>
             </v-flex>
-            <v-flex xs2>
+            <v-flex xs4>
               <p>{{ section.section }}</p>
             </v-flex>
-            <v-flex xs2>
-              <p>{{ section.sectionCount }}</p>
+            <v-flex xs4>
+              <p>{{ section.count }}</p>
             </v-flex>
           </template>
           <v-flex xs12 v-if="!hasSections">
@@ -106,10 +105,7 @@
       ...mapState(['courses'])
 
     },
-    methods: {computeCourseItems},
-    mounted () {
-      this.$store.dispatch('loadItems', 'courses')
-    }
+    methods: {computeCourseItems}
   }
 </script>
 

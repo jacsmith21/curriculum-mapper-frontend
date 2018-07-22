@@ -1,6 +1,6 @@
 <template>
   <sidebar-base>
-    <j-card-form title="Course Form" :submit="submit" :submit-text="edit ? 'Save' : 'Submit'">
+    <j-card-form title="Course Form" object="courses" :edit-item="course">
 
       <j-form-break title="Basic Information"></j-form-break>
       <v-layout wrap>
@@ -103,89 +103,34 @@
 
 <script>
   import JTextField from '@/components/inputs/JTextField'
-  import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
+  // import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
+  import { mapForm } from '@/_'
   import JSelect from '@/components/inputs/JSelect'
   import JChipSelect from '@/components/inputs/JChipSelect'
   import JDynamicField from '@/components/inputs/JDynamicField'
   import JFormBreak from '@/components/JFormBreak'
   import JCardForm from '@/components/JCardForm'
   import SidebarBase from '@/views/SidebarBase'
-  import { router } from '@/router'
 
   export default {
     name: 'CourseForm',
     components: { SidebarBase, JCardForm, JFormBreak, JDynamicField, JChipSelect, JSelect, JTextField },
-    props: {edit: {type: Boolean, default: false}},
     data () {
       return {
         caebItems: ['I', 'D', 'A'],
-        assessmentTypes: ['Test', 'Lab', 'Assignment'],
-        course: null
+        assessmentTypes: ['Test', 'Lab', 'Assignment']
       }
     },
     computed: {
       benchmarkItems () {
         return this.$store.state.benchmarks.map(benchmark => benchmark.name)
       },
-      ...mapFields(
-        [
-          'number',
-          'title',
-          'maintainer',
-          'description',
-          'corequisites',
-          'prerequisites',
-          'recommended',
-          'percentFailure',
-          'averageGrade',
-          'inLab',
-          'inClass',
-          'auDistribution.math',
-          'auDistribution.naturalScience',
-          'auDistribution.complementaryStudies',
-          'auDistribution.engineeringScience',
-          'auDistribution.engineeringDesign',
-          'caebAttributes.knowledgeBase',
-          'caebAttributes.problemAnalysis',
-          'caebAttributes.investigation',
-          'caebAttributes.design',
-          'caebAttributes.tools',
-          'caebAttributes.team',
-          'caebAttributes.communication',
-          'caebAttributes.professionalism',
-          'caebAttributes.impacts',
-          'caebAttributes.ethics',
-          'caebAttributes.economics',
-          'caebAttributes.ll',
-          'benchmarks'
-        ].map(field => `form.${field}`)),
-      ...mapMultiRowFields([`form.learningOutcomes`, `form.assessments`, `form.sections`])
-    },
-    methods: {
-      submit () {
-        if (this.edit) {
-          this.$store.dispatch('patchCourse', this.course)
-            .then(() => {
-              router.go(-1)
-            })
-            .catch(err => {
-              console.error(err)
-            })
-        } else {
-          this.$store.dispatch('addCourse')
-            .catch(err => {
-              console.error(err)
-            })
-        }
-      }
-    },
-    created () {
-      if (this.edit) {
-        this.course = this.$store.getters.courseNumberLookup[this.$route.params.name]
-        this.$store.commit('resetForm', this.course)
-      } else {
-        this.$store.commit('resetForm')
-      }
+      course () {
+        const number = this.$route.params.name
+        console.info(number)
+        return this.$store.getters.courseNumberLookup[number]
+      },
+      ...mapForm('forms.courses.current')
     }
   }
 </script>

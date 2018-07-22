@@ -24,7 +24,7 @@
     </v-content>
     <v-footer fixed app>
       <v-layout column align-center>
-        <span>&copy; 2018 Jacob Smith</span>
+        <span>&copy; 2018 UNB</span>
       </v-layout>
     </v-footer>
   </v-app>
@@ -79,6 +79,17 @@
     },
     destroyed () {
       window.removeEventListener('resize', this.handleResize)
+    },
+    watch: {
+      authenticated: {
+        immediate: true,
+        handler () {
+          if (this.authenticated) {
+            this.$store.dispatch('loadItems', 'benchmarks')
+            this.$store.dispatch('loadItems', 'courses')
+          }
+        }
+      }
     }
 }
 </script>

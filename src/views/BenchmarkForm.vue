@@ -1,9 +1,9 @@
 <template>
   <sidebar-base>
-    <j-card-form title="Benchmark Form" :submit="submit">
+    <j-card-form title="Benchmark Form" object="benchmarks">
       <v-layout wrap>
         <j-text-field label="Name" v-model="name" xs12></j-text-field>
-        <j-select label="Accreditor" v-model="accreditor" :items="['CAEB', 'CBEPS', 'IHO']" xs12></j-select>
+        <j-select label="Accreditor" v-model="accreditor" :items="items" xs12></j-select>
       </v-layout>
     </j-card-form>
   </sidebar-base>
@@ -13,21 +13,18 @@
   import JTextField from '@/components/inputs/JTextField'
   import SidebarBase from '@/views/SidebarBase'
   import JCardForm from '@/components/JCardForm'
-  import { mapFields } from 'vuex-map-fields'
+  import { mapForm } from '@/_'
   import JSelect from '@/components/inputs/JSelect'
 
   export default {
     name: 'BenchmarkForm',
-    components: { JSelect, SidebarBase, JCardForm, JTextField },
-    computed: mapFields(['benchmark.name', 'benchmark.accreditor']),
-    methods: {
-      submit () {
-        this.$store.dispatch('addBenchmark').then(() => {
-        }).catch(err => {
-          console.error(err)
-        })
+    components: {JSelect, SidebarBase, JCardForm, JTextField},
+    data () {
+      return {
+        items: ['CAEB', 'CBEPS', 'IHO']
       }
-    }
+    },
+    computed: mapForm('forms.benchmarks.current')
   }
 </script>
 
