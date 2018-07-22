@@ -24,79 +24,18 @@
       </v-card-actions>
     </v-card>
 
-    <v-navigation-drawer
-      v-model="showHistory"
-      clipped
-      fixed
-      app
-      right
-    >
-      <v-tabs v-model="active" grow>
-        <v-tab ripple>Major</v-tab>
-        <v-tab ripple>Minor</v-tab>
-      </v-tabs>
-
-      <v-tabs-items v-model="active">
-        <v-tab-item>
-          <v-list two-line>
-            <template v-for="(revision, index) in majorRevisions">
-              <v-list-tile ripple :key="index" class="tile" @click="">
-
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ firstLetterUpper(revision.type) }} Revision</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ revision.operations.length }} Operations</v-list-tile-sub-title>
-                  <!--<v-list-tile-title>{{ opLabelMap[revision.op] }} {{ processKey(revision.path) }}</v-list-tile-title>-->
-                  <!--<v-list-tile-sub-title>{{ revision.value || 'None' }}</v-list-tile-sub-title>-->
-                </v-list-tile-content>
-
-                <v-list-tile-action>
-                  <v-list-tile-action-text>{{ revision.time }}</v-list-tile-action-text>
-                  <v-btn icon @click="expand(index)">
-                    <v-icon>expand_more</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-
-              </v-list-tile>
-              <v-divider v-if="index + 1 < majorRevisions.length" :key="index"></v-divider>
-            </template>
-          </v-list>
-        </v-tab-item>
-        <v-tab-item>
-          <v-list two-line>
-            <template v-for="(revision, index) in revisions">
-              <v-list-tile ripple :key="index" class="tile" @click="">
-
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ firstLetterUpper(revision.type) }} Revision</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ revision.operations.length }} Operations</v-list-tile-sub-title>
-                  <!--<v-list-tile-title>{{ opLabelMap[revision.op] }} {{ processKey(revision.path) }}</v-list-tile-title>-->
-                  <!--<v-list-tile-sub-title>{{ revision.value || 'None' }}</v-list-tile-sub-title>-->
-                </v-list-tile-content>
-
-                <v-list-tile-action>
-                  <v-list-tile-action-text>{{ revision.time }}</v-list-tile-action-text>
-                  <v-btn icon @click="expand(index)">
-                    <v-icon>expand_more</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-
-              </v-list-tile>
-              <v-divider v-if="index + 1 < majorRevisions.length" :key="index"></v-divider>
-            </template>
-          </v-list>
-        </v-tab-item>
-      </v-tabs-items>
-
-    </v-navigation-drawer>
+    <j-version-drawer :show="showHistory" :revisions="revisions"></j-version-drawer>
 
   </v-container>
 </template>
 
 <script>
   import { router } from '@/router'
+  import JVersionDrawer from '@/components/JVersionDrawer'
 
   export default {
     name: 'JCard',
+    components: {JVersionDrawer},
     props: {
       computeItems: {required: true, type: Function},
       item: {required: true, type: Object},
@@ -109,8 +48,8 @@
       return {
         showHistory: false,
         dateText: null,
-        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'},
-        active: ''
+        active: '',
+        expanded: []
       }
     },
     computed: {
@@ -120,9 +59,6 @@
         } else {
           return this.computeItems(this.item)
         }
-      },
-      majorRevisions () {
-        return this.revisions.filter(revision => revision.type === 'major')
       },
       revisions () {
         let revisions = {}
@@ -173,22 +109,6 @@
       },
       clickedCompare () {
         router.push({name: `${this.object}/compare`, params: {name: this.name}})
-      },
-      processKey (key) {
-        if (!key) {
-          return key
-        }
-
-        const keys = key.split('/')
-        const lastKey = keys[keys.length - 1]
-        return this.firstLetterUpper(lastKey)
-      },
-      firstLetterUpper (string) {
-        // noinspection JSUnresolvedFunction
-        return string.charAt(0).toUpperCase() + string.slice(1)
-      },
-      expand (index) {
-
       }
     },
     mounted () {
