@@ -16,7 +16,8 @@
         </slot>
       </v-list>
 
-      <v-card-actions v-show="actions">
+      <v-card-actions v-show="actions || date">
+        <j-date-picker v-model="dateText" v-if="date"></j-date-picker>
         <v-spacer></v-spacer>
         <v-btn v-for="button in buttons" flat @click="button.handle" v-show="actions" :key="button.icon">
           <v-icon right left>{{ button.icon }}</v-icon>
@@ -32,15 +33,17 @@
 <script>
   import { router } from '@/router'
   import JVersionDrawer from '@/components/JVersionDrawer'
+  import JDatePicker from '@/components/inputs/JDatePicker'
 
   export default {
     name: 'JCard',
-    components: {JVersionDrawer},
+    components: {JVersionDrawer, JDatePicker},
     props: {
       computeItems: {required: true, type: Function},
       item: {required: true, type: Object},
       object: String,
       actions: {type: Boolean, default: false},
+      date: {type: Boolean, default: false},
       tileStyle: {type: Function, default: () => {}},
       dateChange: {type: Function, default: () => {}}
     },
@@ -88,6 +91,7 @@
       buttons () {
         return [
           {icon: 'compare_arrows', handle: this.clickedCompare},
+          {icon: 'cloud_download', handle: this.clickedDownload},
           {icon: 'history', handle: this.clickedHistory},
           {icon: 'edit', handle: this.clickedEdit},
           {icon: 'delete', handle: this.clickedDelete}
@@ -109,6 +113,9 @@
       },
       clickedCompare () {
         router.push({name: `${this.object}/compare`, params: {name: this.name}})
+      },
+      clickedDownload () {
+        this.$store.dispatch('excelExport', this._id)
       }
     },
     mounted () {

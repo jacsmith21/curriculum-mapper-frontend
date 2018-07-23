@@ -69,7 +69,6 @@
     },
     methods: {
       tileStyle (key) {
-        console.log(key, this.colorLookup[this.differences[key]])
         return {
           backgroundColor: this.colorLookup[this.differences[key]]
         }

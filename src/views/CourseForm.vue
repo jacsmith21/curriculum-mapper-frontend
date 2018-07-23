@@ -127,7 +127,6 @@
       },
       course () {
         const number = this.$route.params.name
-        console.info(number)
         return this.$store.getters.courseNumberLookup[number]
       },
       ...mapForm('forms.courses.current')

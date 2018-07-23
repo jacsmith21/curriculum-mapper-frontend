@@ -211,6 +211,15 @@ const actions = {
   logout: () => {
     localStorage.removeItem('user-token')
     router.push({name: 'login'})
+  },
+  excelExport (_id) {
+    instance.get(`/export/${_id}`, {responseType: 'arraybuffer'})
+      .then(r => {
+        console.log(r)
+        let blob = new Blob([r.data], {type: 'application/vnd.ms-excel'})
+        let url = window.URL.createObjectURL(blob)
+        window.open(url)
+      })
   }
 }
 
@@ -261,7 +270,6 @@ const mutations = {
     state.forms[object].current = {...state.forms[object].blank, ...item}
   },
   addPatch (state, {patch, _id}) {
-    console.info('Adding patch!')
     Vue.set(state.history, _id, patch)
   },
   setObjectState (state, { course, date }) {

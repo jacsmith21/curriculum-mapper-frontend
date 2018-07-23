@@ -8,7 +8,7 @@
   >
     <v-tabs v-model="active" grow>
       <v-tab ripple>Major</v-tab>
-      <v-tab ripple>Minor</v-tab>
+      <v-tab ripple>All</v-tab>
     </v-tabs>
 
     <v-list two-line>
