@@ -1,5 +1,5 @@
 import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
-import store from '@/store'
+import store from '@/store'  // this is incredibly fragile and may cause an error due to circular dependencies
 import * as _ from 'lodash'
 
 export const copy = (obj) => {

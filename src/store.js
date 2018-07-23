@@ -192,6 +192,7 @@ const actions = {
   login ({ commit, dispatch }, user) {
     instance.post(`/login`, user)
       .then(r => {
+        console.info('User successfully logged in!')
         localStorage.setItem('user-token', r.data)
         axios.defaults.headers.common['Authorization'] = r.data
         router.push({name: 'home'})
@@ -288,9 +289,21 @@ const mutations = {
   updateField
 }
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state,
   getters,
   mutations,
   actions
 })
+
+instance.interceptors.response.use(undefined, err => {
+  console.log(err.config)
+  return new Promise(() => {
+    if (err.config && err.response && err.response.status === 401) {
+      store.dispatch('logout')
+    }
+    throw err
+  })
+})
+
+export {store as default}

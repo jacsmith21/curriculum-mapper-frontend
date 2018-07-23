@@ -127,6 +127,11 @@
       dateText () {
         this.$store.dispatch('loadAtDate', {object: this.object, date: this.dateText, _id: this._id})
         this.dateChange(this.dateText)
+      },
+      _id () {
+        if (this.showHistory) {
+          this.$store.dispatch('loadHistory', {object: this.object, _id: this._id})
+        }
       }
     }
   }

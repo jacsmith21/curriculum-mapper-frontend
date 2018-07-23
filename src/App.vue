@@ -33,7 +33,6 @@
 <script>
   import { mapGetters } from 'vuex'
   import { mapFields } from 'vuex-map-fields'
-  import axios from 'axios'
   import JToolbarDropdown from '@/components/JToolbarDropdown'
 
   export default {
@@ -65,16 +64,6 @@
       }
     },
     created () {
-      axios.interceptors.response.use(undefined, err => {
-        console.log(err.config)
-        return new Promise(() => {
-          if (err.config && err.response && err.response.status === 401) {
-            this.$store.dispatch('logout')
-          }
-          throw err
-        })
-      })
-
       window.addEventListener('resize', this.handleResize)
     },
     destroyed () {

@@ -28,7 +28,8 @@
     props: {
       title: String,
       cancel: {type: Boolean, default: false},
-      object: {type: String, required: true},
+      object: {type: String, required: false},
+      submit: {type: Function},
       editItem: {type: Object, required: false}
     },
     data () {
@@ -59,6 +60,15 @@
     },
     methods: {
       handleSubmit () {
+        if (this.submit) {
+          this.submit()
+          return
+        } else {
+          if (!this.object) {
+            throw new Error('`object` prop must be given if the `submit` is not given.')
+          }
+        }
+
         if (this.edit) {
           if (!this.type) {
             this.errorMessages = ['Revision type is required.']
@@ -85,6 +95,10 @@
       editItem: {
         immediate: true,
         handler () {
+          if (!this.object) {
+            return
+          }
+
           this.$store.commit('resetForm', {object: this.object, item: this.editItem})
         }
       }
