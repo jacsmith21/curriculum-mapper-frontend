@@ -193,8 +193,10 @@ const actions = {
     instance.post(`/login`, user)
       .then(r => {
         console.info('User successfully logged in!')
-        localStorage.setItem('user-token', r.data)
-        axios.defaults.headers.common['Authorization'] = r.data
+        const token = r.data
+        localStorage.setItem('user-token', token)
+        axios.defaults.headers.common['Authorization'] = token
+        commit('setToken', token)
         router.push({name: 'home'})
       })
       .catch(err => {
@@ -285,6 +287,9 @@ const mutations = {
   },
   setErrorMessage (state, err) {
     console.error(err.response.data)
+  },
+  setToken (state, token) {
+    state.token = token
   },
   updateField
 }
