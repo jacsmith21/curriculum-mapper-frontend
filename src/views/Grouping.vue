@@ -271,10 +271,6 @@
 <!--TODO: Make this scoped-->
 <!--suppress CssUnusedSymbol -->
 <style>
-  body {
-    font: 10px sans-serif
-  }
-
   circle.node {
     fill: lightsteelblue;
     stroke: #555;
