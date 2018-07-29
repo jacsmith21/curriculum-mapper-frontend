@@ -56,7 +56,6 @@
 
 <!--suppress JSUnresolvedVariable -->
 <script>
-  import * as d3 from 'd3'
   import JGraph from '@/components/JGraph'
   import { mapState } from 'vuex'
 
@@ -78,9 +77,6 @@
           console.info(`You clicked on something that isn't a course!`)
           return
         }
-
-        this.open = true
-        d3.event.stopPropagation()
         this.selected = clickedNode.id  // id is the course name
       },
       dfs (course, key, option, states, start = true) {
@@ -194,7 +190,7 @@
       },
       indexLookup () {
         let i = 0
-        return this.parsed.reduce((lookup, course) => { lookup[course.number] = i; i++; return lookup }, {})
+        return this.filteredCourses.reduce((lookup, course) => { lookup[course.number] = i; i++; return lookup }, {})
       },
       selectedCourse () {
         return this.courseLookup[this.selected] || {}

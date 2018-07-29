@@ -49,7 +49,10 @@
         return this.filter.toLowerCase()
       },
       clipped () {
-        return this.width >= this.mobileBreakPoint
+        return !this.mobile
+      },
+      mobile () {
+        return this.width < this.mobileBreakPoint
       },
       ...mapFields(['open']),
       ...mapState(['width'])
@@ -57,6 +60,18 @@
     methods: {
       filterFunction (item) {
         return item.title.toLowerCase().startsWith(this.searchTerm)
+      }
+    },
+    watch: {
+      mobile: {
+        immediate: true,
+        handler () {
+          // ensure sure drawer is initially closed if we start mobile
+          if (this.mobile) {
+            // noinspection JSUnusedGlobalSymbols
+            this.open = false
+          }
+        }
       }
     }
   }

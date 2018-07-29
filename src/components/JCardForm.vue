@@ -98,7 +98,6 @@
           if (!this.object) {
             return
           }
-
           this.$store.commit('resetForm', {object: this.object, item: this.editItem})
         }
       }

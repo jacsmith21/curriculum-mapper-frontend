@@ -7,7 +7,8 @@ import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 import * as _ from 'lodash'
 
-const instance = axios.create({baseURL: process.env.SERVER_BASE})
+const baseUrl = process.env.SERVER_BASE
+const instance = axios.create({baseURL: baseUrl})
 
 Vue.use(Vuex)
 
@@ -215,14 +216,9 @@ const actions = {
     localStorage.removeItem('user-token')
     router.push({name: 'login'})
   },
-  excelExport (_id) {
-    instance.get(`/export/${_id}`, {responseType: 'arraybuffer'})
-      .then(r => {
-        console.log(r)
-        let blob = new Blob([r.data], {type: 'application/vnd.ms-excel'})
-        let url = window.URL.createObjectURL(blob)
-        window.open(url)
-      })
+  excelExport (_, _id) {
+    const url = `${baseUrl}/export/${_id}`
+    window.open(url)
   }
 }
 
@@ -263,7 +259,8 @@ const mutations = {
     console.info('Resetting the form!', item)
     item = item || {}
     item = copy(item)
-    if (object === 'course') {
+    console.log('Copied item: ', item)
+    if (object === 'courses') {
       if (item.learningOutcomes) {
         item.learningOutcomes = item.learningOutcomes.map(outcome => ({value: outcome}))
       }
@@ -303,6 +300,7 @@ const store = new Vuex.Store({
 
 instance.interceptors.response.use(undefined, err => {
   console.log(err.config)
+  console.log(err.config.__isRetryRequest)
   return new Promise(() => {
     if (err.config && err.response && err.response.status === 401) {
       store.dispatch('logout')

@@ -115,6 +115,9 @@
         router.push({name: `${this.object}/compare`, params: {name: this.name}})
       },
       clickedDownload () {
+        if (this.object !== 'courses') {
+          return
+        }
         this.$store.dispatch('excelExport', this._id)
       }
     },

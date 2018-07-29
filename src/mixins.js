@@ -14,5 +14,10 @@ export const vmodel = {
     classes () {
       return Object.keys(this.$attrs)
     }
+  },
+  watch: {
+    value () {
+      this.content = this.value
+    }
   }
 }

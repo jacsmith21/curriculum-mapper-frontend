@@ -3,6 +3,7 @@
     <v-navigation-drawer
       v-if="drawer"
       v-model="open"
+      @input="handleInput"
       clipped
       fixed
       right
@@ -50,7 +51,8 @@
         open: false,
         node: null,
         link: null,
-        text: null
+        text: null,
+        opened: null
       }
     },
     methods: {
@@ -62,8 +64,15 @@
         let metrics = context.measureText(text)
         return metrics.width
       },
+      handleInput (value) {
+        // This fixes a bug where you click and let go at the exact same position and the drawer closes
+        if (!value && new Date().getTime() - this.opened.getTime() < 200) {
+          this.open = true
+        }
+      },
       clicked (node) {
         this.open = true
+        this.opened = new Date()
         d3.event.stopPropagation()
         this.clickedNode(node)
       },
@@ -108,6 +117,7 @@
           .attr('r', this.radius)
           .attr('fill', (node, i) => this.color(node, i))
           .on('mousedown', this.clicked)
+          .on('mouseup', this.mouseup)
           .call(d3.drag()
             .on('start', d => {
               if (!d3.event.active) { simulation.alphaTarget(0.3).restart() }
