@@ -104,7 +104,7 @@
 <script>
   import JTextField from '@/components/inputs/JTextField'
   // import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
-  import { mapForm } from '@/_'
+  import { mapForm } from '@/store/utils'
   import JSelect from '@/components/inputs/JSelect'
   import JChipSelect from '@/components/inputs/JChipSelect'
   import JDynamicField from '@/components/inputs/JDynamicField'

@@ -9,7 +9,7 @@
   import SidebarBase from '@/views/SidebarBase'
   import JCard from '@/components/JCard'
   import JDrawer from '@/components/JDrawer'
-  import { computeBenchmarkItems } from '@/_'
+  import { computeBenchmarkItems, BENCHMARK } from '@/_'
   import { mapGetters, mapState } from 'vuex'
 
   export default {
@@ -35,7 +35,7 @@
           ({title: benchmark.name, headline: benchmark.accreditor || 'No Accreditor', to: `/benchmarks/${benchmark.name}`}))
       },
       ...mapGetters(['benchmarkNameLookup']),
-      ...mapState(['benchmarks'])
+      ...mapState([BENCHMARK])
     },
     methods: {computeBenchmarkItems}
   }

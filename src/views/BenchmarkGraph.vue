@@ -35,6 +35,7 @@
 <script>
   import JGraph from '@/components/JGraph'
   import { mapState, mapGetters } from 'vuex'
+  import { BENCHMARK } from '@/_'
 
   export default {
     name: 'BenchmarkGraph',
@@ -108,7 +109,7 @@
       courses () {
         return this.$store.state.courses.map(course => ({...course, name: course.number}))
       },
-      ...mapState(['benchmarks']),
+      ...mapState([BENCHMARK]),
       ...mapGetters({benchmarkLookup: 'benchmarkIdLookup', courseLookup: 'courseIdLookup'})
     }
   }

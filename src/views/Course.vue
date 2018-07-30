@@ -72,7 +72,7 @@
 <script>
   import SidebarBase from '@/views/SidebarBase'
   import JCard from '@/components/JCard'
-  import { computeCourseItems } from '@/_'
+  import { computeCourseItems, COURSE } from '@/_'
   import JDrawer from '@/components/JDrawer'
   import { mapGetters, mapState } from 'vuex'
 
@@ -102,7 +102,7 @@
           ({title: course.number, headline: course.title || 'No Title', to: `/courses/${course.number}`}))
       },
       ...mapGetters(['courseNumberLookup']),
-      ...mapState(['courses'])
+      ...mapState([COURSE])
 
     },
     methods: {computeCourseItems}

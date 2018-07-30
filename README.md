@@ -20,3 +20,6 @@ npm run dev
 # build for production with minification
 npm run build
 ```
+
+## Deploying
+Just push to `origin/master`!

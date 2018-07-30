@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import { router } from '@/router'
-import { copy, makeLookup } from '@/_'
+import { copy, COURSE, makeLookup } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 import * as _ from 'lodash'
@@ -84,7 +84,7 @@ const actions = {
   addItem ({ commit, state }, object) {
     let item = copy(state.forms[object].current)
 
-    if (object === 'courses') {
+    if (object === COURSE) {
       item.learningOutcomes = item.learningOutcomes.map(outcome => outcome.value)
     }
 
@@ -138,7 +138,7 @@ const actions = {
     delete oldItem.index
     filter(oldItem)
 
-    if (object === 'courses' && oldItem.learningOutcomes) {
+    if (object === COURSE && oldItem.learningOutcomes) {
       oldItem.learningOutcomes = oldItem.learningOutcomes.map(outcome => ({value: outcome}))
     }
 
@@ -212,9 +212,8 @@ const actions = {
         commit('setErrorMessage', err)
       })
   },
-  logout: () => {
-    localStorage.removeItem('user-token')
-    router.push({name: 'login'})
+  logout: ({ commit }) => {
+    commit('logout')
   },
   excelExport (_, _id) {
     const url = `${baseUrl}/export/${_id}`
@@ -260,7 +259,7 @@ const mutations = {
     item = item || {}
     item = copy(item)
     console.log('Copied item: ', item)
-    if (object === 'courses') {
+    if (object === COURSE) {
       if (item.learningOutcomes) {
         item.learningOutcomes = item.learningOutcomes.map(outcome => ({value: outcome}))
       }
@@ -287,6 +286,11 @@ const mutations = {
   },
   setToken (state, token) {
     state.token = token
+  },
+  logout (state) {
+    localStorage.removeItem('user-token')
+    state.token = ''
+    router.push({name: 'login'})
   },
   updateField
 }

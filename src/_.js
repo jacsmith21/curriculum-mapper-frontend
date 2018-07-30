@@ -1,7 +1,3 @@
-import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
-import store from '@/store'  // this is incredibly fragile and may cause an error due to circular dependencies
-import * as _ from 'lodash'
-
 export const copy = (obj) => {
   return JSON.parse(JSON.stringify(obj))
 }
@@ -68,40 +64,6 @@ export const radiusVector = (link, radius) => {
   return scale(sub(link.target, link.source), radius)
 }
 
-export const mapForm = (keys) => {
-  let form = store.state
-  keys = keys.split('.')
-  keys.map(key => {
-    form = form[key]
-  })
-
-  let multiRowFields = []
-  let fields = []
-  const map = (object, base) => {
-    Object.keys(object).map(name => {
-      const field = form[name]
-      if (_.isArray(field)) {
-        if (field.length) {
-          multiRowFields.push([...base, name])
-        } else {
-          fields.push([...base, name])
-        }
-      } else if (_.isObject(field)) {
-        map(field, [...base, name])
-      } else {
-        fields.push([...base, name])
-      }
-    })
-  }
-  map(form, keys)
-  fields = fields.map(name => name.join('.'))
-  multiRowFields = multiRowFields.map(name => name.join('.'))
-  return {
-    ...mapFields(fields),
-    ...mapMultiRowFields(multiRowFields)
-  }
-}
-
 export const courseLabelMap = {
   'number': 'Number',
   'title': 'Title',
@@ -111,3 +73,7 @@ export const courseLabelMap = {
   'corequisites': 'Corequisites',
   'recommended': 'Recommended'
 }
+
+export const COURSE = 'courses'
+
+export const BENCHMARK = 'benchmarks'

@@ -3,7 +3,7 @@
     <v-content>
       <router-view/>
 
-      <v-toolbar app clipped-left clipped-right color="amber">
+      <v-toolbar app clipped-left clipped-right color="amber" v-if="authenticated">
         <v-toolbar-side-icon @click.stop="open = !open"></v-toolbar-side-icon>
 
         <v-toolbar-items class="hidden-sm-and-down" style="margin-left: 10px;">
@@ -21,6 +21,13 @@
         </j-toolbar-dropdown>
       </v-toolbar>
 
+      <v-toolbar app clipped-left clipped-right color="amber" v-else>
+        <v-spacer></v-spacer>
+        <v-btn flat to="/register">Register</v-btn>
+        <v-btn flat to="/login">Login</v-btn>
+      </v-toolbar>
+
+
     </v-content>
     <v-footer fixed app>
       <v-layout column align-center>
@@ -34,6 +41,7 @@
   import { mapGetters } from 'vuex'
   import { mapFields } from 'vuex-map-fields'
   import JToolbarDropdown from '@/components/JToolbarDropdown'
+  import { COURSE, BENCHMARK } from '@/_'
 
   export default {
     name: 'App',
@@ -74,8 +82,8 @@
         immediate: true,
         handler () {
           if (this.authenticated) {
-            this.$store.dispatch('loadItems', 'benchmarks')
-            this.$store.dispatch('loadItems', 'courses')
+            this.$store.dispatch('loadItems', BENCHMARK)
+            this.$store.dispatch('loadItems', COURSE)
           }
         }
       }

@@ -13,7 +13,7 @@
   import JTextField from '@/components/inputs/JTextField'
   import SidebarBase from '@/views/SidebarBase'
   import JCardForm from '@/components/JCardForm'
-  import { mapForm } from '@/_'
+  import { mapForm } from '@/store/utils'
   import JSelect from '@/components/inputs/JSelect'
 
   export default {

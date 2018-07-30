@@ -34,6 +34,7 @@
   import { router } from '@/router'
   import JVersionDrawer from '@/components/JVersionDrawer'
   import JDatePicker from '@/components/inputs/JDatePicker'
+  import {COURSE} from '@/_'
 
   export default {
     name: 'JCard',
@@ -115,7 +116,7 @@
         router.push({name: `${this.object}/compare`, params: {name: this.name}})
       },
       clickedDownload () {
-        if (this.object !== 'courses') {
+        if (this.object !== COURSE) {
           return
         }
         this.$store.dispatch('excelExport', this._id)
