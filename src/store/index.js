@@ -182,10 +182,10 @@ const actions = {
         throw err
       })
   },
-  loadAtDate ({ commit }, { object, _id, date }) {
-    instance.get(`/${object}/${_id}?date=${date}`)
+  loadAtTime ({ commit }, { object, _id, time }) {
+    instance.get(`/${object}/${_id}?time=${time}`)
       .then(res => {
-        commit('setObjectState', {object: object, course: res.data, date: date})
+        commit('setObjectState', {object: object, course: res.data, time})
       }, err => {
         console.error(err)
       })
@@ -258,7 +258,6 @@ const mutations = {
     console.info('Resetting the form!', item)
     item = item || {}
     item = copy(item)
-    console.log('Copied item: ', item)
     if (object === COURSE) {
       if (item.learningOutcomes) {
         item.learningOutcomes = item.learningOutcomes.map(outcome => ({value: outcome}))
@@ -271,12 +270,12 @@ const mutations = {
   addPatch (state, {patch, _id}) {
     Vue.set(state.history, _id, patch)
   },
-  setObjectState (state, { course, date }) {
+  setObjectState (state, { course, time }) {
     if (!(course._id in state.states)) {
       Vue.set(state.states, course._id, {})
     }
 
-    Vue.set(state.states[course._id], date, course)
+    Vue.set(state.states[course._id], time, course)
   },
   setParsed (state, parsed) {
     state.parsed = parsed

@@ -22,11 +22,11 @@
 
           <v-list-tile-content v-else>
             <v-list-tile-title>{{ firstLetterUpper(item.type) }} Revision</v-list-tile-title>
-            <v-list-tile-sub-title>{{ item.operations.length }} Operations</v-list-tile-sub-title>
+            <v-list-tile-sub-title>{{ item.operations.length }} Operations by {{ item.initials || 'Anonymous' }}</v-list-tile-sub-title>
           </v-list-tile-content>
 
           <v-list-tile-action>
-            <v-list-tile-action-text>{{ item.time }}</v-list-tile-action-text>
+            <v-list-tile-action-text>{{ item.date }}</v-list-tile-action-text>
             <v-btn icon @click="expand(item.index)" v-if="!item.isOperation">
               <v-icon v-if="expanded.includes(item.index)">expand_less</v-icon>
               <v-icon v-else>expand_more</v-icon>
@@ -48,7 +48,13 @@
       return {
         active: 0,
         expanded: [],
-        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'}
+        opLabelMap: {add: 'Added', remove: 'Removed', replace: 'Changed'},
+        options: {
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric'
+        }
       }
     },
     computed: {
@@ -73,7 +79,7 @@
             items.splice(index + 1, 0, operation)
           })
         })
-        return items.map(item => ({...item, isOperation: !!item.op}))
+        return items.map(item => ({...item, isOperation: !!item.op, date: new Date(item.time * 1000).toLocaleString('en-US', this.options)}))
       },
       majorRevisions () {
         return this.revisions.filter(revision => revision.type === 'major')

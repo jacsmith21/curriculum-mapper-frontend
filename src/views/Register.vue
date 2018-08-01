@@ -3,7 +3,7 @@
     <v-layout class="j-flex-column j-flex-center">
       <j-card-form title="Register" :submit="register" style="max-width: 600px; display: table" submit-text="Register">
         <j-text-field xs12 label="Username" v-model="user.username"></j-text-field>
-        <j-text-field xs12 label="Initial" v-model="user.initial"></j-text-field>
+        <j-text-field xs12 label="Initials" v-model="user.initials"></j-text-field>
         <j-text-field xs12 label="Password" v-model="user.password" type="password"></j-text-field>
         <j-text-field xs12 label="Confirm Password" v-model="user.confirmPassword" type="password"></j-text-field>
         <j-text-field xs12 label="Code" v-model="user.code"></j-text-field>
@@ -25,7 +25,7 @@
           username: '',
           password: '',
           confirmPassword: '',
-          initial: '',
+          initials: '',
           code: ''
         }
       }

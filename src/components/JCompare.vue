@@ -3,10 +3,10 @@
     <v-container grid-list-md text-xs-center style="padding: 0">
       <v-layout row wrap>
         <v-flex xs6>
-          <j-card :object="object" :item="itemOne" :compute-items="computeItems" date :date-change="handleThis"></j-card>
+          <j-card :object="object" :item="itemOne" :compute-items="computeItems" date :time-change="handleThis"></j-card>
         </v-flex>
         <v-flex xs6>
-          <j-card :object="object" :item="itemTwo" :compute-items="computeItems" date :date-change="handleThat" :tile-style="tileStyle"></j-card>
+          <j-card :object="object" :item="itemTwo" :compute-items="computeItems" date :time-change="handleThat" :tile-style="tileStyle"></j-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -73,11 +73,11 @@
           backgroundColor: this.colorLookup[this.differences[key]]
         }
       },
-      handleThis (date) {
-        this.this = date
+      handleThis (time) {
+        this.this = time
       },
-      handleThat (date) {
-        this.that = date
+      handleThat (time) {
+        this.that = time
       }
     }
   }

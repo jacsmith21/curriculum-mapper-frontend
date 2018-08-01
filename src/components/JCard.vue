@@ -46,7 +46,7 @@
       actions: {type: Boolean, default: false},
       date: {type: Boolean, default: false},
       tileStyle: {type: Function, default: () => {}},
-      dateChange: {type: Function, default: () => {}}
+      timeChange: {type: Function, default: () => {}}
     },
     data () {
       return {
@@ -58,17 +58,21 @@
     },
     computed: {
       items () {
-        if (this.itemAtDate) {
-          return this.computeItems(this.itemAtDate)
+        if (this.itemAtTime) {
+          return this.computeItems(this.itemAtTime)
         } else {
           return this.computeItems(this.item)
         }
       },
+      time () {
+        return new Date(this.dateText).getTime() / 1000
+      },
       revisions () {
+        // here were grouping revisions by time
         let revisions = {}
         this.patches.map(patch => {
           if (!(patch.time in revisions)) {
-            revisions[patch.time] = {type: patch.type, time: patch.time, operations: []}
+            revisions[patch.time] = {type: patch.type, time: patch.time, operations: [], initials: patch.initials}
           }
           revisions[patch.time].operations.push(patch)
         })
@@ -83,8 +87,8 @@
       objectStates () {
         return this.$store.state.states[this._id] || {}
       },
-      itemAtDate () {
-        return this.objectStates[this.dateText]
+      itemAtTime () {
+        return this.objectStates[this.time]
       },
       name () {
         return this.$route.params.name
@@ -129,8 +133,8 @@
     },
     watch: {
       dateText () {
-        this.$store.dispatch('loadAtDate', {object: this.object, date: this.dateText, _id: this._id})
-        this.dateChange(this.dateText)
+        this.$store.dispatch('loadAtTime', {object: this.object, time: this.time, _id: this._id})
+        this.timeChange(this.time)
       },
       _id () {
         if (this.showHistory) {
