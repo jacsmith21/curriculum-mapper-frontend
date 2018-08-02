@@ -48,7 +48,8 @@ const state = {
   token: localStorage.getItem('user-token') || '',
   open: true,
   width: window.innerWidth,
-  drawerExists: false
+  drawerExists: false,
+  errors: false
 }
 
 // duplicate forms for resetting
@@ -72,9 +73,6 @@ const getters = {
   },
   courseIdLookup: (state) => {
     return makeLookup(state.courses, '_id')
-  },
-  benchmarkIdLookup: (state) => {
-    return makeLookup(state.benchmarks, '_id')
   },
   authenticated: state => !!state.token,
   getField
@@ -183,6 +181,7 @@ const actions = {
       })
       .catch(err => {
         localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+        commit('setErrors')
         throw err
       })
   },
@@ -268,6 +267,9 @@ const mutations = {
     localStorage.removeItem('user-token')
     state.token = ''
     router.push({name: 'login'})
+  },
+  setErrors (state, errors = true) {
+    state.errors = errors
   },
   updateField
 }

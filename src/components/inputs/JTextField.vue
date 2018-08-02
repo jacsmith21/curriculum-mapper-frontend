@@ -7,6 +7,7 @@
       @input="input"
       :suffix="suffix"
       :disabled="disabled"
+      :error-messages="errorMessages"
       required
     ></v-text-field>
   </v-flex>
@@ -22,7 +23,8 @@
       label: String,
       type: {default: 'text', type: String},
       suffix: {type: String},
-      disabled: {default: false}
+      disabled: {default: false},
+      errorMessages: String
     }
   }
 </script>
