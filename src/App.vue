@@ -4,7 +4,7 @@
       <router-view/>
 
       <v-toolbar app clipped-left clipped-right color="amber" v-if="authenticated">
-        <v-toolbar-side-icon @click.stop="open = !open"></v-toolbar-side-icon>
+        <v-toolbar-side-icon v-if="hamburger" @click.stop="open = !open"></v-toolbar-side-icon>
 
         <v-toolbar-items class="hidden-sm-and-down" style="margin-left: 10px;">
           <v-btn flat to="/courses">Courses</v-btn>

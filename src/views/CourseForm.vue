@@ -31,7 +31,7 @@
       <j-form-break title="Course Content"></j-form-break>
       <j-form-break title="Learning Outcomes" tag="h3"></j-form-break>
       <v-layout wrap>
-        <j-dynamic-field :items="learningOutcomes" identifier="form.learningOutcomes">
+        <j-dynamic-field :items="learningOutcomes" identifier="learningOutcomes">
           <template slot-scope="{ item }">
             <j-text-field xs11 label="Learning Outcome" v-model="item.value"></j-text-field>
           </template>
@@ -40,7 +40,7 @@
 
       <j-form-break title="Assessments" tag="h3"></j-form-break>
       <v-layout wrap>
-        <j-dynamic-field :items="assessments" identifier="form.assessments">
+        <j-dynamic-field :items="assessments" identifier="assessments">
           <template slot-scope="{ item }">
             <j-select xs3 label="Type" :items="assessmentTypes" v-model="item.assessmentType"></j-select>
             <j-text-field xs8 label="Description" v-model="item.description"></j-text-field>
@@ -50,11 +50,11 @@
 
       <j-form-break title="Instructors" tag="h3"></j-form-break>
       <v-layout wrap>
-        <j-dynamic-field :items="sections" identifier="form.sections">
+        <j-dynamic-field :items="sections" identifier="sections">
           <template slot-scope="{ item }">
             <j-text-field xs4 label="Instructor" v-model="item.instructor"></j-text-field>
             <j-text-field xs4 label="Section" v-model="item.section"></j-text-field>
-            <j-text-field xs3 label="Section Count" type="number" v-model="item.section"></j-text-field>
+            <j-text-field xs3 label="Section Count" type="number" v-model="item.sectionCount"></j-text-field>
           </template>
         </j-dynamic-field>
       </v-layout>

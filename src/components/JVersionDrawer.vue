@@ -1,11 +1,5 @@
 <template>
-  <v-navigation-drawer
-    :value="show"
-    clipped
-    fixed
-    app
-    right
-  >
+  <v-navigation-drawer :value="content" @input="input" clipped fixed app right>
     <v-tabs v-model="active" grow>
       <v-tab ripple>Major</v-tab>
       <v-tab ripple>All</v-tab>
@@ -41,9 +35,12 @@
 </template>
 
 <script>
+  import { vmodel } from '@/mixins'
+
   export default {
     name: 'JVersionDrawer',
-    props: {revisions: {type: Array, required: true}, show: {type: Boolean, required: true}},
+    props: {revisions: {type: Array, required: true}},
+    mixins: [vmodel],
     data () {
       return {
         active: 0,
@@ -105,6 +102,11 @@
         } else {
           this.expanded.push(index)
         }
+      }
+    },
+    watch: {
+      revisions () {
+        this.expanded = []
       }
     }
   }

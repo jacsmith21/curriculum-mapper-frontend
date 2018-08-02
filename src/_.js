@@ -1,3 +1,5 @@
+import * as _ from 'lodash'
+
 export const copy = (obj) => {
   return JSON.parse(JSON.stringify(obj))
 }
@@ -77,3 +79,27 @@ export const courseLabelMap = {
 export const COURSE = 'courses'
 
 export const BENCHMARK = 'benchmarks'
+
+export const filter = (obj) => {
+  if (Array.isArray(obj)) {
+    let indices = []
+    for (const [i, item] of obj.entries()) {
+      if (!filter(item)) {
+        indices.push(i)
+      }
+    }
+    for (const i of indices.reverse()) {
+      obj.splice(i, 1)
+    }
+    return obj.length !== 0
+  } else if (typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      if (!filter(obj[key])) {
+        delete obj[key]
+      }
+    }
+    return !_.isEmpty(obj)
+  } else {
+    return !!obj
+  }
+}

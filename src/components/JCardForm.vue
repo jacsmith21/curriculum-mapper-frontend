@@ -84,9 +84,6 @@
             })
         } else {
           this.$store.dispatch('addItem', this.object)
-            .catch(err => {
-              throw err
-            })
         }
       },
       handleCancel () {}

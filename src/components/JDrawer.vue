@@ -73,6 +73,12 @@
           }
         }
       }
+    },
+    mounted () {
+      this.$store.commit('updateField', {path: 'drawerExists', value: true})
+    },
+    destroyed () {
+      this.$store.commit('updateField', {path: 'drawerExists', value: false})
     }
   }
 </script>

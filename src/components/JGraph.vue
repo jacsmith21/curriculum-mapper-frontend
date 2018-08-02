@@ -164,7 +164,7 @@
     async mounted () {
       window.addEventListener('resize', () => {
         this.width = window.innerWidth
-        this.height = window.innerWidth - 64 - 32
+        this.height = window.innerHeight - 64 - 32
       })
 
       while (!this.loaded) {

@@ -85,8 +85,9 @@
 
         let links = []
         this.courses.map((course, index) => {
-          for (const _id of course.benchmarks || []) {
-            links.push({source: this.benchmarkLookup[_id.$oid].index + this.courses.length, target: index})
+          for (const name of course.benchmarks || []) {
+            console.log(name)
+            links.push({source: this.benchmarkLookup[name].index + this.courses.length, target: index})
           }
         })
 
@@ -110,7 +111,7 @@
         return this.$store.state.courses.map(course => ({...course, name: course.number}))
       },
       ...mapState([BENCHMARK]),
-      ...mapGetters({benchmarkLookup: 'benchmarkIdLookup', courseLookup: 'courseIdLookup'})
+      ...mapGetters({benchmarkLookup: 'benchmarkNameLookup', courseLookup: 'courseIdLookup'})
     }
   }
 </script>

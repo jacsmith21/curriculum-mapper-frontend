@@ -12,6 +12,7 @@ import BenchmarkCompare from '@/views/BenchmarkCompare'
 import Grouping from '@/views/Grouping'
 import Login from '@/views/Login'
 import Register from '@/views/Register'
+import { BENCHMARK, COURSE } from '@/_'
 
 // noinspection JSUnresolvedFunction
 Vue.use(Router)
@@ -45,6 +46,7 @@ export const router = new Router({
       beforeEnter: authenticate
     },
     {
+      name: BENCHMARK,
       path: '/benchmarks/:name?',
       component: Benchmark,
       beforeEnter: authenticate
@@ -56,6 +58,7 @@ export const router = new Router({
       beforeEnter: authenticate
     },
     {
+      name: COURSE,
       path: '/courses/:name?',
       component: Course,
       beforeEnter: authenticate

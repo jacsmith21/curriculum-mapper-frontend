@@ -2,10 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import { router } from '@/router'
-import { copy, COURSE, makeLookup } from '@/_'
+import { copy, COURSE, makeLookup, filter } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
-import * as _ from 'lodash'
 
 const baseUrl = process.env.SERVER_BASE
 const instance = axios.create({baseURL: baseUrl})
@@ -48,7 +47,8 @@ const state = {
   parsed: [],
   token: localStorage.getItem('user-token') || '',
   open: true,
-  width: window.innerWidth
+  width: window.innerWidth,
+  drawerExists: false
 }
 
 // duplicate forms for resetting
@@ -61,8 +61,8 @@ Object.keys(state.forms).map(key => {
 })
 
 const getters = {
-  hamburger: (_, getters) => {
-    return getters.authenticated
+  hamburger: (state, getters) => {
+    return getters.authenticated && state.drawerExists
   },
   courseNumberLookup: (state) => {
     return makeLookup(state.courses, 'number')
@@ -88,9 +88,13 @@ const actions = {
       item.learningOutcomes = item.learningOutcomes.map(outcome => outcome.value)
     }
 
+    // This is important as we filter out empty objects
+    filter(item)
+
     instance.post(`/${object}`, item)
       .then(() => {
         commit('addItem', {item, object})
+        router.push({name: object})
       })
       .catch(err => {
         throw err
@@ -104,29 +108,6 @@ const actions = {
   },
   patchItem ({ commit, getters, state }, { item, object, type }) {
     let oldItem = item
-    const filter = (obj) => {
-      if (Array.isArray(obj)) {
-        let indices = []
-        for (const [i, item] of obj.entries()) {
-          if (!filter(item)) {
-            indices.push(i)
-          }
-        }
-        for (const i of indices.reverse()) {
-          obj.splice(i, 1)
-        }
-        return obj.length !== 0
-      } else if (typeof obj === 'object') {
-        for (const key of Object.keys(obj)) {
-          if (!filter(obj[key])) {
-            delete obj[key]
-          }
-        }
-        return !_.isEmpty(obj)
-      } else {
-        return !!obj
-      }
-    }
 
     let newItem = copy(state.forms[object].current)
     filter(newItem)
@@ -232,10 +213,7 @@ const mutations = {
     state[object][index] = item
   },
   clickedDynamicInput (state, {key, index}) {
-    let array = state
-    for (const subKey of key.split('.')) {
-      array = array[subKey]
-    }
+    let array = state.forms.courses.current[key]
 
     if (array.length - 1 === index) {
       const element = array[0]
@@ -302,10 +280,9 @@ const store = new Vuex.Store({
 })
 
 instance.interceptors.response.use(undefined, err => {
-  console.log(err.config)
-  console.log(err.config.__isRetryRequest)
   return new Promise(() => {
     if (err.config && err.response && err.response.status === 401) {
+      // noinspection JSUnresolvedFunction
       store.dispatch('logout')
     }
     throw err

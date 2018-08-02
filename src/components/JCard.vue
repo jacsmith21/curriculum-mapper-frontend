@@ -25,7 +25,7 @@
       </v-card-actions>
     </v-card>
 
-    <j-version-drawer :show="showHistory" :revisions="revisions"></j-version-drawer>
+    <j-version-drawer v-model="showHistory" :revisions="revisions"></j-version-drawer>
 
   </v-container>
 </template>

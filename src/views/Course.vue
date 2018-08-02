@@ -17,6 +17,9 @@
             </p>
           </v-flex>
 
+          <v-flex xs12>
+            <h2>Requisites</h2>
+          </v-flex>
           <v-flex xs4>
             <h3>Prerequisites</h3>
           </v-flex>
@@ -36,6 +39,9 @@
             <p>{{ course.recommended || 'No Recommended' }}</p>
           </v-flex>
 
+          <v-flex xs12>
+            <h2>Sections</h2>
+          </v-flex>
           <v-flex xs4 v-if="hasSections">
             <h3>Instructor</h3>
           </v-flex>
@@ -60,7 +66,7 @@
             <p>None</p>
           </v-flex>
 
-          <v-flex xs12><h3>Maintainer</h3></v-flex>
+          <v-flex xs12><h2>Maintainer</h2></v-flex>
           <v-flex xs12><p>{{ course.maintainer || 'None' }}</p></v-flex>
         </v-layout>
       </v-container>
