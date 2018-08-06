@@ -1,6 +1,6 @@
 <template>
   <sidebar-base>
-    <j-card-form title="Course Form" object="courses" :edit-item="course">
+    <j-card-form title="Course Form" object="courses" :edit-item="course" :disabled="!number">
 
       <j-form-break title="Basic Information"></j-form-break>
       <v-layout wrap>
