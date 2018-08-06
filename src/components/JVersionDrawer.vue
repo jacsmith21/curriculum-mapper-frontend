@@ -88,9 +88,8 @@
           return key
         }
 
-        const keys = key.split('/')
-        const lastKey = keys[keys.length - 1]
-        return this.firstLetterUpper(lastKey)
+        const keys = key.split('/').filter(k => k)
+        return keys.join(' ')
       },
       firstLetterUpper (string) {
         // noinspection JSUnresolvedFunction

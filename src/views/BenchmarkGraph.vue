@@ -55,11 +55,11 @@
         if (node.benchmark) {
           type = 'Benchmark'
           subTitle = 'Courses'
-          items = (this.coursesLookup[node._id] || []).map(_id => this.courseLookup[_id.$oid])
+          items = this.coursesLookup[node.id] || []
         } else {
           type = 'Course'
           subTitle = 'Benchmarks'
-          items = (this.courseLookup[node._id].benchmarks || []).map(_id => this.benchmarkLookup[_id.$oid])
+          items = (this.courseLookup[node._id].benchmarks || []).map(name => this.benchmarkLookup[name])
         }
 
         this.selected = {
@@ -86,7 +86,10 @@
         let links = []
         this.courses.map((course, index) => {
           for (const name of course.benchmarks || []) {
-            console.log(name)
+            if (!(name in this.benchmarkLookup)) {
+              console.info(`${name} not in the benchmark lookup`)
+              continue
+            }
             links.push({source: this.benchmarkLookup[name].index + this.courses.length, target: index})
           }
         })
@@ -96,10 +99,14 @@
       coursesLookup () {
         let coursesLookup = {}
         for (const course of this.courses) {
-          for (const _id of course.benchmarks || []) {
-            let benchmark = this.benchmarkLookup[_id.$oid]
-            coursesLookup[benchmark._id] = this.coursesLookup[benchmark._id] || []
-            this.coursesLookup[benchmark._id].push({$oid: course._id})
+          for (const name of course.benchmarks || []) {
+            if (!(name in this.benchmarkLookup)) {
+              console.info(`${name} not in the benchmark lookup`)
+              continue
+            }
+            let benchmark = this.benchmarkLookup[name]
+            coursesLookup[benchmark.name] = coursesLookup[benchmark.name] || []
+            coursesLookup[benchmark.name].push(course)
           }
         }
         return coursesLookup

@@ -29,7 +29,7 @@ const state = {
       assessments: [{assessmentType: '', description: ''}],
       averageGrade: '',
       percentFailure: '',
-      sections: [{section: '', instructor: '', count: 0}],
+      sections: [{section: '', instructor: '', count: ''}],
       auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
       caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
       benchmarks: []
@@ -104,10 +104,13 @@ const actions = {
     })
     router.go(-1)
   },
-  patchItem ({ commit, getters, state }, { item, object, type }) {
+  patchItem ({ commit, getters, state, dispatch }, { item, object, type }) {
     let oldItem = item
 
     let newItem = copy(state.forms[object].current)
+    if (object === COURSE) {
+      newItem.learningOutcomes = newItem.learningOutcomes.map(outcome => outcome.value)
+    }
     filter(newItem)
 
     oldItem = copy(oldItem)
@@ -117,13 +120,10 @@ const actions = {
     delete oldItem.index
     filter(oldItem)
 
-    if (object === COURSE && oldItem.learningOutcomes) {
-      oldItem.learningOutcomes = oldItem.learningOutcomes.map(outcome => ({value: outcome}))
-    }
-
     const patch = jsonpatch.compare(oldItem, newItem)
     instance.patch(`/${object}/${_id}?type=${type}`, patch).then(() => {
-      commit('patchItem', {item: newItem, index, object})
+      commit('patchItem', {item: newItem, index, object, patch})
+      dispatch('loadHistory', {object, _id, force: true})
       router.go(-1)
     })
   },
@@ -149,8 +149,8 @@ const actions = {
         throw err
       })
   },
-  loadHistory ({ commit, state }, {object, _id}) {
-    if (_id in state.history) {
+  loadHistory ({ commit, state }, {object, _id, force}) {
+    if (_id in state.history && !force) {
       return
     }
 

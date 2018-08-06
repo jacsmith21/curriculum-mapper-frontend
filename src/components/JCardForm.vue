@@ -21,8 +21,6 @@
 </template>
 
 <script>
-  import { router } from '@/router'
-
   export default {
     name: 'JCardForm',
     props: {
@@ -77,12 +75,6 @@
           }
 
           this.$store.dispatch('patchItem', {object: this.object, item: this.editItem, type: this.type})
-            .then(() => {
-              router.go(-1)
-            })
-            .catch(err => {
-              throw err
-            })
         } else {
           this.$store.dispatch('addItem', this.object)
         }

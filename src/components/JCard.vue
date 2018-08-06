@@ -19,7 +19,7 @@
       <v-card-actions v-show="actions || date">
         <j-date-picker v-model="dateText" v-if="date"></j-date-picker>
         <v-spacer></v-spacer>
-        <v-btn v-for="button in buttons" flat @click="button.handle" v-show="actions" :key="button.icon">
+        <v-btn v-for="button in buttons" v-if="button.show" flat @click="button.handle" v-show="actions" :key="button.icon">
           <v-icon right left>{{ button.icon }}</v-icon>
         </v-btn>
       </v-card-actions>
@@ -46,7 +46,11 @@
       actions: {type: Boolean, default: false},
       date: {type: Boolean, default: false},
       tileStyle: {type: Function, default: () => {}},
-      timeChange: {type: Function, default: () => {}}
+      timeChange: {type: Function, default: () => {}},
+      edit: {type: Boolean, default: false},
+      download: {type: Boolean, default: false},
+      compare: {type: Boolean, default: false},
+      history: {type: Boolean, default: false}
     },
     data () {
       return {
@@ -95,11 +99,11 @@
       },
       buttons () {
         return [
-          {icon: 'compare_arrows', handle: this.clickedCompare},
-          {icon: 'cloud_download', handle: this.clickedDownload},
-          {icon: 'history', handle: this.clickedHistory},
-          {icon: 'edit', handle: this.clickedEdit},
-          {icon: 'delete', handle: this.clickedDelete}
+          {icon: 'compare_arrows', handle: this.clickedCompare, show: this.compare},
+          {icon: 'cloud_download', handle: this.clickedDownload, show: this.download},
+          {icon: 'history', handle: this.clickedHistory, show: this.history},
+          {icon: 'edit', handle: this.clickedEdit, show: this.edit},
+          {icon: 'delete', handle: this.clickedDelete, show: true}
         ]
       }
     },

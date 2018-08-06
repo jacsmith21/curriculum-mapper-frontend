@@ -1,7 +1,7 @@
 <template>
   <sidebar-base>
     <j-drawer :items="items"></j-drawer>
-    <j-card :item="course" actions :compute-items="computeCourseItems" object="courses">
+    <j-card :item="course" actions :compute-items="computeCourseItems" object="courses" edit download compare history>
       <!--<vue-markdown :source="markdown" class="markdown"></vue-markdown>-->
       <v-container grid-list-lg>
         <v-layout wrap>
