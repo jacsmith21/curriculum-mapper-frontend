@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import { router } from '@/router'
-import { copy, COURSE, makeLookup, filter, sleep } from '@/_'
+import { copy, COURSE, makeLookup, filter } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 
@@ -29,7 +29,7 @@ const state = {
       assessments: [{assessmentType: '', description: ''}],
       averageGrade: '',
       percentFailure: '',
-      sections: [{section: '', instructor: '', sectionCount: 0}],
+      sections: [{section: '', instructor: '', count: 0}],
       auDistribution: {math: '', naturalScience: '', complementaryStudies: '', engineeringScience: '', engineeringDesign: ''},
       caebAttributes: {knowledgeBase: '', problemAnalysis: '', investigation: '', design: '', tools: '', team: '', communication: '', professionalism: '', impacts: '', ethics: '', economics: '', ll: ''},
       benchmarks: []
@@ -90,8 +90,8 @@ const actions = {
     filter(item)
 
     instance.post(`/${object}`, item)
-      .then(() => {
-        commit('addItem', {item, object})
+      .then(r => {
+        commit('addItem', {item, object, _id: r.data})
         router.push({name: object})
       })
       .catch(err => {
@@ -204,7 +204,8 @@ const actions = {
 }
 
 const mutations = {
-  addItem (state, {object, item}) {
+  addItem (state, {object, item, _id}) {
+    item._id = _id
     state[object].push(item)
   },
   removeItem (state, {object, _id}) {

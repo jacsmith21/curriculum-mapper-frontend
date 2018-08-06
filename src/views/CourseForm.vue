@@ -54,7 +54,7 @@
           <template slot-scope="{ item }">
             <j-text-field xs4 label="Instructor" v-model="item.instructor"></j-text-field>
             <j-text-field xs4 label="Section" v-model="item.section"></j-text-field>
-            <j-text-field xs3 label="Section Count" type="number" v-model="item.sectionCount"></j-text-field>
+            <j-text-field xs3 label="Section Count" type="number" v-model="item.count"></j-text-field>
           </template>
         </j-dynamic-field>
       </v-layout>
