@@ -1,7 +1,7 @@
 <template>
   <v-slide-y-transition mode="out-in">
     <v-layout class="j-flex-column j-flex-center">
-      <j-card-form title="Login" :submit="login" style="max-width: 600px; display: table" submitText="Login">
+      <j-card-form title="Login" :submit="login" style="max-width: 600px; display: table" submitText="Login" :loading="loading">
         <v-alert :value="true" type="error" xs12 outline style="margin-bottom: 30px" v-if="errors">
           Username or password is incorrect.
         </v-alert>
@@ -27,7 +27,8 @@
         user: {
           username: '',
           password: ''
-        }
+        },
+        loading: false
       }
     },
     components: {JCardForm, JTextField},
@@ -36,7 +37,16 @@
     },
     methods: {
       login () {
+        this.loading = true
         this.$store.dispatch('login', this.user)
+          .then(() => {
+            this.loading = false  // Just to be explicit.
+            router.push({name: 'home'})
+          })
+          .catch(e => {
+            this.loading = false
+            throw e
+          })
       },
       cancel () {
         router.push({name: 'register'})

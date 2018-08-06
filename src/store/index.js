@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import { router } from '@/router'
-import { copy, COURSE, makeLookup, filter } from '@/_'
+import { copy, COURSE, makeLookup, filter, sleep } from '@/_'
 import * as jsonpatch from 'fast-json-patch'
 import { getField, updateField } from 'vuex-map-fields'
 
@@ -169,21 +169,23 @@ const actions = {
         console.error(err)
       })
   },
-  login ({ commit, dispatch }, user) {
-    instance.post(`/login`, user)
-      .then(r => {
-        console.info('User successfully logged in!')
-        const token = r.data
-        localStorage.setItem('user-token', token)
-        axios.defaults.headers.common['Authorization'] = token
-        commit('setToken', token)
-        router.push({name: 'home'})
-      })
-      .catch(err => {
-        localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
-        commit('setErrors')
-        throw err
-      })
+  async login ({ commit, dispatch }, user) {
+    return new Promise((resolve, reject) => {
+      instance.post(`/login`, user)
+        .then(r => {
+          console.info('User successfully logged in!')
+          const token = r.data
+          localStorage.setItem('user-token', token)
+          axios.defaults.headers.common['Authorization'] = token
+          commit('setToken', token)
+          resolve(r.data)
+        })
+        .catch(e => {
+          localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
+          commit('setErrors')
+          reject(e)
+        })
+    })
   },
   register ({ dispatch, commit }, user) {
     instance.post(`/register`, user)

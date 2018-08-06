@@ -14,7 +14,7 @@
       <v-btn v-if="cancel" flat @click="handleCancel"> Cancel </v-btn>
       <v-spacer></v-spacer>
       <v-select v-if="edit" v-model="revisionType" :items="revisionItems" style="max-width: 150px" :error-messages="errorMessages"></v-select>
-      <v-btn color="primary" flat @click="handleSubmit">{{ submitText }}</v-btn>
+      <v-btn color="primary" flat @click="handleSubmit" :loading="loading">{{ submitText }}</v-btn>
     </v-card-actions>
 
   </v-container>
@@ -30,7 +30,8 @@
       cancel: {type: Boolean, default: false},
       object: {type: String, required: false},
       submit: {type: Function},
-      editItem: {type: Object, required: false}
+      editItem: {type: Object, required: false},
+      loading: {type: Boolean, default: false}
     },
     data () {
       return {
