@@ -49,7 +49,7 @@ const state = {
   open: true,
   width: window.innerWidth,
   drawerExists: false,
-  errors: false
+  error: ''
 }
 
 // duplicate forms for resetting
@@ -178,20 +178,21 @@ const actions = {
           localStorage.setItem('user-token', token)
           axios.defaults.headers.common['Authorization'] = token
           commit('setToken', token)
-          resolve(r.data)
+          router.push({name: 'home'})
+          resolve()
         })
         .catch(e => {
           localStorage.removeItem('user-token') // if the request fails, remove any possible user token if possible
-          commit('setErrors')
-          reject(e)
+          commit('setError', e.response.data)
+          resolve()
         })
     })
   },
   register ({ dispatch, commit }, user) {
     instance.post(`/register`, user)
       .then(() => dispatch('login', user))
-      .catch(err => {
-        commit('setErrorMessage', err)
+      .catch(e => {
+        commit('setError', e.response.data)
       })
   },
   logout: ({ commit }) => {
@@ -260,9 +261,6 @@ const mutations = {
   setParsed (state, parsed) {
     state.parsed = parsed
   },
-  setErrorMessage (state, err) {
-    console.error(err.response.data)
-  },
   setToken (state, token) {
     state.token = token
   },
@@ -271,8 +269,8 @@ const mutations = {
     state.token = ''
     router.push({name: 'login'})
   },
-  setErrors (state, errors = true) {
-    state.errors = errors
+  setError (state, error) {
+    state.error = error
   },
   updateField
 }

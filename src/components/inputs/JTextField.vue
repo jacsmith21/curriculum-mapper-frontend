@@ -7,8 +7,7 @@
       @input="input"
       :suffix="suffix"
       :disabled="disabled"
-      :error-messages="errorMessages"
-      required
+      :rules="rules"
     ></v-text-field>
   </v-flex>
 </template>
@@ -24,7 +23,21 @@
       type: {default: 'text', type: String},
       suffix: {type: String},
       disabled: {default: false},
-      errorMessages: String
+      errorMessages: String,
+      required: {type: Boolean, default: false},
+      match: String
+    },
+    computed: {
+      rules () {
+        let rules = []
+        if (this.required) {
+          rules.push(s => !!s || `${this.label} is required.`)
+        }
+        if (this.match) {
+          rules.push(s => s === this.match || `${this.label} does not match.`)
+        }
+        return rules
+      }
     }
   }
 </script>

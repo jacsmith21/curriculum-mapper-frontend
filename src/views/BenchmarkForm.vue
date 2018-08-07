@@ -2,7 +2,7 @@
   <sidebar-base>
     <j-card-form title="Benchmark Form" object="benchmarks">
       <v-layout wrap>
-        <j-text-field label="Name" v-model="name" xs12></j-text-field>
+        <j-text-field label="Name" v-model="name" xs12 required></j-text-field>
         <j-select label="Accreditor" v-model="accreditor" :items="items" xs12></j-select>
       </v-layout>
     </j-card-form>

@@ -3,15 +3,17 @@
 
     <h1>{{ title }}</h1>
 
-    <v-form>
+    <v-form v-model="valid" ref="form">
       <v-container grid-list-lg style="padding-top: 0">
+        <v-alert :value="true" type="error" xs12 outline style="margin-bottom: 30px" v-if="showError">
+          {{ error }}
+        </v-alert>
         <slot></slot>
       </v-container>
     </v-form>
 
     <v-divider class="mt-3"></v-divider>
     <v-card-actions>
-      <v-btn v-if="cancel" flat @click="handleCancel"> Cancel </v-btn>
       <v-spacer></v-spacer>
       <v-select v-if="edit" v-model="revisionType" :items="revisionItems" style="max-width: 150px" :error-messages="errorMessages"></v-select>
       <v-btn color="primary" flat @click="handleSubmit" :loading="loading" :disabled="disabled">{{ submitText }}</v-btn>
@@ -21,11 +23,12 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     name: 'JCardForm',
     props: {
       title: String,
-      cancel: {type: Boolean, default: false},
       object: {type: String, required: false},
       submit: {type: Function},
       editItem: {type: Object, required: false},
@@ -40,7 +43,8 @@
         revisionMap: {
           'Minor Revision': 'minor',
           'Major Revision': 'major'
-        }
+        },
+        valid: false
       }
     },
     computed: {
@@ -56,10 +60,18 @@
       },
       type () {
         return this.revisionMap[this.revisionType]
-      }
+      },
+      showError () {
+        return !!this.error
+      },
+      ...mapState(['error'])
     },
     methods: {
       handleSubmit () {
+        if (!this.$refs.form.validate()) {
+          return
+        }
+
         if (this.submit) {
           this.submit()
           return
@@ -79,8 +91,13 @@
         } else {
           this.$store.dispatch('addItem', this.object)
         }
-      },
-      handleCancel () {}
+      }
+    },
+    mounted () {
+      this.$store.commit('setError', '')
+    },
+    destroyed () {
+      this.$store.commit('setError', '')
     },
     watch: {
       editItem: {
