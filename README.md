@@ -4,6 +4,9 @@ independent project for SWE4913.
 
 Demo [here](https://serene-lovelace-d0079e.netlify.com/#/).
 
+**username**: username  
+**password**: password
+
 ## Goal
 The goal of this project is to create a modern system to manage courses.
 
