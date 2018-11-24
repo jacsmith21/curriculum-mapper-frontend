@@ -58,7 +58,12 @@
         return [['Course', {name: 'createCourse'}], ['Benchmark', {name: 'createBenchmark'}]]
       },
       userItems () {
-        return [['Prerequisite Graph', {name: 'prereqGraph'}], ['Benchmark Graph', {name: 'benchmarkGraph'}], ['Grouping Graph', '/grouping'], ['Logout', this.logout]]
+        return [
+          ['Prerequisite Graph', {name: 'prereqGraph'}],
+        //   ['Benchmark Graph', {name: 'benchmarkGraph'}],
+          ['Grouping Graph', '/grouping'],
+          ['Logout', this.logout]
+        ]
       },
       ...mapGetters(['authenticated', 'hamburger']),
       ...mapFields(['open', 'width'])

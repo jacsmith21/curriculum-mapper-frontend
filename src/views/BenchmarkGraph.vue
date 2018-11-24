@@ -5,7 +5,8 @@
     :loaded="loaded"
     :color="color"
     drawer
-    :clickedNode="clicked">
+    :clickedNode="clicked"
+  >
     <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
       <v-list two-line subheader>
