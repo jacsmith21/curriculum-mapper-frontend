@@ -27,15 +27,13 @@
   import * as d3 from 'd3'
   import {add, sub, radiusVector, sleep} from '@/_'
 
-  const ordinalScale = d3.scaleOrdinal(d3.schemeCategory10)
-
   export default {
     name: 'JGraph',
     props: {
       nodes: {required: true, type: Array},
       links: {required: true, type: Array},
       loaded: {required: true, type: Boolean},
-      color: {default: (_, i) => ordinalScale(i), type: Function},
+      color: {default: (_, i) => 'grey', type: Function},
       clickedNode: {type: Function, default: () => {}},
       nodeStyle: Object,
       refresh: {type: Boolean, default: false},

@@ -19,8 +19,8 @@
     data () {
       return {
         user: {
-          username: '',
-          password: ''
+          username: 'username',
+          password: 'password'
         },
         loading: false
       }

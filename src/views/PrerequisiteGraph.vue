@@ -6,7 +6,9 @@
     :clickedNode="clicked"
     :node-style="nodeStyle"
     drawer
-    :refresh="refresh">
+    :refresh="refresh"
+    class="graph--container"
+  >
     <!--suppress JSUnresolvedVariable -->
     <template slot="drawer">
 
@@ -51,6 +53,13 @@
       ></v-text-field>
     </v-toolbar>
 
+    <div class="legend">
+      <div class="legend--item" v-for="item in legend" :key="item.title">
+        <div class="legend--block" :style="`background-color: ${item.color}`"></div>
+        <div class="legend--text">{{ item.title }}</div>
+      </div>
+    </div>
+
   </j-graph>
 </template>
 
@@ -59,16 +68,36 @@
   import JGraph from '@/components/JGraph'
   import { mapState } from 'vuex'
 
+  const OPTIONS = {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'}
+
   export default {
     name: 'PrerequisiteGraph',
     components: {JGraph},
     data () {
       return {
-        options: {prereq: '#ffe800', coreq: 'green', post: '#ff4e41', none: 'grey', current: '#15abff'},
+        options: OPTIONS,
         filter: '',
         selected: null,
         nodeStyle: undefined,
-        refresh: false
+        refresh: false,
+        legend: [
+          {
+            title: 'Selected',
+            color: OPTIONS.current
+          },
+          {
+            title: 'Prerequisite',
+            color: OPTIONS.prereq
+          },
+          {
+            title: 'Corerequisite',
+            color: OPTIONS.coreq
+          },
+          {
+            title: 'Dependent Course',
+            color: OPTIONS.post
+          }
+        ]
       }
     },
     methods: {
@@ -244,6 +273,32 @@
     left: 0;
     padding: 0;
     margin-top: 20px!important;
+  }
+
+  .legend {
+    position: absolute;
+    left: 0;
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .legend--item {
+    display: flex;
+    align-items: center;
+  }
+
+  .legend--block {
+    height: 15px;
+    width: 15px;
+  }
+
+  .legend--text {
+    margin-left: 10px;
+  }
+
+  .graph--container {
+    height: 100%;
+    position: relative;
   }
 </style>
 
