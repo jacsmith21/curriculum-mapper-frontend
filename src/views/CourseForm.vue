@@ -4,8 +4,8 @@
 
       <j-form-break title="Basic Information"></j-form-break>
       <v-layout wrap>
-        <j-text-field v-model="number" label="Number" xs4></j-text-field>
-        <j-text-field v-model="title" label="Title" xs6></j-text-field>
+        <j-text-field v-model="number" label="Number" xs4 required></j-text-field>
+        <j-text-field v-model="title" label="Title" xs6 required></j-text-field>
       </v-layout>
 
 
